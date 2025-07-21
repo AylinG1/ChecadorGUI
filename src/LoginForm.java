@@ -1,3 +1,4 @@
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -6,8 +7,12 @@ import java.sql.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
+import javax.swing.SwingUtilities;
+import javax.swing.JFrame; // Importación ya presente, pero la incluyo para claridad
 
-
+/**
+ * Clase principal del formulario de Login.
+ */
 public class LoginForm {
     private JPanel panel1;
     private JTextField inicio; // Este campo no parece usarse en el código, podrías revisarlo
@@ -58,8 +63,9 @@ public class LoginForm {
         labelMensaje.setForeground(Color.RED);
         panel1.add(labelMensaje);
 
-
-
+        /**
+         * Acción que se ejecuta cuando se pulsa el botón de login
+         */
         botonLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -118,6 +124,16 @@ public class LoginForm {
                         return;
                     }
 
+                    // Verifica si el usuario es LDAP (externo)
+                    if (esLDAP) {
+                        labelMensaje.setForeground(Color.ORANGE);
+                        labelMensaje.setText("Validación LDAP requerida (externa).");
+                        registrarLog(conn, usuarioId, "Intento de login (LDAP)");
+                        // --- DEBUG: Usuario LDAP ---
+                        System.out.println("DEBUG: Usuario '" + usuario + "' es LDAP.");
+                        // ---------------------------
+                        return;
+                    }
 
                     // Generamos el hash con la contraseña ingresada + salt
                     String hashIngresado = generarSHA256(password + salt);
@@ -131,7 +147,7 @@ public class LoginForm {
                         labelMensaje.setForeground(Color.GREEN);
                         labelMensaje.setText("¡Login exitoso!");
                         registrarLog(conn, usuarioId, "Login exitoso");
-                        mostrarRoles(conn, usuarioId);
+                        mostrarRoles(conn, usuarioId); // Llama a este método para mostrar roles y abrir la nueva ventana
                         // --- DEBUG: Login exitoso ---
                         System.out.println("DEBUG: Login exitoso para el usuario '" + usuario + "'.");
                         // ----------------------------
@@ -167,11 +183,11 @@ public class LoginForm {
     }
 
     /**
-     Genera un hash SHA-256 en formato hexadecimal.
-     Se usa para validar la contraseña ingresada contra la almacenada en la base de datos.
-     @param input La cadena a hashear (contraseña + salt).
-     @return El hash SHA-256 en formato hexadecimal.
-     @throws NoSuchAlgorithmException Si el algoritmo SHA-256 no está disponible.
+     * Genera un hash SHA-256 en formato hexadecimal.
+     * Se usa para validar la contraseña ingresada contra la almacenada en la base de datos.
+     * @param input La cadena a hashear (contraseña + salt).
+     * @return El hash SHA-256 en formato hexadecimal.
+     * @throws NoSuchAlgorithmException Si el algoritmo SHA-256 no está disponible.
      */
     private String generarSHA256(String input) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -183,6 +199,14 @@ public class LoginForm {
         return hexString.toString();
     }
 
+    /**
+     * Registra en la base de datos el log de la actividad del usuario.
+     * Ejemplos: "Login exitoso", "Login fallido", etc.
+     * @param conn La conexión a la base de datos.
+     * @param usuarioId El ID del usuario.
+     * @param accion La descripción de la acción.
+     * @throws SQLException Si ocurre un error de SQL.
+     */
     private void registrarLog(Connection conn, int usuarioId, String accion) throws SQLException {
         String sql = "INSERT INTO LogsActividad (UsuarioID, Accion) VALUES (?, ?)";
         PreparedStatement ps = conn.prepareStatement(sql);
@@ -191,7 +215,13 @@ public class LoginForm {
         ps.executeUpdate();
     }
 
-
+    /**
+     * Consulta y muestra los roles del usuario logueado en un mensaje emergente.
+     * Y abre la ventana de administración si el login es exitoso.
+     * @param conn La conexión a la base de datos.
+     * @param usuarioId El ID del usuario.
+     * @throws SQLException Si ocurre un error de SQL.
+     */
     private void mostrarRoles(Connection conn, int usuarioId) throws SQLException {
         String sql = "SELECT r.NombreRol FROM UsuariosRoles ur JOIN Roles r ON ur.RolID = r.RolID WHERE ur.UsuarioID = ?";
         PreparedStatement ps = conn.prepareStatement(sql);
@@ -199,14 +229,48 @@ public class LoginForm {
         ResultSet rs = ps.executeQuery();
 
         StringBuilder roles = new StringBuilder("Roles: ");
+        boolean isAdmin = false; // <-- CORREGIDO: Declaración de isAdmin fuera del bucle
         while (rs.next()) {
-            roles.append(rs.getString("NombreRol")).append(" ");
+            String rol = rs.getString("NombreRol");
+            roles.append(rol).append(" ");
+            if ("Admin".equalsIgnoreCase(rol)) { // Compara si el rol es "Admin" (ignora mayúsculas/minúsculas)
+                isAdmin = true;
+            }
         }
 
         JOptionPane.showMessageDialog(null, roles.toString().trim(), "Roles del Usuario", JOptionPane.INFORMATION_MESSAGE);
-        // Puedes añadir aquí la lógica para abrir la ventana principal de la aplicación
-        // Por ejemplo: new VentanaPrincipal().setVisible(true);
-        // Y cerrar la ventana de login: ((JFrame) SwingUtilities.getWindowAncestor(panel1)).dispose();
+
+        // Lógica para abrir la ventana PrincipalAdmin
+        if (isAdmin) { // Solo si el usuario tiene el rol de Admin
+            // Asegúrate de que PrincipalAdmin esté en el mismo paquete o importado correctamente
+            // Si PrincipalAdmin también está en el paquete LoginForm, no necesitas importarlo explícitamente aquí
+            // Si está en otro paquete, por ejemplo 'com.tuempresa.admin', necesitarías 'import com.tuempresa.admin.PrincipalAdmin;'
+
+            // Ejecutar la creación y visualización de la nueva ventana en el Event Dispatch Thread (EDT)
+            SwingUtilities.invokeLater(() -> {
+                PrincipalAdmin adminPanel = new PrincipalAdmin(); // Crea una instancia de tu clase PrincipalAdmin
+
+                JFrame adminFrame = new JFrame("Panel de Administración"); // Crea un nuevo JFrame para la ventana
+                adminFrame.setContentPane(adminPanel.getPanel()); // Asigna el JPanel de PrincipalAdmin al JFrame
+                adminFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Comportamiento al cerrar la nueva ventana
+                adminFrame.setSize(1000, 700); // Tamaño de la nueva ventana
+                adminFrame.setLocationRelativeTo(null); // Centra la nueva ventana en la pantalla
+                adminFrame.setVisible(true); // Hace visible la nueva ventana
+
+                // Cierra la ventana de login actual
+                // Esto busca el JFrame que contiene el panel1 (el panel de login) y lo cierra
+                JFrame currentFrame = (JFrame) SwingUtilities.getWindowAncestor(panel1);
+                if (currentFrame != null) {
+                    currentFrame.dispose();
+                }
+            });
+        } else { // <-- AÑADIDO: Bloque else para usuarios que no son Admin
+            // Si el usuario no es admin, puedes mostrar otro mensaje o abrir otra ventana
+            JOptionPane.showMessageDialog(null, "Acceso no autorizado para esta función de administración.", "Acceso Denegado", JOptionPane.WARNING_MESSAGE);
+            // Opcional: Si hay otra ventana para usuarios no admin, abrirla aquí
+            // Por ejemplo: new VentanaEmpleado().setVisible(true);
+            // Y cerrar la ventana de login: ((JFrame) SwingUtilities.getWindowAncestor(panel1)).dispose();
+        }
     }
 
     /**
@@ -226,7 +290,7 @@ public class LoginForm {
     public static void main(String[] args) {
         // Ejecutar la UI en el Event Dispatch Thread (EDT) para seguridad de hilos en Swing
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Login de Farmacia"); // Título más descriptivo
+            JFrame frame = new JFrame("Login Empresa"); // Título más descriptivo
             LoginForm loginForm = new LoginForm();
 
             frame.setContentPane(loginForm.getPanel());
