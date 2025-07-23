@@ -16,44 +16,23 @@ public class PrincipaloUsuario extends JFrame {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
-        menuBar1 = new JMenuBar();
-        menu1 = new JMenu();
         separator1 = new JPopupMenu.Separator();
-        radioButtonMenuItem1 = new JRadioButtonMenuItem();
-        menu2 = new JMenu();
-        menuItem1 = new JMenuItem();
+        separator2 = new JPopupMenu.Separator();
+        separator3 = new JPopupMenu.Separator();
+        separator4 = new JPopupMenu.Separator();
 
         //======== this ========
         setBackground(new Color(0x2385c7));
         var contentPane = getContentPane();
         contentPane.setLayout(null);
-        setJMenuBar(menuBar1);
-
-        //======== menu1 ========
-        {
-            menu1.setText("text");
-        }
-        contentPane.add(menu1);
-        menu1.setBounds(new Rectangle(new Point(10, 20), menu1.getPreferredSize()));
         contentPane.add(separator1);
-        separator1.setBounds(10, 50, 120, 3);
-
-        //---- radioButtonMenuItem1 ----
-        radioButtonMenuItem1.setText("text");
-        contentPane.add(radioButtonMenuItem1);
-        radioButtonMenuItem1.setBounds(new Rectangle(new Point(75, 135), radioButtonMenuItem1.getPreferredSize()));
-
-        //======== menu2 ========
-        {
-            menu2.setText("text");
-        }
-        contentPane.add(menu2);
-        menu2.setBounds(new Rectangle(new Point(30, 70), menu2.getPreferredSize()));
-
-        //---- menuItem1 ----
-        menuItem1.setText("text");
-        contentPane.add(menuItem1);
-        menuItem1.setBounds(new Rectangle(new Point(25, 155), menuItem1.getPreferredSize()));
+        separator1.setBounds(0, 70, 85, separator1.getPreferredSize().height);
+        contentPane.add(separator2);
+        separator2.setBounds(0, 100, 85, 9);
+        contentPane.add(separator3);
+        separator3.setBounds(0, 135, 85, 9);
+        contentPane.add(separator4);
+        separator4.setBounds(0, 170, 85, 9);
 
         {
             // compute preferred size
@@ -75,11 +54,9 @@ public class PrincipaloUsuario extends JFrame {
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
-    private JMenuBar menuBar1;
-    private JMenu menu1;
     private JPopupMenu.Separator separator1;
-    private JRadioButtonMenuItem radioButtonMenuItem1;
-    private JMenu menu2;
-    private JMenuItem menuItem1;
+    private JPopupMenu.Separator separator2;
+    private JPopupMenu.Separator separator3;
+    private JPopupMenu.Separator separator4;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }
