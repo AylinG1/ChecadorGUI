@@ -2,10 +2,10 @@ import java.sql.*;
 
 public class BaseSQL {
 
-    private Connection conn;
+    public Connection conn;
 
     // Constructor: crea y guarda una conexión activa
-    public ConexionBD() throws SQLException {
+    public BaseSQL() throws SQLException {
         String url = "jdbc:sqlserver://servidor-prueba89.database.windows.net:1433;" +
                 "database=BasePrueba;" +
                 "user=Administrador@servidor-prueba89;" +
@@ -34,5 +34,4 @@ public class BaseSQL {
             conn.close();
         }
     }
-
 }
