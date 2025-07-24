@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
 /*
  * Created by JFormDesigner on Wed Jul 23 10:49:29 GMT-06:00 2025
@@ -12,6 +13,13 @@ import javax.swing.*;
 public class PrincipaloUsuario extends JFrame {
     public PrincipaloUsuario() {
         initComponents();
+    }
+
+    private void button1(ActionEvent e) {
+
+        Retardos retardos = new Retardos();
+        this.dispose();
+        retardos.setVisible(true);
     }
 
     private void initComponents() {
@@ -29,6 +37,7 @@ public class PrincipaloUsuario extends JFrame {
         separator5 = new JSeparator();
         panel6 = new JPanel();
         panel3 = new JPanel();
+        button1 = new JButton();
         panel5 = new JPanel();
 
         //======== this ========
@@ -144,6 +153,15 @@ public class PrincipaloUsuario extends JFrame {
             this2ContentPane.add(panel1);
             panel1.setBounds(0, 0, 745, 370);
 
+            //---- button1 ----
+            button1.setText("text");
+            button1.addActionListener(e -> {
+			button1(e);
+			button1(e);
+		});
+            this2ContentPane.add(button1);
+            button1.setBounds(245, 130, 78, 34);
+
             {
                 // compute preferred size
                 Dimension preferredSize = new Dimension();
@@ -183,6 +201,7 @@ public class PrincipaloUsuario extends JFrame {
     private JSeparator separator5;
     private JPanel panel6;
     private JPanel panel3;
+    private JButton button1;
     private JPanel panel5;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }

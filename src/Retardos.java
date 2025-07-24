@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -14,10 +13,10 @@ import javax.swing.table.*;
 
 
 
-
+/**
+ * @author aylin
+ */
 public class Retardos extends JFrame {
-
-
     public Retardos() {
         initComponents();
         //fecha
@@ -26,8 +25,6 @@ public class Retardos extends JFrame {
         String fechaFormateada = fechaActual.format(formato);
         fechaact.setText("Fecha: " + fechaFormateada);
         //nombre
-        String nombreUsuario = SesionUsuario.usuarioActual;
-        nombre.setText("Bienvenido, " + nombreUsuario);
 
 
     }
@@ -35,6 +32,7 @@ public class Retardos extends JFrame {
     public static void main(String[] args) {
 
     }
+
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
