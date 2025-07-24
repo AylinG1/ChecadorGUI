@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
 /*
  * Created by JFormDesigner on Wed Jul 23 10:49:29 GMT-06:00 2025
@@ -14,12 +15,21 @@ public class PrincipaloUsuario extends JFrame {
         initComponents();
     }
 
+    private void button1(ActionEvent e) {
+
+        Retardos retardos = new Retardos();
+        this.dispose();
+        retardos.setVisible(true);
+    }
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
+        // Generated using JFormDesigner Evaluation license - Juan
         separator1 = new JPopupMenu.Separator();
         separator2 = new JPopupMenu.Separator();
         separator3 = new JPopupMenu.Separator();
         separator4 = new JPopupMenu.Separator();
+        button1 = new JButton();
 
         //======== this ========
         setBackground(new Color(0x2385c7));
@@ -33,6 +43,14 @@ public class PrincipaloUsuario extends JFrame {
         separator3.setBounds(0, 135, 85, 9);
         contentPane.add(separator4);
         separator4.setBounds(0, 170, 85, 9);
+
+        //---- button1 ----
+        button1.setText("text");
+        button1.addActionListener(e -> {
+			button1(e);
+		});
+        contentPane.add(button1);
+        button1.setBounds(245, 130, 78, 34);
 
         {
             // compute preferred size
@@ -54,9 +72,11 @@ public class PrincipaloUsuario extends JFrame {
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
+    // Generated using JFormDesigner Evaluation license - Juan
     private JPopupMenu.Separator separator1;
     private JPopupMenu.Separator separator2;
     private JPopupMenu.Separator separator3;
     private JPopupMenu.Separator separator4;
+    private JButton button1;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }
