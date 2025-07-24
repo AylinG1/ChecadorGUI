@@ -68,11 +68,12 @@ new FormModel {
 				"width": 189
 			} )
 			add( new FormComponent( "javax.swing.JLabel" ) {
-				name: "label4"
+				name: "fechaact"
 				"text": "dd/mm/aaaa"
 			}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 				"x": 360
 				"y": 5
+				"width": 160
 			} )
 			add( new FormComponent( "javax.swing.JButton" ) {
 				name: "button1"

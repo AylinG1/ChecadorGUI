@@ -1,5 +1,11 @@
 import java.awt.*;
 import javax.swing.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 /*
  * Created by JFormDesigner on Wed Jul 23 16:28:00 GMT-06:00 2025
  */
@@ -12,7 +18,20 @@ import javax.swing.*;
 public class Retardos extends JFrame {
     public Retardos() {
         initComponents();
+        //fecha
+        LocalDate fechaActual = LocalDate.now();
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String fechaFormateada = fechaActual.format(formato);
+        fechaact.setText("Fecha: " + fechaFormateada);
+        //nombre
+
+
     }
+
+    public static void main(String[] args) {
+
+    }
+
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
@@ -26,7 +45,7 @@ public class Retardos extends JFrame {
         radioButton2 = new JRadioButton();
         label2 = new JLabel();
         label3 = new JLabel();
-        label4 = new JLabel();
+        fechaact = new JLabel();
         button1 = new JButton();
         label5 = new JLabel();
         label6 = new JLabel();
@@ -80,10 +99,10 @@ public class Retardos extends JFrame {
         contentPane.add(label3);
         label3.setBounds(50, 10, 189, label3.getPreferredSize().height);
 
-        //---- label4 ----
-        label4.setText("dd/mm/aaaa");
-        contentPane.add(label4);
-        label4.setBounds(new Rectangle(new Point(360, 5), label4.getPreferredSize()));
+        //---- fechaact ----
+        fechaact.setText("dd/mm/aaaa");
+        contentPane.add(fechaact);
+        fechaact.setBounds(360, 5, 160, fechaact.getPreferredSize().height);
 
         //---- button1 ----
         button1.setText("Hacer un comentario");
@@ -127,6 +146,7 @@ public class Retardos extends JFrame {
         pack();
         setLocationRelativeTo(getOwner());
         // JFormDesigner - End of component initialization  //GEN-END:initComponents  @formatter:on
+
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
@@ -140,7 +160,7 @@ public class Retardos extends JFrame {
     private JRadioButton radioButton2;
     private JLabel label2;
     private JLabel label3;
-    private JLabel label4;
+    private JLabel fechaact;
     private JButton button1;
     private JLabel label5;
     private JLabel label6;

@@ -1,14 +1,11 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class BaseSQL {
 
-    /**
-     * Retorna una conexión activa a SQL Server en Azure.
-     * Asegúrate de que la IP de tu equipo esté permitida en el firewall del servidor Azure.
-     */
-    public static Connection obtenerConexion() throws SQLException {
+    private Connection conn;
+
+    // Constructor: crea y guarda una conexión activa
+    public ConexionBD() throws SQLException {
         String url = "jdbc:sqlserver://servidor-prueba89.database.windows.net:1433;" +
                 "database=BasePrueba;" +
                 "user=Administrador@servidor-prueba89;" +
@@ -16,7 +13,26 @@ public class BaseSQL {
                 "encrypt=true;" +
                 "trustServerCertificate=false;" +
                 "loginTimeout=30;";
-
-        return DriverManager.getConnection(url);
+        conn = DriverManager.getConnection(url);
     }
+
+    // Método tipo C#: ejecutar una consulta SELECT y devolver el ResultSet
+    public ResultSet ejecutarConsulta(String sql) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        return stmt.executeQuery();
+    }
+
+    // (Opcional) Ejecutar INSERT, UPDATE o DELETE
+    public int ejecutarActualizacion(String sql) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        return stmt.executeUpdate();
+    }
+
+    // Cerrar conexión
+    public void cerrar() throws SQLException {
+        if (conn != null && !conn.isClosed()) {
+            conn.close();
+        }
+    }
+
 }

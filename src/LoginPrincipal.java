@@ -177,6 +177,11 @@ public class LoginPrincipal extends JFrame {
         });
     }
 
+    private void button1(ActionEvent e) {
+        // TODO add your code here
+
+    }
+
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
@@ -189,6 +194,7 @@ public class LoginPrincipal extends JFrame {
         botonLogin = new JButton();
         label2 = new JLabel();
         labelMensaje = new JLabel();
+        button1 = new JButton();
 
         //======== this ========
         var contentPane = getContentPane();
@@ -230,6 +236,12 @@ public class LoginPrincipal extends JFrame {
         contentPane.add(labelMensaje);
         labelMensaje.setBounds(380, 250, 410, labelMensaje.getPreferredSize().height);
 
+        //---- button1 ----
+        button1.setText("text");
+        button1.addActionListener(e -> button1(e));
+        contentPane.add(button1);
+        button1.setBounds(new Rectangle(new Point(160, 465), button1.getPreferredSize()));
+
         {
             // compute preferred size
             Dimension preferredSize = new Dimension();
@@ -247,6 +259,10 @@ public class LoginPrincipal extends JFrame {
         pack();
         setLocationRelativeTo(getOwner());
         // JFormDesigner - End of component initialization  //GEN-END:initComponents  @formatter:on
+        Retardos retardos = new Retardos();
+        this.hide();
+        retardos.setVisible(true);
+
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
@@ -259,5 +275,6 @@ public class LoginPrincipal extends JFrame {
     private JButton botonLogin;
     private JLabel label2;
     private JLabel labelMensaje;
+    private JButton button1;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }
