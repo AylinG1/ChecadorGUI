@@ -51,9 +51,7 @@ public class LoginPrincipal extends JFrame {
         JOptionPane.showMessageDialog(this, roles.toString().trim(), "Roles del Usuario", JOptionPane.INFORMATION_MESSAGE);
     }
 
-
     private void botonLogin(ActionEvent e) {
-        // TODO add your code here
         String usuario = campoUsuario.getText().trim();
         String password = new String(campoPassword.getPassword());
 
@@ -63,15 +61,19 @@ public class LoginPrincipal extends JFrame {
             return;
         }
 
-        try (Connection conn = BaseSQL.obtenerConexion()) {
+        try {
+            // Crear instancia BaseSQL que abre la conexión
+            BaseSQL bd = new BaseSQL();
+
             String sql = "SELECT UsuarioID, HashContraseña, Salt, EsLDAP, Activo FROM Usuarios WHERE Usuario = ?";
-            PreparedStatement ps = conn.prepareStatement(sql);
+            PreparedStatement ps = bd.conn.prepareStatement(sql); // accedes a la conexión directamente
             ps.setString(1, usuario);
             ResultSet rs = ps.executeQuery();
 
             if (!rs.next()) {
                 labelMensaje.setText("Usuario no encontrado.");
                 labelMensaje.setForeground(Color.RED);
+                bd.cerrar();
                 return;
             }
 
@@ -84,72 +86,74 @@ public class LoginPrincipal extends JFrame {
             if (!activo) {
                 labelMensaje.setText("Usuario desactivado.");
                 labelMensaje.setForeground(Color.RED);
+                bd.cerrar();
                 return;
             }
 
             if (esLDAP) {
                 labelMensaje.setText("Validación LDAP requerida (externa).");
                 labelMensaje.setForeground(Color.ORANGE);
-                registrarLog(conn, usuarioId, "Intento de login (LDAP)");
+                registrarLog(bd.conn, usuarioId, "Intento de login (LDAP)");
+                bd.cerrar();
                 return;
             }
 
             String hashIngresado = generarSHA256(password + salt);
 
             if (hashIngresado.equalsIgnoreCase(hashBD)) {
-                registrarLog(conn, usuarioId, "Login exitoso");
+                registrarLog(bd.conn, usuarioId, "Login exitoso");
 
-                // Verificar si el usuario es admin
-                String sqlRol = "SELECT r.NombreRol FROM UsuariosRoles ur JOIN Roles r ON ur.RolID = r.RolID WHERE ur.UsuarioID = ?";
-                PreparedStatement psRol = conn.prepareStatement(sqlRol);
+                String sqlRol = "SELECT TOP 1 r.NombreRol FROM UsuariosRoles ur JOIN Roles r ON ur.RolID = r.RolID WHERE ur.UsuarioID = ?";
+                PreparedStatement psRol = bd.conn.prepareStatement(sqlRol);
                 psRol.setInt(1, usuarioId);
                 ResultSet rsRol = psRol.executeQuery();
 
-                boolean esAdmin = false;
-                boolean esUsuario = false;
-                while (rsRol.next()) {
-                    String rol = rsRol.getString("NombreRol");
-                    if ("admin".equalsIgnoreCase(rol)) {
-                        esAdmin = true;
-                        break;
-                    }
-                    else if ("empleado".equalsIgnoreCase(rol)) {
-                        esUsuario = true;
-                        break;
-                    }
-                }
+                if (rsRol.next()) {
+                    String rol = rsRol.getString("NombreRol").toLowerCase();
 
-                if (esAdmin) {
-                    labelMensaje.setText("¡Login exitoso! Bienvenido administrador.");
                     labelMensaje.setForeground(Color.GREEN);
 
-                    // Abrir ventana InicioAdmin
-                    SwingUtilities.invokeLater(() -> {
-                        InicioAdmin adminWindow = new InicioAdmin();
-                        adminWindow.setVisible(true);
-                        this.dispose();
-                    });
-                }
-                else if (esUsuario) {
-                    labelMensaje.setText("¡Login exitoso! Bienvenido administrador.");
-                    labelMensaje.setForeground(Color.GREEN);
+                    switch (rol) {
+                        case "admin":
+                            labelMensaje.setText("¡Login exitoso! Bienvenido administrador.");
+                            SwingUtilities.invokeLater(() -> {
+                                new InicioAdmin().setVisible(true);
+                                this.dispose();
+                            });
+                            break;
 
-                    // Abrir ventana InicioAdmin
-                    SwingUtilities.invokeLater(() -> {
-                        PrincipaloUsuario usuarioWindow = new PrincipaloUsuario();
-                        usuarioWindow.setVisible(true);
-                        this.dispose();
-                    });
-                }
-                else {
-                    labelMensaje.setText("Acceso denegado: no eres administrador.");
+                        case "empleado":
+                            labelMensaje.setText("¡Login exitoso! Bienvenido empleado.");
+                            SwingUtilities.invokeLater(() -> {
+                                new PrincipaloUsuario().setVisible(true);
+                                this.dispose();
+                            });
+                            break;
+
+                        case "supervisor":
+                            labelMensaje.setText("¡Login exitoso! Bienvenido supervisor.");
+                            SwingUtilities.invokeLater(() -> {
+                                new PrincipalSupervisor().setVisible(true);
+                                this.dispose();
+                            });
+                            break;
+
+                        default:
+                            labelMensaje.setText("Rol desconocido. Contacte al administrador.");
+                            labelMensaje.setForeground(Color.RED);
+                            break;
+                    }
+                } else {
+                    labelMensaje.setText("No se encontró ningún rol asignado al usuario.");
                     labelMensaje.setForeground(Color.RED);
                 }
             } else {
                 labelMensaje.setText("Contraseña incorrecta.");
                 labelMensaje.setForeground(Color.RED);
-                registrarLog(conn, usuarioId, "Login fallido - contraseña incorrecta");
+                registrarLog(bd.conn, usuarioId, "Login fallido - contraseña incorrecta");
             }
+
+            bd.cerrar();
 
         } catch (SQLException ex) {
             labelMensaje.setText("Error SQL: " + ex.getMessage());
@@ -178,12 +182,15 @@ public class LoginPrincipal extends JFrame {
 
     private void button1(ActionEvent e) {
         // TODO add your code here
-
+        Retardos retardos = new Retardos();
+        this.hide();
+        retardos.setVisible(true);
     }
 
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
+        // Generated using JFormDesigner Evaluation license - Juan
         labelInicio = new JLabel();
         labelUsuario = new JLabel();
         campoUsuario = new JTextField();
@@ -256,14 +263,12 @@ public class LoginPrincipal extends JFrame {
         }
         pack();
         setLocationRelativeTo(getOwner());
-        // JFormDesigner - End of component initialization  //GEN-END:initComponents  @formatter:on
-        Retardos retardos = new Retardos();
-        this.hide();
-        retardos.setVisible(true);
+
 
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
+    // Generated using JFormDesigner Evaluation license - Juan
     private JLabel labelInicio;
     private JLabel labelUsuario;
     private JTextField campoUsuario;
