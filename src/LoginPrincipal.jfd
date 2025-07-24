@@ -46,8 +46,8 @@ new FormModel {
 				"text": "Iniciar sesión"
 				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "botonLogin", true ) )
 			}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-				"x": 450
-				"y": 260
+				"x": 460
+				"y": 285
 			} )
 			add( new FormComponent( "javax.swing.JLabel" ) {
 				name: "label2"
@@ -60,12 +60,13 @@ new FormModel {
 				name: "labelMensaje"
 				"text": "text"
 			}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-				"x": 375
-				"y": 235
+				"x": 380
+				"y": 250
+				"width": 410
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )
-			"size": new java.awt.Dimension( 780, 460 )
+			"size": new java.awt.Dimension( 1125, 635 )
 		} )
 	}
 }

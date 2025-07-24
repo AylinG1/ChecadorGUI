@@ -63,8 +63,9 @@ new FormModel {
 				name: "label3"
 				"text": "Nombre"
 			}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-				"x": 190
+				"x": 50
 				"y": 10
+				"width": 189
 			} )
 			add( new FormComponent( "javax.swing.JLabel" ) {
 				name: "label4"

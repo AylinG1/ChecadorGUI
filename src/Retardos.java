@@ -16,6 +16,7 @@ public class Retardos extends JFrame {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
+        // Generated using JFormDesigner Evaluation license - Juan
         scrollPane1 = new JScrollPane();
         textArea1 = new JTextArea();
         label1 = new JLabel();
@@ -77,7 +78,7 @@ public class Retardos extends JFrame {
         //---- label3 ----
         label3.setText("Nombre");
         contentPane.add(label3);
-        label3.setBounds(new Rectangle(new Point(190, 10), label3.getPreferredSize()));
+        label3.setBounds(50, 10, 189, label3.getPreferredSize().height);
 
         //---- label4 ----
         label4.setText("dd/mm/aaaa");
@@ -129,6 +130,7 @@ public class Retardos extends JFrame {
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
+    // Generated using JFormDesigner Evaluation license - Juan
     private JScrollPane scrollPane1;
     private JTextArea textArea1;
     private JLabel label1;
