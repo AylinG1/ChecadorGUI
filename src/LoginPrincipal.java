@@ -124,11 +124,13 @@ public class LoginPrincipal extends JFrame {
 
                         case "empleado":
                             labelMensaje.setText("¡Login exitoso! Bienvenido empleado.");
+                            SesionUsuario.usuarioActual = campoUsuario.getText().trim(); //guarda el usuario
                             SwingUtilities.invokeLater(() -> {
                                 new PrincipaloUsuario().setVisible(true);
                                 this.dispose();
                             });
                             break;
+
 
                         case "supervisor":
                             labelMensaje.setText("¡Login exitoso! Bienvenido supervisor.");
@@ -180,12 +182,6 @@ public class LoginPrincipal extends JFrame {
         });
     }
 
-    private void button1(ActionEvent e) {
-        // TODO add your code here
-        Retardos retardos = new Retardos();
-        this.hide();
-        retardos.setVisible(true);
-    }
 
 
     private void initComponents() {
@@ -240,12 +236,6 @@ public class LoginPrincipal extends JFrame {
         labelMensaje.setText("text");
         contentPane.add(labelMensaje);
         labelMensaje.setBounds(380, 250, 410, labelMensaje.getPreferredSize().height);
-
-        //---- button1 ----
-        button1.setText("text");
-        button1.addActionListener(e -> button1(e));
-        contentPane.add(button1);
-        button1.setBounds(new Rectangle(new Point(160, 465), button1.getPreferredSize()));
 
         {
             // compute preferred size
