@@ -525,4 +525,3 @@ public class InicioAdmin extends JFrame {
     private JLabel label8;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }
-
