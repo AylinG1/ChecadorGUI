@@ -182,6 +182,14 @@ public class LoginPrincipal extends JFrame {
         });
     }
 
+    private void button1(ActionEvent e) {
+        SesionUsuario.usuarioActual = campoUsuario.getText().trim(); //guarda el usuario
+        SwingUtilities.invokeLater(() -> {
+            new Retardos().setVisible(true);
+            this.dispose();
+        });
+    }
+
 
 
     private void initComponents() {
@@ -237,6 +245,14 @@ public class LoginPrincipal extends JFrame {
         contentPane.add(labelMensaje);
         labelMensaje.setBounds(380, 250, 410, labelMensaje.getPreferredSize().height);
 
+        //---- button1 ----
+        button1.setText("text");
+        button1.addActionListener(e -> {
+			button1(e);
+		});
+        contentPane.add(button1);
+        button1.setBounds(180, 355, 120, button1.getPreferredSize().height);
+
         {
             // compute preferred size
             Dimension preferredSize = new Dimension();
@@ -253,10 +269,9 @@ public class LoginPrincipal extends JFrame {
         }
         pack();
         setLocationRelativeTo(getOwner());
-
+        // JFormDesigner - End of component initialization  //GEN-END:initComponents
 
     }
-
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
     // Generated using JFormDesigner Evaluation license - Juan
     private JLabel labelInicio;

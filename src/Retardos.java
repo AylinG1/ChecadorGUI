@@ -25,17 +25,98 @@ public class Retardos extends JFrame {
         String fechaFormateada = fechaActual.format(formato);
         fechaact.setText("Fecha: " + fechaFormateada);
         //nombre
+        nombre.setText(SesionUsuario.usuarioActual);
 
-
+        //llenar tabla
+        cargarRetardos();
     }
 
-    public static void main(String[] args) {
+    public void cargarRetardos() {
+        String usuario = nombre.getText();
+        String sql =
+                "SELECT rc.fecha, t.entrada_1 AS entrada_valida, rc.hora, " +
+                        "DATEDIFF(MINUTE, t.entrada_1, rc.hora) AS minutos_retraso, rc.tipo_registro " +
+                        "FROM Registros_Checada rc " +
+                        "JOIN Empleados e ON rc.id_empleado = e.id " +
+                        "JOIN Turnos t ON e.id_turno = t.id " +
+                        "WHERE e.nombre = ? AND t.entrada_1 IS NOT NULL AND rc.hora > t.entrada_1 " +
+                        "UNION ALL " +
+                        "SELECT rc.fecha, t.entrada_2 AS entrada_valida, rc.hora, " +
+                        "DATEDIFF(MINUTE, t.entrada_2, rc.hora) AS minutos_retraso, rc.tipo_registro " +
+                        "FROM Registros_Checada rc " +
+                        "JOIN Empleados e ON rc.id_empleado = e.id " +
+                        "JOIN Turnos t ON e.id_turno = t.id " +
+                        "WHERE e.nombre = ? AND t.entrada_2 IS NOT NULL AND rc.hora > t.entrada_2 " +
+                        "UNION ALL " +
+                        "SELECT rc.fecha, t.entrada_3 AS entrada_valida, rc.hora, " +
+                        "DATEDIFF(MINUTE, t.entrada_3, rc.hora) AS minutos_retraso, rc.tipo_registro " +
+                        "FROM Registros_Checada rc " +
+                        "JOIN Empleados e ON rc.id_empleado = e.id " +
+                        "JOIN Turnos t ON e.id_turno = t.id " +
+                        "WHERE e.nombre = ? AND t.entrada_3 IS NOT NULL AND rc.hora > t.entrada_3 " +
+                        "ORDER BY entrada_valida";
 
+        BaseSQL base = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            base = new BaseSQL();
+            ps = base.conn.prepareStatement(sql);
+
+            ps.setString(1, usuario);
+            ps.setString(2, usuario);
+            ps.setString(3, usuario);
+
+            rs = ps.executeQuery();
+
+            DefaultTableModel model = new DefaultTableModel(
+                    new String[] {"Fecha", "Entrada Valida", "Hora", "Minutos Retraso", "Tipo Registro"}, 0);
+
+            int minutosAcumulados = 0;
+
+            while (rs.next()) {
+                Object[] fila = new Object[5];
+                fila[0] = rs.getDate("fecha");
+                fila[1] = rs.getTime("entrada_valida");
+                fila[2] = rs.getTime("hora");
+                int minutos = rs.getInt("minutos_retraso");
+                fila[3] = minutos;
+                fila[4] = rs.getString("tipo_registro");
+
+                minutosAcumulados += minutos;
+
+                model.addRow(fila);
+            }
+
+            table1.setModel(model);
+
+            minacum.setText("Minutos acumulados: " + minutosAcumulados);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al cargar retardos: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            try { if (rs != null) rs.close(); } catch (SQLException ex) { ex.printStackTrace(); }
+            try { if (ps != null) ps.close(); } catch (SQLException ex) { ex.printStackTrace(); }
+            try { if (base != null) base.cerrar(); } catch (SQLException ex) { ex.printStackTrace(); }
+        }
+    }
+
+
+
+    public static void main(String[] args) {
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            Retardos ventana = new Retardos();
+            ventana.setVisible(true);
+        });
     }
 
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
+        // Generated using JFormDesigner Evaluation license - Juan
         scrollPane1 = new JScrollPane();
         textArea1 = new JTextArea();
         label1 = new JLabel();
@@ -49,6 +130,7 @@ public class Retardos extends JFrame {
         label6 = new JLabel();
         label7 = new JLabel();
         label8 = new JLabel();
+        minacum = new JLabel();
 
         //======== this ========
         var contentPane = getContentPane();
@@ -86,7 +168,7 @@ public class Retardos extends JFrame {
             scrollPane2.setViewportView(table1);
         }
         contentPane.add(scrollPane2);
-        scrollPane2.setBounds(45, 220, 300, 160);
+        scrollPane2.setBounds(20, 220, 385, 160);
 
         //---- label2 ----
         label2.setText("Mostrar retardos por semana:");
@@ -129,6 +211,11 @@ public class Retardos extends JFrame {
         contentPane.add(label8);
         label8.setBounds(new Rectangle(new Point(250, 190), label8.getPreferredSize()));
 
+        //---- minacum ----
+        minacum.setText("text");
+        contentPane.add(minacum);
+        minacum.setBounds(275, 400, 120, minacum.getPreferredSize().height);
+
         {
             // compute preferred size
             Dimension preferredSize = new Dimension();
@@ -150,6 +237,7 @@ public class Retardos extends JFrame {
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
+    // Generated using JFormDesigner Evaluation license - Juan
     private JScrollPane scrollPane1;
     private JTextArea textArea1;
     private JLabel label1;
@@ -163,5 +251,6 @@ public class Retardos extends JFrame {
     private JLabel label6;
     private JLabel label7;
     private JLabel label8;
+    private JLabel minacum;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }
