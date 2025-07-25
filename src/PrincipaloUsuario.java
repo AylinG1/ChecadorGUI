@@ -13,8 +13,40 @@ import javax.swing.*;
 public class PrincipaloUsuario extends JFrame {
     public PrincipaloUsuario() {
         initComponents();
+        agregarEventos();         // añadimos eventos de clic a los labels
+        mostrarPanel("card1");
     }
 
+    private void agregarEventos() {
+        // Hacemos que los labels se vean como clicables
+        label1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        label3.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        label4.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        // Agregamos eventos a cada label para cambiar de panel
+        label1.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                mostrarPanel("card1"); // Asistencia
+            }
+        });
+
+        label3.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                mostrarPanel("card2"); // Horario
+            }
+        });
+
+        label4.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                mostrarPanel("card3"); // Retardos
+            }
+        });
+    }
+
+    private void mostrarPanel(String nombreCard) {
+        CardLayout cl = (CardLayout) panel1.getLayout();
+        cl.show(panel1, nombreCard);
+    }
     private void button1(ActionEvent e) {
 
         Retardos retardos = new Retardos();
@@ -24,8 +56,8 @@ public class PrincipaloUsuario extends JFrame {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
-        this2 = new JFrame();
-        panel1 = new JPanel();
+        panel3 = new JPanel();
+        panel4 = new JPanel();
         panelMenu = new JPanel();
         label1 = new JLabel();
         separator1 = new JSeparator();
@@ -35,15 +67,200 @@ public class PrincipaloUsuario extends JFrame {
         label4 = new JLabel();
         separator4 = new JSeparator();
         separator5 = new JSeparator();
+        label6 = new JLabel();
+        panel1 = new JPanel();
+        panelAsistencia = new JPanel();
+        panelHorario = new JPanel();
+        panelRetardos = new JPanel();
         panel6 = new JPanel();
-        panel3 = new JPanel();
-        button1 = new JButton();
-        panel5 = new JPanel();
 
         //======== this ========
         setBackground(new Color(0x2385c7));
         var contentPane = getContentPane();
         contentPane.setLayout(null);
+
+        //======== panel3 ========
+        {
+            panel3.setLayout(new BorderLayout());
+
+            //======== panel4 ========
+            {
+                panel4.setMaximumSize(new Dimension(1002773, 1002773));
+                panel4.setMinimumSize(new Dimension(1000, 1000));
+                panel4.setLayout(null);
+            }
+            panel3.add(panel4, BorderLayout.NORTH);
+
+            //======== panelMenu ========
+            {
+                panelMenu.setBackground(new Color(0xf2876b));
+                panelMenu.setLayout(null);
+
+                //---- label1 ----
+                label1.setText("Asistencia");
+                label1.setForeground(Color.white);
+                panelMenu.add(label1);
+                label1.setBounds(15, 125, 125, label1.getPreferredSize().height);
+
+                //---- separator1 ----
+                separator1.setBackground(Color.white);
+                separator1.setForeground(Color.white);
+                panelMenu.add(separator1);
+                separator1.setBounds(0, 115, 145, 3);
+
+                //---- label2 ----
+                label2.setText("USUARIO");
+                label2.setForeground(Color.white);
+                label2.setFont(new Font("Segoe UI", Font.BOLD, 14));
+                panelMenu.add(label2);
+                label2.setBounds(25, 90, 105, 16);
+
+                //---- separator2 ----
+                separator2.setForeground(Color.white);
+                panelMenu.add(separator2);
+                separator2.setBounds(0, 151, 145, 3);
+
+                //---- label3 ----
+                label3.setText("Horario");
+                label3.setForeground(Color.white);
+                panelMenu.add(label3);
+                label3.setBounds(15, 165, 115, 16);
+
+                //---- label4 ----
+                label4.setText("Retardos");
+                label4.setForeground(Color.white);
+                panelMenu.add(label4);
+                label4.setBounds(15, 200, 135, 16);
+
+                //---- separator4 ----
+                separator4.setForeground(Color.white);
+                panelMenu.add(separator4);
+                separator4.setBounds(0, 190, 145, 3);
+
+                //---- separator5 ----
+                separator5.setForeground(Color.white);
+                panelMenu.add(separator5);
+                separator5.setBounds(0, 225, 145, 3);
+
+                //---- label6 ----
+                label6.setIcon(new ImageIcon(getClass().getResource("/Captura de pantalla 2025-07-24 135647.png")));
+                panelMenu.add(label6);
+                label6.setBounds(new Rectangle(new Point(20, 0), label6.getPreferredSize()));
+
+                {
+                    // compute preferred size
+                    Dimension preferredSize = new Dimension();
+                    for(int i = 0; i < panelMenu.getComponentCount(); i++) {
+                        Rectangle bounds = panelMenu.getComponent(i).getBounds();
+                        preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+                        preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+                    }
+                    Insets insets = panelMenu.getInsets();
+                    preferredSize.width += insets.right;
+                    preferredSize.height += insets.bottom;
+                    panelMenu.setMinimumSize(preferredSize);
+                    panelMenu.setPreferredSize(preferredSize);
+                }
+            }
+            panel3.add(panelMenu, BorderLayout.WEST);
+
+            //======== panel1 ========
+            {
+                panel1.setLayout(new CardLayout());
+
+                //======== panelAsistencia ========
+                {
+                    panelAsistencia.setBackground(new Color(0xf8f0de));
+                    panelAsistencia.setLayout(null);
+
+                    {
+                        // compute preferred size
+                        Dimension preferredSize = new Dimension();
+                        for(int i = 0; i < panelAsistencia.getComponentCount(); i++) {
+                            Rectangle bounds = panelAsistencia.getComponent(i).getBounds();
+                            preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+                            preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+                        }
+                        Insets insets = panelAsistencia.getInsets();
+                        preferredSize.width += insets.right;
+                        preferredSize.height += insets.bottom;
+                        panelAsistencia.setMinimumSize(preferredSize);
+                        panelAsistencia.setPreferredSize(preferredSize);
+                    }
+                }
+                panel1.add(panelAsistencia, "card1");
+
+                //======== panelHorario ========
+                {
+                    panelHorario.setBackground(new Color(0xf8f0de));
+                    panelHorario.setLayout(null);
+
+                    {
+                        // compute preferred size
+                        Dimension preferredSize = new Dimension();
+                        for(int i = 0; i < panelHorario.getComponentCount(); i++) {
+                            Rectangle bounds = panelHorario.getComponent(i).getBounds();
+                            preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+                            preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+                        }
+                        Insets insets = panelHorario.getInsets();
+                        preferredSize.width += insets.right;
+                        preferredSize.height += insets.bottom;
+                        panelHorario.setMinimumSize(preferredSize);
+                        panelHorario.setPreferredSize(preferredSize);
+                    }
+                }
+                panel1.add(panelHorario, "card2");
+
+                //======== panelRetardos ========
+                {
+                    panelRetardos.setForeground(new Color(0xf8f0de));
+                    panelRetardos.setBackground(new Color(0xf8f0de));
+                    panelRetardos.setLayout(null);
+
+                    {
+                        // compute preferred size
+                        Dimension preferredSize = new Dimension();
+                        for(int i = 0; i < panelRetardos.getComponentCount(); i++) {
+                            Rectangle bounds = panelRetardos.getComponent(i).getBounds();
+                            preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+                            preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+                        }
+                        Insets insets = panelRetardos.getInsets();
+                        preferredSize.width += insets.right;
+                        preferredSize.height += insets.bottom;
+                        panelRetardos.setMinimumSize(preferredSize);
+                        panelRetardos.setPreferredSize(preferredSize);
+                    }
+                }
+                panel1.add(panelRetardos, "card3");
+
+                //======== panel6 ========
+                {
+                    panel6.setBackground(new Color(0xf8f0de));
+                    panel6.setLayout(null);
+
+                    {
+                        // compute preferred size
+                        Dimension preferredSize = new Dimension();
+                        for(int i = 0; i < panel6.getComponentCount(); i++) {
+                            Rectangle bounds = panel6.getComponent(i).getBounds();
+                            preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+                            preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+                        }
+                        Insets insets = panel6.getInsets();
+                        preferredSize.width += insets.right;
+                        preferredSize.height += insets.bottom;
+                        panel6.setMinimumSize(preferredSize);
+                        panel6.setPreferredSize(preferredSize);
+                    }
+                }
+                panel1.add(panel6, "card4");
+            }
+            panel3.add(panel1, BorderLayout.CENTER);
+        }
+        contentPane.add(panel3);
+        panel3.setBounds(0, 0, 620, 450);
 
         {
             // compute preferred size
@@ -61,135 +278,12 @@ public class PrincipaloUsuario extends JFrame {
         }
         pack();
         setLocationRelativeTo(getOwner());
-
-        //======== this2 ========
-        {
-            var this2ContentPane = this2.getContentPane();
-            this2ContentPane.setLayout(null);
-
-            //======== panel1 ========
-            {
-                panel1.setLayout(new BorderLayout());
-
-                //======== panelMenu ========
-                {
-                    panelMenu.setBackground(new Color(0xf2876b));
-                    panelMenu.setLayout(null);
-
-                    //---- label1 ----
-                    label1.setText("Asistencia");
-                    label1.setForeground(Color.white);
-                    panelMenu.add(label1);
-                    label1.setBounds(15, 125, 125, label1.getPreferredSize().height);
-
-                    //---- separator1 ----
-                    separator1.setBackground(Color.white);
-                    separator1.setForeground(Color.white);
-                    panelMenu.add(separator1);
-                    separator1.setBounds(0, 115, 145, 3);
-
-                    //---- label2 ----
-                    label2.setText("USUARIO");
-                    label2.setForeground(Color.white);
-                    panelMenu.add(label2);
-                    label2.setBounds(20, 80, 105, 16);
-
-                    //---- separator2 ----
-                    separator2.setForeground(Color.white);
-                    panelMenu.add(separator2);
-                    separator2.setBounds(0, 151, 145, 3);
-
-                    //---- label3 ----
-                    label3.setText("Horario");
-                    label3.setForeground(Color.white);
-                    panelMenu.add(label3);
-                    label3.setBounds(15, 165, 115, 16);
-
-                    //---- label4 ----
-                    label4.setText("Retardos");
-                    label4.setForeground(Color.white);
-                    panelMenu.add(label4);
-                    label4.setBounds(15, 200, 135, 16);
-
-                    //---- separator4 ----
-                    separator4.setForeground(Color.white);
-                    panelMenu.add(separator4);
-                    separator4.setBounds(0, 190, 145, 3);
-
-                    //---- separator5 ----
-                    separator5.setForeground(Color.white);
-                    panelMenu.add(separator5);
-                    separator5.setBounds(0, 225, 145, 3);
-
-                    {
-                        // compute preferred size
-                        Dimension preferredSize = new Dimension();
-                        for(int i = 0; i < panelMenu.getComponentCount(); i++) {
-                            Rectangle bounds = panelMenu.getComponent(i).getBounds();
-                            preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
-                            preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
-                        }
-                        Insets insets = panelMenu.getInsets();
-                        preferredSize.width += insets.right;
-                        preferredSize.height += insets.bottom;
-                        panelMenu.setMinimumSize(preferredSize);
-                        panelMenu.setPreferredSize(preferredSize);
-                    }
-                }
-                panel1.add(panelMenu, BorderLayout.WEST);
-
-                //======== panel6 ========
-                {
-                    panel6.setLayout(new BorderLayout());
-
-                    //======== panel3 ========
-                    {
-                        panel3.setLayout(new BorderLayout());
-                    }
-                    panel6.add(panel3, BorderLayout.CENTER);
-                }
-                panel1.add(panel6, BorderLayout.CENTER);
-            }
-            this2ContentPane.add(panel1);
-            panel1.setBounds(0, 0, 745, 370);
-
-            //---- button1 ----
-            button1.setText("text");
-            button1.addActionListener(e -> {
-			button1(e);
-			button1(e);
-		});
-            this2ContentPane.add(button1);
-            button1.setBounds(245, 130, 78, 34);
-
-            {
-                // compute preferred size
-                Dimension preferredSize = new Dimension();
-                for(int i = 0; i < this2ContentPane.getComponentCount(); i++) {
-                    Rectangle bounds = this2ContentPane.getComponent(i).getBounds();
-                    preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
-                    preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
-                }
-                Insets insets = this2ContentPane.getInsets();
-                preferredSize.width += insets.right;
-                preferredSize.height += insets.bottom;
-                this2ContentPane.setMinimumSize(preferredSize);
-                this2ContentPane.setPreferredSize(preferredSize);
-            }
-            this2.pack();
-            this2.setLocationRelativeTo(this2.getOwner());
-        }
-
-        //======== panel5 ========
-        {
-            panel5.setLayout(new BorderLayout());
-        }
         // JFormDesigner - End of component initialization  //GEN-END:initComponents  @formatter:on
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
-    private JFrame this2;
-    private JPanel panel1;
+    private JPanel panel3;
+    private JPanel panel4;
     private JPanel panelMenu;
     private JLabel label1;
     private JSeparator separator1;
@@ -199,9 +293,11 @@ public class PrincipaloUsuario extends JFrame {
     private JLabel label4;
     private JSeparator separator4;
     private JSeparator separator5;
+    private JLabel label6;
+    private JPanel panel1;
+    private JPanel panelAsistencia;
+    private JPanel panelHorario;
+    private JPanel panelRetardos;
     private JPanel panel6;
-    private JPanel panel3;
-    private JButton button1;
-    private JPanel panel5;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }
