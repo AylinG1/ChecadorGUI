@@ -32,69 +32,94 @@ public class Retardos extends JFrame {
     }
 
     public void cargarRetardos() {
-        String usuario = nombre.getText();
-        String sql =
-                "SELECT rc.fecha, t.entrada_1 AS entrada_valida, rc.hora, " +
-                        "DATEDIFF(MINUTE, t.entrada_1, rc.hora) AS minutos_retraso, rc.tipo_registro " +
-                        "FROM Registros_Checada rc " +
-                        "JOIN Empleados e ON rc.id_empleado = e.id " +
-                        "JOIN Turnos t ON e.id_turno = t.id " +
-                        "WHERE e.nombre = ? AND t.entrada_1 IS NOT NULL AND rc.hora > t.entrada_1 " +
-                        "UNION ALL " +
-                        "SELECT rc.fecha, t.entrada_2 AS entrada_valida, rc.hora, " +
-                        "DATEDIFF(MINUTE, t.entrada_2, rc.hora) AS minutos_retraso, rc.tipo_registro " +
-                        "FROM Registros_Checada rc " +
-                        "JOIN Empleados e ON rc.id_empleado = e.id " +
-                        "JOIN Turnos t ON e.id_turno = t.id " +
-                        "WHERE e.nombre = ? AND t.entrada_2 IS NOT NULL AND rc.hora > t.entrada_2 " +
-                        "UNION ALL " +
-                        "SELECT rc.fecha, t.entrada_3 AS entrada_valida, rc.hora, " +
-                        "DATEDIFF(MINUTE, t.entrada_3, rc.hora) AS minutos_retraso, rc.tipo_registro " +
-                        "FROM Registros_Checada rc " +
-                        "JOIN Empleados e ON rc.id_empleado = e.id " +
-                        "JOIN Turnos t ON e.id_turno = t.id " +
-                        "WHERE e.nombre = ? AND t.entrada_3 IS NOT NULL AND rc.hora > t.entrada_3 " +
-                        "ORDER BY entrada_valida";
+        // Obtiene el nombre del usuario/empleado del campo de texto
+        String usuario = nombre.getText(); // Asegúrate de que 'nombre' es el JTextField correcto
+
+        // La consulta SQL para calcular los retrasos brutos (sin aplicar tolerancia).
+        // Ahora, 'minutos_retraso_bruto' será la diferencia directa DATEDIFF.
+        String sql = "SELECT " +
+                "    rc.fecha, " +
+                "    CASE " +
+                "        WHEN rc.tipo_registro LIKE 'ENTRADA_1%' THEN t.entrada_1 " +
+                "        WHEN rc.tipo_registro LIKE 'ENTRADA_2%' THEN t.entrada_2 " +
+                "        WHEN rc.tipo_registro LIKE 'ENTRADA_3%' THEN t.entrada_3 " +
+                "        ELSE NULL " +
+                "    END AS entrada_valida, " +
+                "    rc.hora, " +
+                "    CASE " +
+                "        WHEN rc.tipo_registro LIKE 'ENTRADA_1%' AND rc.hora > t.entrada_1 " +
+                "            THEN DATEDIFF(MINUTE, t.entrada_1, rc.hora) " +
+                "        WHEN rc.tipo_registro LIKE 'ENTRADA_2%' AND rc.hora > t.entrada_2 " +
+                "            THEN DATEDIFF(MINUTE, t.entrada_2, rc.hora) " +
+                "        WHEN rc.tipo_registro LIKE 'ENTRADA_3%' AND rc.hora > t.entrada_3 " +
+                "            THEN DATEDIFF(MINUTE, t.entrada_3, rc.hora) " +
+                "        ELSE 0 " +
+                "    END AS minutos_retraso_bruto, " +
+                "    rc.tipo_registro " +
+                "FROM Registros_Checada rc " +
+                "JOIN Empleados e ON rc.id_empleado = e.id " +
+                "JOIN Turnos t ON e.id_turno = t.id " +
+                "WHERE e.nombre = ? " + // Este es el único marcador de posición '?'
+                "  AND ( " +
+                "        (rc.tipo_registro LIKE 'ENTRADA_1%' AND t.entrada_1 IS NOT NULL AND rc.hora > t.entrada_1) OR " +
+                "        (rc.tipo_registro LIKE 'ENTRADA_2%' AND t.entrada_2 IS NOT NULL AND rc.hora > t.entrada_2) OR " +
+                "        (rc.tipo_registro LIKE 'ENTRADA_3%' AND t.entrada_3 IS NOT NULL AND rc.hora > t.entrada_3) " +
+                "      ) " +
+                "ORDER BY rc.fecha, entrada_valida";
 
         BaseSQL base = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
 
         try {
-            base = new BaseSQL();
-            ps = base.conn.prepareStatement(sql);
+            base = new BaseSQL(); // Asumo que BaseSQL.obtenerConexion() es ahora BaseSQL.getConnection() o similar
 
-            ps.setString(1, usuario);
-            ps.setString(2, usuario);
-            ps.setString(3, usuario);
+            // Líneas de depuración: Imprime la consulta SQL y el usuario
+            System.out.println("SQL Query a preparar: \n" + sql);
+            System.out.println("Usuario a buscar: " + usuario);
+
+            ps = base.conn.prepareStatement(sql);
+            ps.setString(1, usuario); // El índice 1 corresponde al primer (y único) '?'
 
             rs = ps.executeQuery();
 
+            // Definir el modelo de la tabla con las columnas correctas
             DefaultTableModel model = new DefaultTableModel(
-                    new String[] {"Fecha", "Entrada Valida", "Hora", "Minutos Retraso", "Tipo Registro"}, 0);
+                    new String[] {"Fecha", "Entrada Válida", "Hora Checada", "Minutos Retraso Bruto", "Tipo Registro"}, 0);
 
-            int minutosAcumulados = 0;
+            int minutosAcumuladosTotales = 0; // Variable para acumular los minutos de retraso brutos
 
             while (rs.next()) {
                 Object[] fila = new Object[5];
                 fila[0] = rs.getDate("fecha");
                 fila[1] = rs.getTime("entrada_valida");
                 fila[2] = rs.getTime("hora");
-                int minutos = rs.getInt("minutos_retraso");
-                fila[3] = minutos;
+                int minutosRetrasoBruto = rs.getInt("minutos_retraso_bruto");
+                fila[3] = minutosRetrasoBruto;
                 fila[4] = rs.getString("tipo_registro");
 
-                minutosAcumulados += minutos;
+                minutosAcumuladosTotales += minutosRetrasoBruto;
 
-                model.addRow(fila);
+                // Solo añade la fila si hay un retraso (mayor que 0)
+                if (minutosRetrasoBruto > 0) {
+                    model.addRow(fila);
+                }
             }
 
-            table1.setModel(model);
+            table1.setModel(model); // Asigna el modelo a tu JTable
+            minacum.setText("Minutos acumulados : " + minutosAcumuladosTotales);
 
-            minacum.setText("Minutos acumulados: " + minutosAcumulados);
+            // === Lógica para cambiar el color de la etiqueta minacum ===
+            if (minutosAcumuladosTotales > 15) {
+                minacum.setForeground(Color.RED); // Si supera 15, color rojo
+            } else {
+                minacum.setForeground(Color.GREEN); // Si es 15 o menos, color verde
+            }
+            // ==========================================================
 
         } catch (SQLException e) {
             e.printStackTrace();
+            // Muestra el mensaje de error relativo a este JFrame
             JOptionPane.showMessageDialog(this, "Error al cargar retardos: " + e.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
@@ -116,6 +141,7 @@ public class Retardos extends JFrame {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
+        // Generated using JFormDesigner Evaluation license - Juan
         scrollPane1 = new JScrollPane();
         textArea1 = new JTextArea();
         label1 = new JLabel();
@@ -213,7 +239,7 @@ public class Retardos extends JFrame {
         //---- minacum ----
         minacum.setText("text");
         contentPane.add(minacum);
-        minacum.setBounds(275, 400, 120, minacum.getPreferredSize().height);
+        minacum.setBounds(25, 400, 370, minacum.getPreferredSize().height);
 
         {
             // compute preferred size
@@ -236,6 +262,7 @@ public class Retardos extends JFrame {
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
+    // Generated using JFormDesigner Evaluation license - Juan
     private JScrollPane scrollPane1;
     private JTextArea textArea1;
     private JLabel label1;

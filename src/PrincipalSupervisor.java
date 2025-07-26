@@ -17,11 +17,6 @@ public class PrincipalSupervisor extends JFrame {
         mostrarPanel("reportes"); // Mostramos panel por defecto al iniciar
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new PrincipalSupervisor().setVisible(true);
-        });
-    }
 
     private void agregarEventos() {
         // Opcional: cambiar cursor a "mano" al pasar sobre los labels
@@ -29,25 +24,24 @@ public class PrincipalSupervisor extends JFrame {
         label4.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         label5.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-
         // Agregamos eventos a cada label para cambiar de panel
-            label3.addMouseListener(new MouseAdapter() {
-                public void mouseClicked(MouseEvent e) {
-                    mostrarPanel("card2");
-                }
-            });
-            label4.addMouseListener(new MouseAdapter() {
-                public void mouseClicked(MouseEvent e) {
-                    mostrarPanel("card3");
-                }
-            });
-            label5.addMouseListener(new MouseAdapter() {
-                public void mouseClicked(MouseEvent e) {
-                    mostrarPanel("card4");
-                }
-            });
+        label3.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                mostrarPanel("reportes");
+            }
+        });
 
+        label4.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                mostrarPanel("registros");
+            }
+        });
 
+        label5.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                mostrarPanel("alertas");
+            }
+        });
     }
 
     private void mostrarPanel(String nombreCard) {
@@ -74,6 +68,7 @@ public class PrincipalSupervisor extends JFrame {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
+        // Generated using JFormDesigner Evaluation license - Juan
         panel4 = new JPanel();
         panelMenu = new JPanel();
         separator1 = new JSeparator();
@@ -101,6 +96,13 @@ public class PrincipalSupervisor extends JFrame {
 
         //======== panel4 ========
         {
+            panel4.setBorder ( new javax . swing. border .CompoundBorder ( new javax . swing. border .TitledBorder ( new
+            javax . swing. border .EmptyBorder ( 0, 0 ,0 , 0) ,  "JF\u006frmDes\u0069gner \u0045valua\u0074ion" , javax
+            . swing .border . TitledBorder. CENTER ,javax . swing. border .TitledBorder . BOTTOM, new java
+            . awt .Font ( "D\u0069alog", java .awt . Font. BOLD ,12 ) ,java . awt
+            . Color .red ) ,panel4. getBorder () ) ); panel4. addPropertyChangeListener( new java. beans .
+            PropertyChangeListener ( ){ @Override public void propertyChange (java . beans. PropertyChangeEvent e) { if( "\u0062order" .
+            equals ( e. getPropertyName () ) )throw new RuntimeException( ) ;} } );
             panel4.setLayout(new BorderLayout());
 
             //======== panelMenu ========
@@ -337,6 +339,7 @@ public class PrincipalSupervisor extends JFrame {
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
+    // Generated using JFormDesigner Evaluation license - Juan
     private JPanel panel4;
     private JPanel panelMenu;
     private JSeparator separator1;

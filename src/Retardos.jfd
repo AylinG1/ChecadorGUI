@@ -128,9 +128,9 @@ new FormModel {
 				name: "minacum"
 				"text": "text"
 			}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-				"x": 275
+				"x": 25
 				"y": 400
-				"width": 120
+				"width": 370
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 20, 15 )
