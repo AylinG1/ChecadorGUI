@@ -17,6 +17,11 @@ public class PrincipalSupervisor extends JFrame {
         mostrarPanel("reportes"); // Mostramos panel por defecto al iniciar
     }
 
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            new PrincipalSupervisor().setVisible(true);
+        });
+    }
 
     private void agregarEventos() {
         // Opcional: cambiar cursor a "mano" al pasar sobre los labels
@@ -24,24 +29,25 @@ public class PrincipalSupervisor extends JFrame {
         label4.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         label5.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
+
         // Agregamos eventos a cada label para cambiar de panel
-        label3.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                mostrarPanel("reportes");
-            }
-        });
+            label3.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    mostrarPanel("card2");
+                }
+            });
+            label4.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    mostrarPanel("card3");
+                }
+            });
+            label5.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    mostrarPanel("card4");
+                }
+            });
 
-        label4.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                mostrarPanel("registros");
-            }
-        });
 
-        label5.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                mostrarPanel("alertas");
-            }
-        });
     }
 
     private void mostrarPanel(String nombreCard) {
@@ -81,8 +87,10 @@ public class PrincipalSupervisor extends JFrame {
         panelInicio = new JPanel();
         panelReportes = new JPanel();
         label10 = new JLabel();
+        panel1 = new JPanel();
         panelRegistros = new JPanel();
         label7 = new JLabel();
+        scrollBar1 = new JScrollBar();
         panelAlertas = new JPanel();
         label9 = new JLabel();
         label8 = new JLabel();
@@ -199,7 +207,30 @@ public class PrincipalSupervisor extends JFrame {
                     label10.setText("Panel reportes");
                     label10.setForeground(new Color(0xf2876b));
                     panelReportes.add(label10);
-                    label10.setBounds(15, 65, 155, 16);
+                    label10.setBounds(20, 35, 155, 16);
+
+                    //======== panel1 ========
+                    {
+                        panel1.setBackground(new Color(0xff9966));
+                        panel1.setLayout(null);
+
+                        {
+                            // compute preferred size
+                            Dimension preferredSize = new Dimension();
+                            for(int i = 0; i < panel1.getComponentCount(); i++) {
+                                Rectangle bounds = panel1.getComponent(i).getBounds();
+                                preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+                                preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+                            }
+                            Insets insets = panel1.getInsets();
+                            preferredSize.width += insets.right;
+                            preferredSize.height += insets.bottom;
+                            panel1.setMinimumSize(preferredSize);
+                            panel1.setPreferredSize(preferredSize);
+                        }
+                    }
+                    panelReportes.add(panel1);
+                    panel1.setBounds(25, 70, 110, 65);
 
                     {
                         // compute preferred size
@@ -228,6 +259,8 @@ public class PrincipalSupervisor extends JFrame {
                     label7.setForeground(new Color(0xf2876b));
                     panelRegistros.add(label7);
                     label7.setBounds(20, 45, 160, 25);
+                    panelRegistros.add(scrollBar1);
+                    scrollBar1.setBounds(440, 0, 15, 345);
 
                     {
                         // compute preferred size
@@ -317,8 +350,10 @@ public class PrincipalSupervisor extends JFrame {
     private JPanel panelInicio;
     private JPanel panelReportes;
     private JLabel label10;
+    private JPanel panel1;
     private JPanel panelRegistros;
     private JLabel label7;
+    private JScrollBar scrollBar1;
     private JPanel panelAlertas;
     private JLabel label9;
     private JLabel label8;

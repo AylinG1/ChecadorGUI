@@ -6,10 +6,10 @@ public class BaseSQL {
 
     // Constructor: crea y guarda una conexión activa
     public BaseSQL() throws SQLException {
-        String url = "jdbc:sqlserver://servidor-prueba89.database.windows.net:1433;" +
-                "database=BasePrueba;" +
-                "user=Administrador@servidor-prueba89;" +
-                "password=Contraseña1;" +
+        String url = "jdbc:sqlserver://servidorcontrolacceso.database.windows.net:1433;" +
+                "database=controlAcceso;" +
+                "user=Administrador@servidorcontrolacceso;" +
+                "password=Contraseña2005;" +
                 "encrypt=true;" +
                 "trustServerCertificate=false;" +
                 "loginTimeout=30;";
