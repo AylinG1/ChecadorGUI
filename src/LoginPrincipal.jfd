@@ -60,9 +60,9 @@ new FormModel {
 				name: "labelMensaje"
 				"text": "text"
 			}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-				"x": 380
+				"x": 355
 				"y": 250
-				"width": 410
+				"width": 80
 			} )
 			add( new FormComponent( "javax.swing.JButton" ) {
 				name: "button1"

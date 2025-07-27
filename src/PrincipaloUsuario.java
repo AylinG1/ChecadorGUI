@@ -54,9 +54,23 @@ public class PrincipaloUsuario extends JFrame {
         retardos.setVisible(true);
     }
 
+    private void label5MouseClicked(MouseEvent e) {
+        // TODO add your code here
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "¿Deseas cerrar sesión?",
+                "Cerrar sesión",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            this.dispose(); // Cierra la ventana actual
+            new LoginPrincipal().setVisible(true); // Abre la ventana de login
+        }
+    }
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
-        // Generated using JFormDesigner Evaluation license - Juan
         panel3 = new JPanel();
         panelMenu = new JPanel();
         label1 = new JLabel();
@@ -69,6 +83,7 @@ public class PrincipaloUsuario extends JFrame {
         separator5 = new JSeparator();
         label6 = new JLabel();
         nombre = new JLabel();
+        label5 = new JLabel();
         panel1 = new JPanel();
         panelAsistencia = new JPanel();
         scrollPane2 = new JScrollPane();
@@ -108,12 +123,6 @@ public class PrincipaloUsuario extends JFrame {
 
         //======== panel3 ========
         {
-            panel3.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax. swing. border
-            . EmptyBorder( 0, 0, 0, 0) , "JFor\u006dDesi\u0067ner \u0045valu\u0061tion", javax. swing. border. TitledBorder. CENTER, javax
-            . swing. border. TitledBorder. BOTTOM, new java .awt .Font ("Dia\u006cog" ,java .awt .Font .BOLD ,
-            12 ), java. awt. Color. red) ,panel3. getBorder( )) ); panel3. addPropertyChangeListener (new java. beans
-            . PropertyChangeListener( ){ @Override public void propertyChange (java .beans .PropertyChangeEvent e) {if ("bord\u0065r" .equals (e .
-            getPropertyName () )) throw new RuntimeException( ); }} );
             panel3.setLayout(new BorderLayout());
 
             //======== panelMenu ========
@@ -177,6 +186,18 @@ public class PrincipaloUsuario extends JFrame {
                 nombre.setFont(new Font("Inter Semi Bold", Font.BOLD, 16));
                 panelMenu.add(nombre);
                 nombre.setBounds(30, 20, 80, 55);
+
+                //---- label5 ----
+                label5.setText("Cerrar sesi\u00f3n");
+                label5.setForeground(Color.white);
+                label5.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        label5MouseClicked(e);
+                    }
+                });
+                panelMenu.add(label5);
+                label5.setBounds(10, 420, 125, 16);
 
                 {
                     // compute preferred size
@@ -458,7 +479,6 @@ public class PrincipaloUsuario extends JFrame {
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
-    // Generated using JFormDesigner Evaluation license - Juan
     private JPanel panel3;
     private JPanel panelMenu;
     private JLabel label1;
@@ -471,6 +491,7 @@ public class PrincipaloUsuario extends JFrame {
     private JSeparator separator5;
     private JLabel label6;
     private JLabel nombre;
+    private JLabel label5;
     private JPanel panel1;
     private JPanel panelAsistencia;
     private JScrollPane scrollPane2;

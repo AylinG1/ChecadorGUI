@@ -194,7 +194,6 @@ public class LoginPrincipal extends JFrame {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
-        // Generated using JFormDesigner Evaluation license - Juan
         labelInicio = new JLabel();
         labelUsuario = new JLabel();
         campoUsuario = new JTextField();
@@ -243,11 +242,15 @@ public class LoginPrincipal extends JFrame {
         //---- labelMensaje ----
         labelMensaje.setText("text");
         contentPane.add(labelMensaje);
-        labelMensaje.setBounds(380, 250, 410, labelMensaje.getPreferredSize().height);
+        labelMensaje.setBounds(355, 250, 80, labelMensaje.getPreferredSize().height);
 
         //---- button1 ----
         button1.setText("text");
         button1.addActionListener(e -> {
+			button1(e);
+			button1(e);
+			button1(e);
+			button1(e);
 			button1(e);
 		});
         contentPane.add(button1);
@@ -273,7 +276,6 @@ public class LoginPrincipal extends JFrame {
 
     }
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
-    // Generated using JFormDesigner Evaluation license - Juan
     private JLabel labelInicio;
     private JLabel labelUsuario;
     private JTextField campoUsuario;

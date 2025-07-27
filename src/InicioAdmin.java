@@ -213,9 +213,27 @@ public class InicioAdmin extends JFrame {
         // TODO add your code here
     }
 
+    private void label5MouseClicked(MouseEvent e) {
+        // TODO add your code here
+    }
+
+    private void label11MouseClicked(MouseEvent e) {
+        // TODO add your code here
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "¿Deseas cerrar sesión?",
+                "Cerrar sesión",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            this.dispose(); // Cierra la ventana actual
+            new LoginPrincipal().setVisible(true); // Abre la ventana de login
+        }
+    }
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
-        // Generated using JFormDesigner Evaluation license - Juan
         panelBase = new JPanel();
         panelMenu = new JPanel();
         label1 = new JLabel();
@@ -228,6 +246,7 @@ public class InicioAdmin extends JFrame {
         separator4 = new JSeparator();
         separator5 = new JSeparator();
         label2 = new JLabel();
+        label11 = new JLabel();
         panelInicio = new JPanel();
         panelGestionEmp = new JPanel();
         label6 = new JLabel();
@@ -245,13 +264,6 @@ public class InicioAdmin extends JFrame {
 
         //======== panelBase ========
         {
-            panelBase.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.TitledBorder(new javax
-            .swing.border.EmptyBorder(0,0,0,0), "JF\u006frmD\u0065sig\u006eer \u0045val\u0075ati\u006fn",javax.swing
-            .border.TitledBorder.CENTER,javax.swing.border.TitledBorder.BOTTOM,new java.awt.
-            Font("Dia\u006cog",java.awt.Font.BOLD,12),java.awt.Color.red
-            ),panelBase. getBorder()));panelBase. addPropertyChangeListener(new java.beans.PropertyChangeListener(){@Override
-            public void propertyChange(java.beans.PropertyChangeEvent e){if("\u0062ord\u0065r".equals(e.getPropertyName(
-            )))throw new RuntimeException();}});
             panelBase.setLayout(new BorderLayout());
 
             //======== panelMenu ========
@@ -343,6 +355,19 @@ public class InicioAdmin extends JFrame {
                 label2.setFont(new Font("Segoe UI", Font.BOLD, 14));
                 panelMenu.add(label2);
                 label2.setBounds(15, 40, 121, label2.getPreferredSize().height);
+
+                //---- label11 ----
+                label11.setText("Cerrar sesi\u00f3n");
+                label11.setForeground(Color.white);
+                label11.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        label5MouseClicked(e);
+                        label11MouseClicked(e);
+                    }
+                });
+                panelMenu.add(label11);
+                label11.setBounds(15, 340, 125, 16);
 
                 {
                     // compute preferred size
@@ -509,7 +534,6 @@ public class InicioAdmin extends JFrame {
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
-    // Generated using JFormDesigner Evaluation license - Juan
     private JPanel panelBase;
     private JPanel panelMenu;
     private JLabel label1;
@@ -522,6 +546,7 @@ public class InicioAdmin extends JFrame {
     private JSeparator separator4;
     private JSeparator separator5;
     private JLabel label2;
+    private JLabel label11;
     private JPanel panelInicio;
     private JPanel panelGestionEmp;
     private JLabel label6;

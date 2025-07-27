@@ -66,9 +66,27 @@ public class PrincipalSupervisor extends JFrame {
         // TODO add your code here
     }
 
+    private void label5MouseClicked(MouseEvent e) {
+        // TODO add your code here
+    }
+
+    private void label6MouseClicked(MouseEvent e) {
+        // TODO add your code here
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "¿Deseas cerrar sesión?",
+                "Cerrar sesión",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            this.dispose(); // Cierra la ventana actual
+            new LoginPrincipal().setVisible(true); // Abre la ventana de login
+        }
+    }
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
-        // Generated using JFormDesigner Evaluation license - Juan
         panel4 = new JPanel();
         panelMenu = new JPanel();
         separator1 = new JSeparator();
@@ -79,6 +97,7 @@ public class PrincipalSupervisor extends JFrame {
         separator4 = new JSeparator();
         separator5 = new JSeparator();
         label2 = new JLabel();
+        label6 = new JLabel();
         panelInicio = new JPanel();
         panelReportes = new JPanel();
         label10 = new JLabel();
@@ -96,13 +115,6 @@ public class PrincipalSupervisor extends JFrame {
 
         //======== panel4 ========
         {
-            panel4.setBorder ( new javax . swing. border .CompoundBorder ( new javax . swing. border .TitledBorder ( new
-            javax . swing. border .EmptyBorder ( 0, 0 ,0 , 0) ,  "JF\u006frmDes\u0069gner \u0045valua\u0074ion" , javax
-            . swing .border . TitledBorder. CENTER ,javax . swing. border .TitledBorder . BOTTOM, new java
-            . awt .Font ( "D\u0069alog", java .awt . Font. BOLD ,12 ) ,java . awt
-            . Color .red ) ,panel4. getBorder () ) ); panel4. addPropertyChangeListener( new java. beans .
-            PropertyChangeListener ( ){ @Override public void propertyChange (java . beans. PropertyChangeEvent e) { if( "\u0062order" .
-            equals ( e. getPropertyName () ) )throw new RuntimeException( ) ;} } );
             panel4.setLayout(new BorderLayout());
 
             //======== panelMenu ========
@@ -176,6 +188,19 @@ public class PrincipalSupervisor extends JFrame {
                 label2.setFont(new Font("Segoe UI", Font.BOLD, 14));
                 panelMenu.add(label2);
                 label2.setBounds(15, 40, 121, label2.getPreferredSize().height);
+
+                //---- label6 ----
+                label6.setText("Cerrar sesi\u00f3n");
+                label6.setForeground(Color.white);
+                label6.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        label5MouseClicked(e);
+                        label6MouseClicked(e);
+                    }
+                });
+                panelMenu.add(label6);
+                label6.setBounds(5, 310, 125, 16);
 
                 {
                     // compute preferred size
@@ -339,7 +364,6 @@ public class PrincipalSupervisor extends JFrame {
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
-    // Generated using JFormDesigner Evaluation license - Juan
     private JPanel panel4;
     private JPanel panelMenu;
     private JSeparator separator1;
@@ -350,6 +374,7 @@ public class PrincipalSupervisor extends JFrame {
     private JSeparator separator4;
     private JSeparator separator5;
     private JLabel label2;
+    private JLabel label6;
     private JPanel panelInicio;
     private JPanel panelReportes;
     private JLabel label10;

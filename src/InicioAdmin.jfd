@@ -106,6 +106,18 @@ new FormModel {
 						"width": 121
 						"x": 15
 					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label11"
+						"text": "Cerrar sesión"
+						"foreground": new java.awt.Color( 255, 255, 255, 255 )
+						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "label5MouseClicked", true ) )
+						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "label11MouseClicked", true ) )
+					}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+						"width": 125
+						"height": 16
+						"x": 15
+						"y": 340
+					} )
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "West"
 				} )
