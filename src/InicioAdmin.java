@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.table.*;
 
 public class InicioAdmin extends JFrame {
     /*
@@ -250,6 +251,8 @@ public class InicioAdmin extends JFrame {
         panelInicio = new JPanel();
         panelGestionEmp = new JPanel();
         label6 = new JLabel();
+        scrollPane1 = new JScrollPane();
+        table1 = new JTable();
         panelSeguridadYrol = new JPanel();
         label10 = new JLabel();
         panelBitácoraAct = new JPanel();
@@ -403,6 +406,38 @@ public class InicioAdmin extends JFrame {
                     panelGestionEmp.add(label6);
                     label6.setBounds(new Rectangle(new Point(35, 60), label6.getPreferredSize()));
 
+                    //======== scrollPane1 ========
+                    {
+
+                        //---- table1 ----
+                        table1.setModel(new DefaultTableModel(
+                            new Object[][] {
+                                {null, null},
+                                {null, null},
+                                {null, null},
+                                {null, null},
+                                {null, null},
+                                {null, null},
+                                {null, null},
+                                {null, null},
+                                {null, null},
+                                {null, null},
+                                {null, null},
+                                {null, null},
+                                {null, null},
+                                {null, null},
+                                {null, null},
+                                {null, null},
+                            },
+                            new String[] {
+                                "NOMBRE", "ESTATUS"
+                            }
+                        ));
+                        scrollPane1.setViewportView(table1);
+                    }
+                    panelGestionEmp.add(scrollPane1);
+                    scrollPane1.setBounds(105, 105, 300, 238);
+
                     {
                         // compute preferred size
                         Dimension preferredSize = new Dimension();
@@ -550,6 +585,8 @@ public class InicioAdmin extends JFrame {
     private JPanel panelInicio;
     private JPanel panelGestionEmp;
     private JLabel label6;
+    private JScrollPane scrollPane1;
+    private JTable table1;
     private JPanel panelSeguridadYrol;
     private JLabel label10;
     private JPanel panelBitácoraAct;

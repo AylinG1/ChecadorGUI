@@ -58,11 +58,11 @@ new FormModel {
 			} )
 			add( new FormComponent( "javax.swing.JLabel" ) {
 				name: "labelMensaje"
-				"text": "text"
+				"text": "ㅤ"
 			}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 				"x": 355
 				"y": 250
-				"width": 80
+				"width": 145
 			} )
 			add( new FormComponent( "javax.swing.JButton" ) {
 				name: "button1"
@@ -76,6 +76,13 @@ new FormModel {
 				"x": 180
 				"y": 355
 				"width": 120
+			} )
+			add( new FormComponent( "javax.swing.JCheckBox" ) {
+				name: "checkRecordar"
+				"text": "Recordar usuario"
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+				"x": 555
+				"y": 240
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )

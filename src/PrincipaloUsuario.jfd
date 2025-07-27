@@ -128,7 +128,7 @@ new FormModel {
 							name: "scrollPane2"
 							add( new FormComponent( "javax.swing.JTable" ) {
 								name: "table1"
-								"model": &SwingTableModel0 new com.jformdesigner.model.SwingTableModel( new java.util.Vector {
+								"model": new com.jformdesigner.model.SwingTableModel( new java.util.Vector {
 									add( new java.util.Vector {
 										add( null )
 										add( null )
@@ -245,12 +245,118 @@ new FormModel {
 							name: "scrollPane1"
 							add( new FormComponent( "javax.swing.JTable" ) {
 								name: "table3"
+								"model": new com.jformdesigner.model.SwingTableModel( new java.util.Vector {
+									add( new java.util.Vector {
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+										add( "" )
+									} )
+									add( new java.util.Vector {
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+									} )
+									add( new java.util.Vector {
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+									} )
+									add( new java.util.Vector {
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+									} )
+									add( new java.util.Vector {
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+									} )
+									add( new java.util.Vector {
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+									} )
+									add( new java.util.Vector {
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+										add( null )
+									} )
+								}, new java.util.Vector {
+									add( "DOMINGO" )
+									add( "LUNES" )
+									add( "MARTES" )
+									add( "MIÉRCOLES" )
+									add( "JUEVES" )
+									add( "VIERNES" )
+									add( "SÁBADO" )
+								}, new java.util.Vector {
+									add( null )
+									add( null )
+									add( null )
+									add( null )
+									add( null )
+									add( null )
+									add( null )
+								}, new java.util.Vector {
+									add( null )
+									add( null )
+									add( null )
+									add( null )
+									add( null )
+									add( null )
+									add( null )
+								}, new java.util.Vector {
+									add( null )
+									add( null )
+									add( null )
+									add( null )
+									add( null )
+									add( null )
+									add( null )
+								} )
 							} )
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-							"x": 40
+							"x": 25
 							"y": 190
-							"width": 390
-							"height": 208
+							"width": 455
+							"height": 130
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label15"
+							"text": "Horario"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"x": 25
+							"y": 105
+							"width": 65
+							"height": 40
 						} )
 					}, new FormLayoutConstraints( class java.lang.String ) {
 						"value": "card2"
@@ -285,7 +391,34 @@ new FormModel {
 							name: "scrollPane4"
 							add( new FormComponent( "javax.swing.JTable" ) {
 								name: "table2"
-								"model": #SwingTableModel0
+								"model": new com.jformdesigner.model.SwingTableModel( new java.util.Vector {
+									add( new java.util.Vector {
+										add( null )
+										add( null )
+										add( null )
+									} )
+									add( new java.util.Vector {
+										add( null )
+										add( null )
+										add( null )
+									} )
+								}, new java.util.Vector {
+									add( "Día" )
+									add( "Hora" )
+									add( "Entrada/Salida" )
+								}, new java.util.Vector {
+									add( null )
+									add( null )
+									add( null )
+								}, new java.util.Vector {
+									add( null )
+									add( null )
+									add( null )
+								}, new java.util.Vector {
+									add( null )
+									add( null )
+									add( null )
+								} )
 							} )
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 							"width": 315
@@ -338,33 +471,6 @@ new FormModel {
 							"height": 16
 							"x": 20
 							"y": 195
-						} )
-						add( new FormComponent( "javax.swing.JLabel" ) {
-							name: "label15"
-							"text": "Día"
-						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-							"width": 19
-							"height": 16
-							"x": 30
-							"y": 225
-						} )
-						add( new FormComponent( "javax.swing.JLabel" ) {
-							name: "label16"
-							"text": "Hora"
-						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-							"width": 27
-							"height": 16
-							"x": 135
-							"y": 225
-						} )
-						add( new FormComponent( "javax.swing.JLabel" ) {
-							name: "label17"
-							"text": "Entrada/Salida"
-						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-							"width": 83
-							"height": 16
-							"x": 235
-							"y": 225
 						} )
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "minacum2"

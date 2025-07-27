@@ -1,11 +1,15 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import javax.swing.SwingUtilities;
+import java.sql.*;
+import javax.swing.SwingUtilities;
+
 
 /*
  * Created by JFormDesigner on Wed Jul 23 11:52:47 GMT-06:00 2025
@@ -19,7 +23,42 @@ import javax.swing.SwingUtilities;
 public class LoginPrincipal extends JFrame {
     public LoginPrincipal() {
         initComponents();
+        cargarUsuarioGuardado();
+
     }
+    private void cargarUsuarioGuardado() {
+        try {
+            File file = new File("remember.txt");
+            if (file.exists()) {
+                BufferedReader reader = new BufferedReader(new FileReader(file));
+                String usuario = reader.readLine();
+                campoUsuario.setText(usuario);
+                checkRecordar.setSelected(true);
+                reader.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void guardarUsuario(String usuario) {
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("remember.txt"));
+            writer.write(usuario);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void borrarUsuarioGuardado() {
+        File file = new File("remember.txt");
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
+
     private String generarSHA256(String input) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
@@ -113,6 +152,13 @@ public class LoginPrincipal extends JFrame {
 
                     labelMensaje.setForeground(Color.GREEN);
 
+                    if (checkRecordar.isSelected()) {
+                        guardarUsuario(campoUsuario.getText().trim());
+                    } else {
+                        borrarUsuarioGuardado();
+                    }
+
+
                     switch (rol) {
                         case "admin":
                             labelMensaje.setText("¡Login exitoso! Bienvenido administrador.");
@@ -203,6 +249,7 @@ public class LoginPrincipal extends JFrame {
         label2 = new JLabel();
         labelMensaje = new JLabel();
         button1 = new JButton();
+        checkRecordar = new JCheckBox();
 
         //======== this ========
         var contentPane = getContentPane();
@@ -240,9 +287,9 @@ public class LoginPrincipal extends JFrame {
         label2.setBounds(new Rectangle(new Point(60, 75), label2.getPreferredSize()));
 
         //---- labelMensaje ----
-        labelMensaje.setText("text");
+        labelMensaje.setText("\u3164");
         contentPane.add(labelMensaje);
-        labelMensaje.setBounds(355, 250, 80, labelMensaje.getPreferredSize().height);
+        labelMensaje.setBounds(355, 250, 145, labelMensaje.getPreferredSize().height);
 
         //---- button1 ----
         button1.setText("text");
@@ -255,6 +302,11 @@ public class LoginPrincipal extends JFrame {
 		});
         contentPane.add(button1);
         button1.setBounds(180, 355, 120, button1.getPreferredSize().height);
+
+        //---- checkRecordar ----
+        checkRecordar.setText("Recordar usuario");
+        contentPane.add(checkRecordar);
+        checkRecordar.setBounds(new Rectangle(new Point(555, 240), checkRecordar.getPreferredSize()));
 
         {
             // compute preferred size
@@ -285,5 +337,6 @@ public class LoginPrincipal extends JFrame {
     private JLabel label2;
     private JLabel labelMensaje;
     private JButton button1;
+    private JCheckBox checkRecordar;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }

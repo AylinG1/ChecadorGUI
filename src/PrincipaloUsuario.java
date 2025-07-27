@@ -1,7 +1,15 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import javax.swing.*;
 import javax.swing.table.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.awt.*;
+
 /*
  * Created by JFormDesigner on Wed Jul 23 10:49:29 GMT-06:00 2025
  */
@@ -17,6 +25,27 @@ public class PrincipaloUsuario extends JFrame {
         agregarEventos();         // añadimos eventos de clic a los labels
         mostrarPanel("card1");
     }
+
+    public void cargarRetardosEnPanel() {
+        try {
+            DefaultTableModel model = new DefaultTableModel();
+            model.addColumn("Fecha");
+            model.addColumn("Hora");
+            model.addColumn("Entrada/Salida");
+
+            // Simulando algunos datos
+            model.addRow(new Object[]{"2025-07-25", "08:05", "Entrada"});
+            model.addRow(new Object[]{"2025-07-26", "08:10", "Entrada"});
+
+            table2.setModel(model); // table2 ya está en el panelRetardos
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al cargar los retardos:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+
+
 
     private void agregarEventos() {
         // Hacemos que los labels se vean como clicables
@@ -40,6 +69,7 @@ public class PrincipaloUsuario extends JFrame {
         label4.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 mostrarPanel("card3"); // Retardos
+                cargarRetardosEnPanel();
             }
         });
     }
@@ -99,6 +129,7 @@ public class PrincipaloUsuario extends JFrame {
         panelHorario = new JPanel();
         scrollPane1 = new JScrollPane();
         table3 = new JTable();
+        label15 = new JLabel();
         panelRetardos = new JPanel();
         scrollPane3 = new JScrollPane();
         textArea2 = new JTextArea();
@@ -110,9 +141,6 @@ public class PrincipaloUsuario extends JFrame {
         fechaact2 = new JLabel();
         button2 = new JButton();
         label14 = new JLabel();
-        label15 = new JLabel();
-        label16 = new JLabel();
-        label17 = new JLabel();
         minacum2 = new JLabel();
         panel6 = new JPanel();
 
@@ -307,10 +335,31 @@ public class PrincipaloUsuario extends JFrame {
 
                     //======== scrollPane1 ========
                     {
+
+                        //---- table3 ----
+                        table3.setModel(new DefaultTableModel(
+                            new Object[][] {
+                                {null, null, null, null, null, null, ""},
+                                {null, null, null, null, null, null, null},
+                                {null, null, null, null, null, null, null},
+                                {null, null, null, null, null, null, null},
+                                {null, null, null, null, null, null, null},
+                                {null, null, null, null, null, null, null},
+                                {null, null, null, null, null, null, null},
+                            },
+                            new String[] {
+                                "DOMINGO", "LUNES", "MARTES", "MI\u00c9RCOLES", "JUEVES", "VIERNES", "S\u00c1BADO"
+                            }
+                        ));
                         scrollPane1.setViewportView(table3);
                     }
                     panelHorario.add(scrollPane1);
-                    scrollPane1.setBounds(40, 190, 390, 208);
+                    scrollPane1.setBounds(25, 190, 455, 130);
+
+                    //---- label15 ----
+                    label15.setText("Horario");
+                    panelHorario.add(label15);
+                    label15.setBounds(25, 105, 65, 40);
 
                     {
                         // compute preferred size
@@ -361,7 +410,7 @@ public class PrincipaloUsuario extends JFrame {
                                 {null, null, null},
                             },
                             new String[] {
-                                null, null, null
+                                "D\u00eda", "Hora", "Entrada/Salida"
                             }
                         ));
                         scrollPane4.setViewportView(table2);
@@ -394,21 +443,6 @@ public class PrincipaloUsuario extends JFrame {
                     label14.setText("Resumen de checada");
                     panelRetardos.add(label14);
                     label14.setBounds(20, 195, 126, 16);
-
-                    //---- label15 ----
-                    label15.setText("D\u00eda");
-                    panelRetardos.add(label15);
-                    label15.setBounds(30, 225, 19, 16);
-
-                    //---- label16 ----
-                    label16.setText("Hora");
-                    panelRetardos.add(label16);
-                    label16.setBounds(135, 225, 27, 16);
-
-                    //---- label17 ----
-                    label17.setText("Entrada/Salida");
-                    panelRetardos.add(label17);
-                    label17.setBounds(235, 225, 83, 16);
 
                     //---- minacum2 ----
                     minacum2.setText("text");
@@ -507,6 +541,7 @@ public class PrincipaloUsuario extends JFrame {
     private JPanel panelHorario;
     private JScrollPane scrollPane1;
     private JTable table3;
+    private JLabel label15;
     private JPanel panelRetardos;
     private JScrollPane scrollPane3;
     private JTextArea textArea2;
@@ -518,9 +553,6 @@ public class PrincipaloUsuario extends JFrame {
     private JLabel fechaact2;
     private JButton button2;
     private JLabel label14;
-    private JLabel label15;
-    private JLabel label16;
-    private JLabel label17;
     private JLabel minacum2;
     private JPanel panel6;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
