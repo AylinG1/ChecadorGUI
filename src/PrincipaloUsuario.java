@@ -9,6 +9,8 @@ import javax.swing.table.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.awt.*;
+import java.sql.SQLException;
+
 
 /*
  * Created by JFormDesigner on Wed Jul 23 10:49:29 GMT-06:00 2025
@@ -24,7 +26,18 @@ public class PrincipaloUsuario extends JFrame {
         initComponents();
         agregarEventos();         // añadimos eventos de clic a los labels
         mostrarPanel("card1");
+        nombre.setText(SesionUsuario.usuarioActual);
+        lblRetardos.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                mostrarPanel("card3"); // Muestra el panelRetardos
+                cargarRetardosEnPanel(); // Llama la lógica para cargar los datos
+            }
+        });
+
     }
+
+
 
     public void cargarRetardosEnPanel() {
         // === Fecha ===
@@ -126,7 +139,7 @@ public class PrincipaloUsuario extends JFrame {
         // Hacemos que los labels se vean como clicables
         label1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         label3.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        label4.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        lblRetardos.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         // Agregamos eventos a cada label para cambiar de panel
         label1.addMouseListener(new MouseAdapter() {
@@ -141,7 +154,7 @@ public class PrincipaloUsuario extends JFrame {
             }
         });
 
-        label4.addMouseListener(new MouseAdapter() {
+        lblRetardos.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 mostrarPanel("card3"); // Retardos
                 cargarRetardosEnPanel();
@@ -183,7 +196,7 @@ public class PrincipaloUsuario extends JFrame {
         label2 = new JLabel();
         separator2 = new JSeparator();
         label3 = new JLabel();
-        label4 = new JLabel();
+        lblRetardos = new JLabel();
         separator4 = new JSeparator();
         separator5 = new JSeparator();
         nombre = new JLabel();
@@ -210,17 +223,16 @@ public class PrincipaloUsuario extends JFrame {
         table3 = new JTable();
         label15 = new JLabel();
         panelRetardos = new JPanel();
-        scrollPane3 = new JScrollPane();
-        textArea2 = new JTextArea();
-        label12 = new JLabel();
         scrollPane4 = new JScrollPane();
         table2 = new JTable();
-        label13 = new JLabel();
         nombre2 = new JLabel();
         fechaact2 = new JLabel();
         button2 = new JButton();
         label14 = new JLabel();
         minacum2 = new JLabel();
+        label4 = new JLabel();
+        label6 = new JLabel();
+        label21 = new JLabel();
         panel6 = new JPanel();
 
         //======== this ========
@@ -269,12 +281,12 @@ public class PrincipaloUsuario extends JFrame {
                 panelMenu.add(label3);
                 label3.setBounds(60, 175, 65, 16);
 
-                //---- label4 ----
-                label4.setText("Retardos");
-                label4.setForeground(new Color(0xff6600));
-                label4.setFont(new Font("Microsoft JhengHei Light", Font.PLAIN, 13));
-                panelMenu.add(label4);
-                label4.setBounds(60, 215, 70, 16);
+                //---- lblRetardos ----
+                lblRetardos.setText("Retardos");
+                lblRetardos.setForeground(new Color(0xff6600));
+                lblRetardos.setFont(new Font("Microsoft JhengHei Light", Font.PLAIN, 13));
+                panelMenu.add(lblRetardos);
+                lblRetardos.setBounds(60, 215, 70, 16);
 
                 //---- separator4 ----
                 separator4.setForeground(new Color(0xff6600));
@@ -291,7 +303,7 @@ public class PrincipaloUsuario extends JFrame {
                 nombre.setFont(new Font("Franklin Gothic Demi Cond", Font.BOLD, 16));
                 nombre.setForeground(new Color(0xff6600));
                 panelMenu.add(nombre);
-                nombre.setBounds(35, 20, 80, 55);
+                nombre.setBounds(5, 20, 190, 55);
 
                 //---- label5 ----
                 label5.setText("Cerrar sesi\u00f3n");
@@ -490,22 +502,6 @@ public class PrincipaloUsuario extends JFrame {
                     panelRetardos.setBackground(new Color(0xf8f0de));
                     panelRetardos.setLayout(null);
 
-                    //======== scrollPane3 ========
-                    {
-
-                        //---- textArea2 ----
-                        textArea2.setBackground(Color.lightGray);
-                        textArea2.setForeground(Color.pink);
-                        scrollPane3.setViewportView(textArea2);
-                    }
-                    panelRetardos.add(scrollPane3);
-                    scrollPane3.setBounds(220, 80, 210, 90);
-
-                    //---- label12 ----
-                    label12.setText("Motivo del retardo");
-                    panelRetardos.add(label12);
-                    label12.setBounds(270, 45, 150, 16);
-
                     //======== scrollPane4 ========
                     {
 
@@ -522,38 +518,50 @@ public class PrincipaloUsuario extends JFrame {
                         scrollPane4.setViewportView(table2);
                     }
                     panelRetardos.add(scrollPane4);
-                    scrollPane4.setBounds(20, 245, 315, 125);
-
-                    //---- label13 ----
-                    label13.setText("Mostrar retardos por semana:");
-                    panelRetardos.add(label13);
-                    label13.setBounds(15, 70, 173, 16);
+                    scrollPane4.setBounds(15, 220, 535, 185);
 
                     //---- nombre2 ----
                     nombre2.setText("Nombre");
                     nombre2.setFont(new Font("Inter Semi Bold", Font.BOLD, 16));
                     panelRetardos.add(nombre2);
-                    nombre2.setBounds(10, 10, 405, 20);
+                    nombre2.setBounds(30, 45, 405, 20);
 
                     //---- fechaact2 ----
                     fechaact2.setText("dd/mm/aaaa");
                     panelRetardos.add(fechaact2);
-                    fechaact2.setBounds(290, 5, 165, 16);
+                    fechaact2.setBounds(395, 25, 165, 16);
 
                     //---- button2 ----
                     button2.setText("Hacer un comentario");
                     panelRetardos.add(button2);
-                    button2.setBounds(305, 405, 155, 26);
+                    button2.setBounds(390, 460, 155, 26);
 
                     //---- label14 ----
                     label14.setText("Resumen de checada");
                     panelRetardos.add(label14);
-                    label14.setBounds(20, 195, 126, 16);
+                    label14.setBounds(45, 190, 126, 16);
 
                     //---- minacum2 ----
                     minacum2.setText("text");
                     panelRetardos.add(minacum2);
-                    minacum2.setBounds(225, 380, 120, 16);
+                    minacum2.setBounds(215, 460, 190, 16);
+
+                    //---- label4 ----
+                    label4.setText("Bienvenid@");
+                    label4.setFont(new Font("Inter Semi Bold", Font.BOLD | Font.ITALIC, 16));
+                    panelRetardos.add(label4);
+                    label4.setBounds(30, 20, 110, 26);
+
+                    //---- label6 ----
+                    label6.setText("Puedes ver aqui tus retardos");
+                    label6.setFont(new Font("Inter Semi Bold", Font.BOLD | Font.ITALIC, 16));
+                    panelRetardos.add(label6);
+                    label6.setBounds(60, 100, 270, 26);
+
+                    //---- label21 ----
+                    label21.setText("___________________");
+                    panelRetardos.add(label21);
+                    label21.setBounds(375, 30, 161, 16);
 
                     {
                         // compute preferred size
@@ -597,7 +605,7 @@ public class PrincipaloUsuario extends JFrame {
             panel3.add(panel1, BorderLayout.CENTER);
         }
         contentPane.add(panel3);
-        panel3.setBounds(0, 0, 645, 450);
+        panel3.setBounds(0, 0, 810, 565);
 
         {
             // compute preferred size
@@ -626,7 +634,7 @@ public class PrincipaloUsuario extends JFrame {
     private JLabel label2;
     private JSeparator separator2;
     private JLabel label3;
-    private JLabel label4;
+    private JLabel lblRetardos;
     private JSeparator separator4;
     private JSeparator separator5;
     private JLabel nombre;
@@ -653,17 +661,16 @@ public class PrincipaloUsuario extends JFrame {
     private JTable table3;
     private JLabel label15;
     private JPanel panelRetardos;
-    private JScrollPane scrollPane3;
-    private JTextArea textArea2;
-    private JLabel label12;
     private JScrollPane scrollPane4;
     private JTable table2;
-    private JLabel label13;
     private JLabel nombre2;
     private JLabel fechaact2;
     private JButton button2;
     private JLabel label14;
     private JLabel minacum2;
+    private JLabel label4;
+    private JLabel label6;
+    private JLabel label21;
     private JPanel panel6;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }
