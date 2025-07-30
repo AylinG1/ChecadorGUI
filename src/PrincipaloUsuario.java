@@ -133,8 +133,6 @@ public class PrincipaloUsuario extends JFrame {
     }
 
 
-
-
     private void agregarEventos() {
         // Hacemos que los labels se vean como clicables
         label1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
