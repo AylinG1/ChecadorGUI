@@ -141,6 +141,7 @@ public class Retardos extends JFrame {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
+        // Generated using JFormDesigner Evaluation license - liz
         scrollPane1 = new JScrollPane();
         textArea1 = new JTextArea();
         label1 = new JLabel();
@@ -157,6 +158,7 @@ public class Retardos extends JFrame {
         minacum = new JLabel();
 
         //======== this ========
+        setBackground(new Color(0xff9966));
         var contentPane = getContentPane();
         contentPane.setLayout(null);
 
@@ -261,6 +263,7 @@ public class Retardos extends JFrame {
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
+    // Generated using JFormDesigner Evaluation license - liz
     private JScrollPane scrollPane1;
     private JTextArea textArea1;
     private JLabel label1;

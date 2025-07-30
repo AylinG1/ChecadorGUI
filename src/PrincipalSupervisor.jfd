@@ -9,78 +9,84 @@ new FormModel {
 				name: "panel4"
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
 					name: "panelMenu"
-					"background": new java.awt.Color( 242, 135, 107, 255 )
+					"background": new java.awt.Color( 255, 255, 255, 255 )
 					add( new FormComponent( "javax.swing.JSeparator" ) {
 						name: "separator1"
 						"background": new java.awt.Color( 255, 255, 255, 255 )
-						"foreground": new java.awt.Color( 255, 255, 255, 255 )
+						"foreground": new java.awt.Color( 255, 102, 51, 255 )
 					}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-						"y": 75
-						"width": 125
-						"height": 20
-						"x": 10
+						"y": 70
+						"width": 135
+						"height": 25
+						"x": 0
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "label3"
 						"text": "Reportes"
-						"foreground": new java.awt.Color( 255, 255, 255, 255 )
+						"foreground": &Color0 new java.awt.Color( 255, 102, 51, 255 )
 						"cursor": &Cursor0 new java.awt.Cursor( 12 )
+						"font": &Font0 new java.awt.Font( "Microsoft JhengHei Light", 0, 13 )
 						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "SeguridadYrolesLbl", true ) )
 					}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-						"y": 95
-						"width": 121
-						"x": 15
+						"y": 90
+						"width": 60
+						"x": 55
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "label4"
 						"text": "Registros"
-						"foreground": new java.awt.Color( 255, 255, 255, 255 )
+						"foreground": #Color0
 						"cursor": #Cursor0
+						"font": #Font0
 						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "BitacoraActsLBL", true ) )
 					}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-						"y": 145
-						"x": 10
+						"y": 135
+						"x": 55
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "label5"
 						"text": "Alertas"
-						"foreground": new java.awt.Color( 255, 255, 255, 255 )
+						"foreground": #Color0
 						"cursor": #Cursor0
+						"font": #Font0
 						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "ReglasLBL", true ) )
 					}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-						"y": 190
-						"width": 121
-						"x": 15
+						"y": 185
+						"width": 60
+						"x": 55
 					} )
 					add( new FormComponent( "javax.swing.JSeparator" ) {
 						name: "separator3"
-						"foreground": new java.awt.Color( 255, 255, 255, 255 )
+						"foreground": #Color0
 					}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-						"y": 209
+						"y": 215
 						"width": 135
 						"height": 20
+						"x": 0
 					} )
 					add( new FormComponent( "javax.swing.JSeparator" ) {
 						name: "separator4"
-						"foreground": new java.awt.Color( 255, 255, 255, 255 )
+						"foreground": #Color0
 					}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-						"y": 117
+						"y": 120
 						"width": 135
-						"height": 20
+						"height": 13
+						"x": 0
 					} )
 					add( new FormComponent( "javax.swing.JSeparator" ) {
 						name: "separator5"
-						"foreground": new java.awt.Color( 255, 255, 255, 255 )
+						"foreground": #Color0
 					}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-						"y": 163
+						"y": 170
 						"width": 135
-						"height": 20
+						"height": 13
+						"x": 0
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "label2"
 						"text": "SUPERVISOR"
-						"foreground": new java.awt.Color( 255, 255, 255, 255 )
-						"font": new java.awt.Font( "Segoe UI", 1, 14 )
+						"foreground": #Color0
+						"font": new java.awt.Font( "Segoe UI Black", 1, 14 )
 					}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 						"y": 40
 						"width": 121
@@ -89,14 +95,42 @@ new FormModel {
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "label6"
 						"text": "Cerrar sesión"
-						"foreground": new java.awt.Color( 255, 255, 255, 255 )
+						"foreground": sfield java.awt.Color black
 						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "label5MouseClicked", true ) )
 						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "label6MouseClicked", true ) )
 					}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 						"width": 125
 						"height": 16
+						"x": 0
+						"y": 305
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label1"
+						"icon": new com.jformdesigner.model.SwingIcon( 0, "/lolo.jpg" )
+					}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 						"x": 5
-						"y": 310
+						"y": 75
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label11"
+						"icon": new com.jformdesigner.model.SwingIcon( 0, "/ki.jpg" )
+					}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+						"x": 10
+						"y": 125
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label12"
+						"icon": new com.jformdesigner.model.SwingIcon( 0, "/fd.jpg" )
+					}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+						"x": 10
+						"y": 175
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label13"
+						"icon": new com.jformdesigner.model.SwingIcon( 0, "/sal.jpg" )
+					}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+						"x": 90
+						"y": 295
 					} )
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "West"
@@ -107,11 +141,11 @@ new FormModel {
 					"background": new java.awt.Color( 248, 240, 222, 255 )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
 						name: "panelReportes"
-						"background": new java.awt.Color( 248, 240, 222, 255 )
+						"background": new java.awt.Color( 255, 153, 102, 255 )
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label10"
 							"text": "Panel reportes"
-							"foreground": &Color0 new java.awt.Color( 242, 135, 107, 255 )
+							"foreground": new java.awt.Color( 204, 204, 204, 255 )
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 							"width": 155
 							"height": 16
@@ -120,7 +154,7 @@ new FormModel {
 						} )
 						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
 							name: "panel1"
-							"background": new java.awt.Color( 255, 153, 102, 255 )
+							"background": new java.awt.Color( 255, 204, 153, 255 )
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 							"x": 25
 							"y": 70
@@ -136,7 +170,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label7"
 							"text": "Registros"
-							"foreground": #Color0
+							"foreground": &Color1 new java.awt.Color( 242, 135, 107, 255 )
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 							"x": 20
 							"y": 45
@@ -167,7 +201,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label8"
 							"text": "Alertas"
-							"foreground": #Color0
+							"foreground": #Color1
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 							"width": 102
 							"height": 16

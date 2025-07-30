@@ -240,51 +240,53 @@ public class LoginPrincipal extends JFrame {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
+        // Generated using JFormDesigner Evaluation license - liz
         labelInicio = new JLabel();
         labelUsuario = new JLabel();
         campoUsuario = new JTextField();
         labelPassword = new JLabel();
         campoPassword = new JPasswordField();
         botonLogin = new JButton();
-        label2 = new JLabel();
         labelMensaje = new JLabel();
         button1 = new JButton();
         checkRecordar = new JCheckBox();
+        label2 = new JLabel();
 
         //======== this ========
+        setBackground(new Color(0x333333));
+        setForeground(new Color(0xff9966));
         var contentPane = getContentPane();
         contentPane.setLayout(null);
 
         //---- labelInicio ----
         labelInicio.setText("Inicio de sesi\u00f3n");
         labelInicio.setFont(new Font("Segoe UI Black", Font.ITALIC, 22));
+        labelInicio.setForeground(new Color(0xff9966));
         contentPane.add(labelInicio);
-        labelInicio.setBounds(new Rectangle(new Point(385, 100), labelInicio.getPreferredSize()));
+        labelInicio.setBounds(new Rectangle(new Point(180, 170), labelInicio.getPreferredSize()));
 
         //---- labelUsuario ----
         labelUsuario.setText("Usuario");
+        labelUsuario.setForeground(new Color(0xff9966));
         contentPane.add(labelUsuario);
-        labelUsuario.setBounds(new Rectangle(new Point(380, 155), labelUsuario.getPreferredSize()));
+        labelUsuario.setBounds(new Rectangle(new Point(295, 245), labelUsuario.getPreferredSize()));
         contentPane.add(campoUsuario);
-        campoUsuario.setBounds(460, 155, 130, campoUsuario.getPreferredSize().height);
+        campoUsuario.setBounds(360, 235, 130, campoUsuario.getPreferredSize().height);
 
         //---- labelPassword ----
         labelPassword.setText("Contrase\u00f1a:");
+        labelPassword.setForeground(new Color(0xff9966));
         contentPane.add(labelPassword);
-        labelPassword.setBounds(new Rectangle(new Point(375, 200), labelPassword.getPreferredSize()));
+        labelPassword.setBounds(new Rectangle(new Point(270, 305), labelPassword.getPreferredSize()));
         contentPane.add(campoPassword);
-        campoPassword.setBounds(460, 205, 125, campoPassword.getPreferredSize().height);
+        campoPassword.setBounds(360, 295, 125, campoPassword.getPreferredSize().height);
 
         //---- botonLogin ----
         botonLogin.setText("Iniciar sesi\u00f3n");
+        botonLogin.setForeground(Color.black);
         botonLogin.addActionListener(e -> botonLogin(e));
         contentPane.add(botonLogin);
-        botonLogin.setBounds(new Rectangle(new Point(460, 285), botonLogin.getPreferredSize()));
-
-        //---- label2 ----
-        label2.setIcon(new ImageIcon(getClass().getResource("/image-removebg-preview.png")));
-        contentPane.add(label2);
-        label2.setBounds(new Rectangle(new Point(60, 75), label2.getPreferredSize()));
+        botonLogin.setBounds(new Rectangle(new Point(360, 375), botonLogin.getPreferredSize()));
 
         //---- labelMensaje ----
         labelMensaje.setText("\u3164");
@@ -293,6 +295,7 @@ public class LoginPrincipal extends JFrame {
 
         //---- button1 ----
         button1.setText("text");
+        button1.setForeground(Color.black);
         button1.addActionListener(e -> {
 			button1(e);
 			button1(e);
@@ -301,12 +304,19 @@ public class LoginPrincipal extends JFrame {
 			button1(e);
 		});
         contentPane.add(button1);
-        button1.setBounds(180, 355, 120, button1.getPreferredSize().height);
+        button1.setBounds(135, 430, 120, button1.getPreferredSize().height);
 
         //---- checkRecordar ----
         checkRecordar.setText("Recordar usuario");
+        checkRecordar.setForeground(new Color(0xff9966));
         contentPane.add(checkRecordar);
-        checkRecordar.setBounds(new Rectangle(new Point(555, 240), checkRecordar.getPreferredSize()));
+        checkRecordar.setBounds(new Rectangle(new Point(480, 340), checkRecordar.getPreferredSize()));
+
+        //---- label2 ----
+        label2.setText("Bienvenido");
+        label2.setFont(new Font("Bernard MT Condensed", Font.PLAIN, 100));
+        contentPane.add(label2);
+        label2.setBounds(170, 35, 440, 95);
 
         {
             // compute preferred size
@@ -328,15 +338,16 @@ public class LoginPrincipal extends JFrame {
 
     }
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
+    // Generated using JFormDesigner Evaluation license - liz
     private JLabel labelInicio;
     private JLabel labelUsuario;
     private JTextField campoUsuario;
     private JLabel labelPassword;
     private JPasswordField campoPassword;
     private JButton botonLogin;
-    private JLabel label2;
     private JLabel labelMensaje;
     private JButton button1;
     private JCheckBox checkRecordar;
+    private JLabel label2;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }

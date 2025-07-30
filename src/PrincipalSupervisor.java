@@ -87,6 +87,7 @@ public class PrincipalSupervisor extends JFrame {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
+        // Generated using JFormDesigner Evaluation license - liz
         panel4 = new JPanel();
         panelMenu = new JPanel();
         separator1 = new JSeparator();
@@ -98,6 +99,10 @@ public class PrincipalSupervisor extends JFrame {
         separator5 = new JSeparator();
         label2 = new JLabel();
         label6 = new JLabel();
+        label1 = new JLabel();
+        label11 = new JLabel();
+        label12 = new JLabel();
+        label13 = new JLabel();
         panelInicio = new JPanel();
         panelReportes = new JPanel();
         label10 = new JLabel();
@@ -115,23 +120,30 @@ public class PrincipalSupervisor extends JFrame {
 
         //======== panel4 ========
         {
+            panel4.setBorder ( new javax . swing. border .CompoundBorder ( new javax . swing. border .TitledBorder ( new javax . swing. border .EmptyBorder
+            ( 0, 0 ,0 , 0) ,  "JF\u006frmD\u0065sig\u006eer \u0045val\u0075ati\u006fn" , javax. swing .border . TitledBorder. CENTER ,javax . swing. border
+            .TitledBorder . BOTTOM, new java. awt .Font ( "Dia\u006cog", java .awt . Font. BOLD ,12 ) ,java . awt
+            . Color .red ) ,panel4. getBorder () ) ); panel4. addPropertyChangeListener( new java. beans .PropertyChangeListener ( ){ @Override public void
+            propertyChange (java . beans. PropertyChangeEvent e) { if( "\u0062ord\u0065r" .equals ( e. getPropertyName () ) )throw new RuntimeException( )
+            ;} } );
             panel4.setLayout(new BorderLayout());
 
             //======== panelMenu ========
             {
-                panelMenu.setBackground(new Color(0xf2876b));
+                panelMenu.setBackground(Color.white);
                 panelMenu.setLayout(null);
 
                 //---- separator1 ----
                 separator1.setBackground(Color.white);
-                separator1.setForeground(Color.white);
+                separator1.setForeground(new Color(0xff6633));
                 panelMenu.add(separator1);
-                separator1.setBounds(10, 75, 125, 20);
+                separator1.setBounds(0, 70, 135, 25);
 
                 //---- label3 ----
                 label3.setText("Reportes");
-                label3.setForeground(Color.white);
+                label3.setForeground(new Color(0xff6633));
                 label3.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                label3.setFont(new Font("Microsoft JhengHei Light", Font.PLAIN, 13));
                 label3.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -139,12 +151,13 @@ public class PrincipalSupervisor extends JFrame {
                     }
                 });
                 panelMenu.add(label3);
-                label3.setBounds(15, 95, 121, label3.getPreferredSize().height);
+                label3.setBounds(55, 90, 60, label3.getPreferredSize().height);
 
                 //---- label4 ----
                 label4.setText("Registros");
-                label4.setForeground(Color.white);
+                label4.setForeground(new Color(0xff6633));
                 label4.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                label4.setFont(new Font("Microsoft JhengHei Light", Font.PLAIN, 13));
                 label4.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -152,12 +165,13 @@ public class PrincipalSupervisor extends JFrame {
                     }
                 });
                 panelMenu.add(label4);
-                label4.setBounds(new Rectangle(new Point(10, 145), label4.getPreferredSize()));
+                label4.setBounds(new Rectangle(new Point(55, 135), label4.getPreferredSize()));
 
                 //---- label5 ----
                 label5.setText("Alertas");
-                label5.setForeground(Color.white);
+                label5.setForeground(new Color(0xff6633));
                 label5.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                label5.setFont(new Font("Microsoft JhengHei Light", Font.PLAIN, 13));
                 label5.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -165,33 +179,33 @@ public class PrincipalSupervisor extends JFrame {
                     }
                 });
                 panelMenu.add(label5);
-                label5.setBounds(15, 190, 121, label5.getPreferredSize().height);
+                label5.setBounds(55, 185, 60, label5.getPreferredSize().height);
 
                 //---- separator3 ----
-                separator3.setForeground(Color.white);
+                separator3.setForeground(new Color(0xff6633));
                 panelMenu.add(separator3);
-                separator3.setBounds(0, 209, 135, 20);
+                separator3.setBounds(0, 215, 135, 20);
 
                 //---- separator4 ----
-                separator4.setForeground(Color.white);
+                separator4.setForeground(new Color(0xff6633));
                 panelMenu.add(separator4);
-                separator4.setBounds(0, 117, 135, 20);
+                separator4.setBounds(0, 120, 135, 13);
 
                 //---- separator5 ----
-                separator5.setForeground(Color.white);
+                separator5.setForeground(new Color(0xff6633));
                 panelMenu.add(separator5);
-                separator5.setBounds(0, 163, 135, 20);
+                separator5.setBounds(0, 170, 135, 13);
 
                 //---- label2 ----
                 label2.setText("SUPERVISOR");
-                label2.setForeground(Color.white);
-                label2.setFont(new Font("Segoe UI", Font.BOLD, 14));
+                label2.setForeground(new Color(0xff6633));
+                label2.setFont(new Font("Segoe UI Black", Font.BOLD, 14));
                 panelMenu.add(label2);
                 label2.setBounds(15, 40, 121, label2.getPreferredSize().height);
 
                 //---- label6 ----
                 label6.setText("Cerrar sesi\u00f3n");
-                label6.setForeground(Color.white);
+                label6.setForeground(Color.black);
                 label6.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -200,7 +214,27 @@ public class PrincipalSupervisor extends JFrame {
                     }
                 });
                 panelMenu.add(label6);
-                label6.setBounds(5, 310, 125, 16);
+                label6.setBounds(0, 305, 125, 16);
+
+                //---- label1 ----
+                label1.setIcon(new ImageIcon(getClass().getResource("/lolo.jpg")));
+                panelMenu.add(label1);
+                label1.setBounds(new Rectangle(new Point(5, 75), label1.getPreferredSize()));
+
+                //---- label11 ----
+                label11.setIcon(new ImageIcon(getClass().getResource("/ki.jpg")));
+                panelMenu.add(label11);
+                label11.setBounds(new Rectangle(new Point(10, 125), label11.getPreferredSize()));
+
+                //---- label12 ----
+                label12.setIcon(new ImageIcon(getClass().getResource("/fd.jpg")));
+                panelMenu.add(label12);
+                label12.setBounds(new Rectangle(new Point(10, 175), label12.getPreferredSize()));
+
+                //---- label13 ----
+                label13.setIcon(new ImageIcon(getClass().getResource("/sal.jpg")));
+                panelMenu.add(label13);
+                label13.setBounds(new Rectangle(new Point(90, 295), label13.getPreferredSize()));
 
                 {
                     // compute preferred size
@@ -227,18 +261,18 @@ public class PrincipalSupervisor extends JFrame {
 
                 //======== panelReportes ========
                 {
-                    panelReportes.setBackground(new Color(0xf8f0de));
+                    panelReportes.setBackground(new Color(0xff9966));
                     panelReportes.setLayout(null);
 
                     //---- label10 ----
                     label10.setText("Panel reportes");
-                    label10.setForeground(new Color(0xf2876b));
+                    label10.setForeground(new Color(0xcccccc));
                     panelReportes.add(label10);
                     label10.setBounds(20, 35, 155, 16);
 
                     //======== panel1 ========
                     {
-                        panel1.setBackground(new Color(0xff9966));
+                        panel1.setBackground(new Color(0xffcc99));
                         panel1.setLayout(null);
 
                         {
@@ -364,6 +398,7 @@ public class PrincipalSupervisor extends JFrame {
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
+    // Generated using JFormDesigner Evaluation license - liz
     private JPanel panel4;
     private JPanel panelMenu;
     private JSeparator separator1;
@@ -375,6 +410,10 @@ public class PrincipalSupervisor extends JFrame {
     private JSeparator separator5;
     private JLabel label2;
     private JLabel label6;
+    private JLabel label1;
+    private JLabel label11;
+    private JLabel label12;
+    private JLabel label13;
     private JPanel panelInicio;
     private JPanel panelReportes;
     private JLabel label10;

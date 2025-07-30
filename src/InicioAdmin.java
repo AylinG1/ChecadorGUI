@@ -235,6 +235,7 @@ public class InicioAdmin extends JFrame {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
+        // Generated using JFormDesigner Evaluation license - liz
         panelBase = new JPanel();
         panelMenu = new JPanel();
         label1 = new JLabel();
@@ -248,11 +249,16 @@ public class InicioAdmin extends JFrame {
         separator5 = new JSeparator();
         label2 = new JLabel();
         label11 = new JLabel();
-        panelInicio = new JPanel();
         panelGestionEmp = new JPanel();
         label6 = new JLabel();
         scrollPane1 = new JScrollPane();
         table1 = new JTable();
+        label12 = new JLabel();
+        label13 = new JLabel();
+        label14 = new JLabel();
+        label15 = new JLabel();
+        label16 = new JLabel();
+        panelInicio = new JPanel();
         panelSeguridadYrol = new JPanel();
         label10 = new JLabel();
         panelBitácoraAct = new JPanel();
@@ -267,17 +273,25 @@ public class InicioAdmin extends JFrame {
 
         //======== panelBase ========
         {
+            panelBase.setBorder ( new javax . swing. border .CompoundBorder ( new javax . swing. border .TitledBorder ( new javax .
+            swing. border .EmptyBorder ( 0, 0 ,0 , 0) ,  "JF\u006frmD\u0065sig\u006eer \u0045val\u0075ati\u006fn" , javax. swing .border
+            . TitledBorder. CENTER ,javax . swing. border .TitledBorder . BOTTOM, new java. awt .Font ( "Dia\u006cog"
+            , java .awt . Font. BOLD ,12 ) ,java . awt. Color .red ) ,panelBase. getBorder
+            () ) ); panelBase. addPropertyChangeListener( new java. beans .PropertyChangeListener ( ){ @Override public void propertyChange (java
+            . beans. PropertyChangeEvent e) { if( "\u0062ord\u0065r" .equals ( e. getPropertyName () ) )throw new RuntimeException
+            ( ) ;} } );
             panelBase.setLayout(new BorderLayout());
 
             //======== panelMenu ========
             {
-                panelMenu.setBackground(new Color(0xf2876b));
+                panelMenu.setBackground(Color.white);
                 panelMenu.setLayout(null);
 
                 //---- label1 ----
                 label1.setText("Gesti\u00f3n de empleados");
-                label1.setForeground(Color.white);
+                label1.setForeground(new Color(0xff8d1b));
                 label1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                label1.setFont(new Font("Microsoft JhengHei Light", Font.PLAIN, 13));
                 label1.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -285,23 +299,24 @@ public class InicioAdmin extends JFrame {
                     }
                 });
                 panelMenu.add(label1);
-                label1.setBounds(10, 235, 121, label1.getPreferredSize().height);
+                label1.setBounds(65, 230, 140, label1.getPreferredSize().height);
 
                 //---- separator1 ----
                 separator1.setBackground(Color.white);
-                separator1.setForeground(Color.white);
+                separator1.setForeground(new Color(0xff892a));
                 panelMenu.add(separator1);
-                separator1.setBounds(10, 75, 125, 20);
+                separator1.setBounds(10, 75, 195, 20);
 
                 //---- separator2 ----
-                separator2.setForeground(Color.white);
+                separator2.setForeground(new Color(0xff7c25));
                 panelMenu.add(separator2);
-                separator2.setBounds(10, 260, 125, 20);
+                separator2.setBounds(10, 260, 195, 20);
 
                 //---- label3 ----
                 label3.setText("Seguridad y roles");
-                label3.setForeground(Color.white);
+                label3.setForeground(new Color(0xff871d));
                 label3.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                label3.setFont(new Font("Microsoft YaHei Light", Font.PLAIN, 13));
                 label3.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -309,12 +324,13 @@ public class InicioAdmin extends JFrame {
                     }
                 });
                 panelMenu.add(label3);
-                label3.setBounds(15, 95, 121, label3.getPreferredSize().height);
+                label3.setBounds(65, 85, 121, label3.getPreferredSize().height);
 
                 //---- label4 ----
                 label4.setText("Bit\u00e1cora de actividades");
-                label4.setForeground(Color.white);
+                label4.setForeground(new Color(0xff8420));
                 label4.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                label4.setFont(new Font("Microsoft YaHei Light", Font.PLAIN, 13));
                 label4.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -322,12 +338,13 @@ public class InicioAdmin extends JFrame {
                     }
                 });
                 panelMenu.add(label4);
-                label4.setBounds(new Rectangle(new Point(10, 145), label4.getPreferredSize()));
+                label4.setBounds(65, 125, 145, 35);
 
                 //---- label5 ----
                 label5.setText("Reglas");
-                label5.setForeground(Color.white);
+                label5.setForeground(new Color(0xff9018));
                 label5.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                label5.setFont(new Font("Microsoft JhengHei Light", Font.PLAIN, 13));
                 label5.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -335,33 +352,34 @@ public class InicioAdmin extends JFrame {
                     }
                 });
                 panelMenu.add(label5);
-                label5.setBounds(15, 190, 121, label5.getPreferredSize().height);
+                label5.setBounds(65, 180, 121, label5.getPreferredSize().height);
 
                 //---- separator3 ----
-                separator3.setForeground(Color.white);
+                separator3.setForeground(new Color(0xff7814));
                 panelMenu.add(separator3);
-                separator3.setBounds(0, 209, 135, 20);
+                separator3.setBounds(0, 209, 205, 20);
 
                 //---- separator4 ----
-                separator4.setForeground(Color.white);
+                separator4.setForeground(new Color(0xff7c17));
                 panelMenu.add(separator4);
-                separator4.setBounds(0, 117, 135, 20);
+                separator4.setBounds(0, 117, 205, 20);
 
                 //---- separator5 ----
-                separator5.setForeground(Color.white);
+                separator5.setForeground(new Color(0xff861b));
                 panelMenu.add(separator5);
-                separator5.setBounds(0, 163, 135, 20);
+                separator5.setBounds(0, 163, 210, 20);
 
                 //---- label2 ----
                 label2.setText("ADMINISTRADOR");
-                label2.setForeground(Color.white);
-                label2.setFont(new Font("Segoe UI", Font.BOLD, 14));
+                label2.setForeground(new Color(0xff8327));
+                label2.setFont(new Font("Segoe UI Black", Font.BOLD, 14));
                 panelMenu.add(label2);
-                label2.setBounds(15, 40, 121, label2.getPreferredSize().height);
+                label2.setBounds(15, 40, 155, label2.getPreferredSize().height);
 
                 //---- label11 ----
                 label11.setText("Cerrar sesi\u00f3n");
-                label11.setForeground(Color.white);
+                label11.setForeground(Color.black);
+                label11.setBackground(new Color(0xff9999));
                 label11.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -372,39 +390,17 @@ public class InicioAdmin extends JFrame {
                 panelMenu.add(label11);
                 label11.setBounds(15, 340, 125, 16);
 
-                {
-                    // compute preferred size
-                    Dimension preferredSize = new Dimension();
-                    for(int i = 0; i < panelMenu.getComponentCount(); i++) {
-                        Rectangle bounds = panelMenu.getComponent(i).getBounds();
-                        preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
-                        preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
-                    }
-                    Insets insets = panelMenu.getInsets();
-                    preferredSize.width += insets.right;
-                    preferredSize.height += insets.bottom;
-                    panelMenu.setMinimumSize(preferredSize);
-                    panelMenu.setPreferredSize(preferredSize);
-                }
-            }
-            panelBase.add(panelMenu, BorderLayout.WEST);
-
-            //======== panelInicio ========
-            {
-                panelInicio.setForeground(new Color(0xf8f0de));
-                panelInicio.setBackground(new Color(0xf8f0de));
-                panelInicio.setLayout(new CardLayout());
-
                 //======== panelGestionEmp ========
                 {
-                    panelGestionEmp.setBackground(new Color(0xf8f0de));
+                    panelGestionEmp.setBackground(new Color(0xff9966));
                     panelGestionEmp.setLayout(null);
 
                     //---- label6 ----
                     label6.setText("Gesti\u00f3n empleados");
-                    label6.setForeground(new Color(0xf2876b));
+                    label6.setForeground(Color.black);
+                    label6.setFont(new Font("MingLiU_HKSCS-ExtB", Font.PLAIN, 13));
                     panelGestionEmp.add(label6);
-                    label6.setBounds(new Rectangle(new Point(35, 60), label6.getPreferredSize()));
+                    label6.setBounds(35, 60, 145, label6.getPreferredSize().height);
 
                     //======== scrollPane1 ========
                     {
@@ -453,7 +449,56 @@ public class InicioAdmin extends JFrame {
                         panelGestionEmp.setPreferredSize(preferredSize);
                     }
                 }
-                panelInicio.add(panelGestionEmp, "card1");
+                panelMenu.add(panelGestionEmp);
+                panelGestionEmp.setBounds(205, 0, 575, 380);
+
+                //---- label12 ----
+                label12.setIcon(new ImageIcon(getClass().getResource("/lo.jpg")));
+                panelMenu.add(label12);
+                label12.setBounds(10, 70, 40, 50);
+
+                //---- label13 ----
+                label13.setIcon(new ImageIcon(getClass().getResource("/lolo.jpg")));
+                panelMenu.add(label13);
+                label13.setBounds(new Rectangle(new Point(10, 120), label13.getPreferredSize()));
+
+                //---- label14 ----
+                label14.setIcon(new ImageIcon(getClass().getResource("/lii.jpg")));
+                panelMenu.add(label14);
+                label14.setBounds(new Rectangle(new Point(15, 170), label14.getPreferredSize()));
+
+                //---- label15 ----
+                label15.setIcon(new ImageIcon(getClass().getResource("/jl.jpg")));
+                panelMenu.add(label15);
+                label15.setBounds(new Rectangle(new Point(15, 215), label15.getPreferredSize()));
+
+                //---- label16 ----
+                label16.setIcon(new ImageIcon(getClass().getResource("/sal.jpg")));
+                panelMenu.add(label16);
+                label16.setBounds(105, 330, 45, 40);
+
+                {
+                    // compute preferred size
+                    Dimension preferredSize = new Dimension();
+                    for(int i = 0; i < panelMenu.getComponentCount(); i++) {
+                        Rectangle bounds = panelMenu.getComponent(i).getBounds();
+                        preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+                        preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+                    }
+                    Insets insets = panelMenu.getInsets();
+                    preferredSize.width += insets.right;
+                    preferredSize.height += insets.bottom;
+                    panelMenu.setMinimumSize(preferredSize);
+                    panelMenu.setPreferredSize(preferredSize);
+                }
+            }
+            panelBase.add(panelMenu, BorderLayout.WEST);
+
+            //======== panelInicio ========
+            {
+                panelInicio.setForeground(new Color(0xf8f0de));
+                panelInicio.setBackground(new Color(0xf8f0de));
+                panelInicio.setLayout(new CardLayout());
 
                 //======== panelSeguridadYrol ========
                 {
@@ -569,6 +614,7 @@ public class InicioAdmin extends JFrame {
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
+    // Generated using JFormDesigner Evaluation license - liz
     private JPanel panelBase;
     private JPanel panelMenu;
     private JLabel label1;
@@ -582,11 +628,16 @@ public class InicioAdmin extends JFrame {
     private JSeparator separator5;
     private JLabel label2;
     private JLabel label11;
-    private JPanel panelInicio;
     private JPanel panelGestionEmp;
     private JLabel label6;
     private JScrollPane scrollPane1;
     private JTable table1;
+    private JLabel label12;
+    private JLabel label13;
+    private JLabel label14;
+    private JLabel label15;
+    private JLabel label16;
+    private JPanel panelInicio;
     private JPanel panelSeguridadYrol;
     private JLabel label10;
     private JPanel panelBitácoraAct;

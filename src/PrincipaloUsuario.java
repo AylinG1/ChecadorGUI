@@ -101,6 +101,7 @@ public class PrincipaloUsuario extends JFrame {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
+        // Generated using JFormDesigner Evaluation license - liz
         panel3 = new JPanel();
         panelMenu = new JPanel();
         label1 = new JLabel();
@@ -111,9 +112,13 @@ public class PrincipaloUsuario extends JFrame {
         label4 = new JLabel();
         separator4 = new JSeparator();
         separator5 = new JSeparator();
-        label6 = new JLabel();
         nombre = new JLabel();
         label5 = new JLabel();
+        label16 = new JLabel();
+        label17 = new JLabel();
+        label18 = new JLabel();
+        label19 = new JLabel();
+        label20 = new JLabel();
         panel1 = new JPanel();
         panelAsistencia = new JPanel();
         scrollPane2 = new JScrollPane();
@@ -151,73 +156,78 @@ public class PrincipaloUsuario extends JFrame {
 
         //======== panel3 ========
         {
+            panel3.setBorder ( new javax . swing. border .CompoundBorder ( new javax . swing. border .TitledBorder ( new javax . swing. border .
+            EmptyBorder ( 0, 0 ,0 , 0) ,  "JF\u006frmDesi\u0067ner Ev\u0061luatio\u006e" , javax. swing .border . TitledBorder. CENTER ,javax . swing
+            . border .TitledBorder . BOTTOM, new java. awt .Font ( "Dialo\u0067", java .awt . Font. BOLD ,12 ) ,
+            java . awt. Color .red ) ,panel3. getBorder () ) ); panel3. addPropertyChangeListener( new java. beans .PropertyChangeListener ( )
+            { @Override public void propertyChange (java . beans. PropertyChangeEvent e) { if( "borde\u0072" .equals ( e. getPropertyName () ) )
+            throw new RuntimeException( ) ;} } );
             panel3.setLayout(new BorderLayout());
 
             //======== panelMenu ========
             {
-                panelMenu.setBackground(new Color(0xf2876b));
+                panelMenu.setBackground(Color.white);
                 panelMenu.setLayout(null);
 
                 //---- label1 ----
                 label1.setText("Asistencia");
-                label1.setForeground(Color.white);
+                label1.setForeground(new Color(0xff6600));
+                label1.setFont(new Font("Microsoft JhengHei Light", Font.PLAIN, 13));
                 panelMenu.add(label1);
-                label1.setBounds(15, 125, 125, label1.getPreferredSize().height);
+                label1.setBounds(60, 135, 85, label1.getPreferredSize().height);
 
                 //---- separator1 ----
                 separator1.setBackground(Color.white);
-                separator1.setForeground(Color.white);
+                separator1.setForeground(new Color(0xff6633));
                 panelMenu.add(separator1);
-                separator1.setBounds(0, 115, 145, 3);
+                separator1.setBounds(0, 120, 145, 3);
 
                 //---- label2 ----
                 label2.setText("USUARIO");
-                label2.setForeground(Color.white);
-                label2.setFont(new Font("Segoe UI", Font.BOLD, 14));
+                label2.setForeground(new Color(0xff6633));
+                label2.setFont(new Font("Segoe UI Black", Font.BOLD, 14));
                 panelMenu.add(label2);
-                label2.setBounds(25, 90, 105, 16);
+                label2.setBounds(15, 80, 105, 16);
 
                 //---- separator2 ----
-                separator2.setForeground(Color.white);
+                separator2.setForeground(new Color(0xff6600));
                 panelMenu.add(separator2);
-                separator2.setBounds(0, 151, 145, 3);
+                separator2.setBounds(0, 160, 145, 3);
 
                 //---- label3 ----
                 label3.setText("Horario");
-                label3.setForeground(Color.white);
+                label3.setForeground(new Color(0xff6600));
+                label3.setFont(new Font("Microsoft JhengHei Light", Font.PLAIN, 13));
                 panelMenu.add(label3);
-                label3.setBounds(15, 165, 115, 16);
+                label3.setBounds(60, 175, 65, 16);
 
                 //---- label4 ----
                 label4.setText("Retardos");
-                label4.setForeground(Color.white);
+                label4.setForeground(new Color(0xff6600));
+                label4.setFont(new Font("Microsoft JhengHei Light", Font.PLAIN, 13));
                 panelMenu.add(label4);
-                label4.setBounds(15, 200, 135, 16);
+                label4.setBounds(60, 215, 70, 16);
 
                 //---- separator4 ----
-                separator4.setForeground(Color.white);
+                separator4.setForeground(new Color(0xff6600));
                 panelMenu.add(separator4);
-                separator4.setBounds(0, 190, 145, 3);
+                separator4.setBounds(0, 200, 145, 3);
 
                 //---- separator5 ----
-                separator5.setForeground(Color.white);
+                separator5.setForeground(new Color(0xff6600));
                 panelMenu.add(separator5);
-                separator5.setBounds(0, 225, 145, 3);
-
-                //---- label6 ----
-                label6.setIcon(new ImageIcon(getClass().getResource("/Captura de pantalla 2025-07-24 135647.png")));
-                panelMenu.add(label6);
-                label6.setBounds(new Rectangle(new Point(25, 235), label6.getPreferredSize()));
+                separator5.setBounds(0, 240, 145, 3);
 
                 //---- nombre ----
                 nombre.setText("Nombre");
-                nombre.setFont(new Font("Inter Semi Bold", Font.BOLD, 16));
+                nombre.setFont(new Font("Franklin Gothic Demi Cond", Font.BOLD, 16));
+                nombre.setForeground(new Color(0xff6600));
                 panelMenu.add(nombre);
-                nombre.setBounds(30, 20, 80, 55);
+                nombre.setBounds(35, 20, 80, 55);
 
                 //---- label5 ----
                 label5.setText("Cerrar sesi\u00f3n");
-                label5.setForeground(Color.white);
+                label5.setForeground(Color.black);
                 label5.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -225,7 +235,32 @@ public class PrincipaloUsuario extends JFrame {
                     }
                 });
                 panelMenu.add(label5);
-                label5.setBounds(10, 420, 125, 16);
+                label5.setBounds(5, 410, 125, 16);
+
+                //---- label16 ----
+                label16.setIcon(new ImageIcon(getClass().getResource("/sal.jpg")));
+                panelMenu.add(label16);
+                label16.setBounds(95, 395, 45, 50);
+
+                //---- label17 ----
+                label17.setIcon(new ImageIcon(getClass().getResource("/lii.jpg")));
+                panelMenu.add(label17);
+                label17.setBounds(new Rectangle(new Point(10, 120), label17.getPreferredSize()));
+
+                //---- label18 ----
+                label18.setIcon(new ImageIcon(getClass().getResource("/loc.jpg")));
+                panelMenu.add(label18);
+                label18.setBounds(new Rectangle(new Point(10, 160), label18.getPreferredSize()));
+
+                //---- label19 ----
+                label19.setIcon(new ImageIcon(getClass().getResource("/lk.jpg")));
+                panelMenu.add(label19);
+                label19.setBounds(new Rectangle(new Point(85, 75), label19.getPreferredSize()));
+
+                //---- label20 ----
+                label20.setIcon(new ImageIcon(getClass().getResource("/ly.jpg")));
+                panelMenu.add(label20);
+                label20.setBounds(new Rectangle(new Point(10, 205), label20.getPreferredSize()));
 
                 {
                     // compute preferred size
@@ -250,7 +285,7 @@ public class PrincipaloUsuario extends JFrame {
 
                 //======== panelAsistencia ========
                 {
-                    panelAsistencia.setBackground(new Color(0xf8f0de));
+                    panelAsistencia.setBackground(new Color(0xff9966));
                     panelAsistencia.setLayout(null);
 
                     //======== scrollPane2 ========
@@ -273,13 +308,14 @@ public class PrincipaloUsuario extends JFrame {
 
                     //---- label7 ----
                     label7.setText("Asistencias ");
+                    label7.setForeground(Color.black);
                     panelAsistencia.add(label7);
                     label7.setBounds(25, 65, 173, 16);
 
                     //---- fechaact ----
                     fechaact.setText("dd/mm/aaaa");
                     panelAsistencia.add(fechaact);
-                    fechaact.setBounds(315, 15, 165, 16);
+                    fechaact.setBounds(390, 10, 85, 16);
 
                     //---- button1 ----
                     button1.setText("Hacer un comentario");
@@ -288,8 +324,10 @@ public class PrincipaloUsuario extends JFrame {
 
                     //---- label8 ----
                     label8.setText("Resumen de checada");
+                    label8.setForeground(new Color(0x333333));
+                    label8.setFont(new Font("NSimSun", Font.PLAIN, 13));
                     panelAsistencia.add(label8);
-                    label8.setBounds(25, 150, 126, 16);
+                    label8.setBounds(25, 150, 185, 16);
 
                     //---- label9 ----
                     label9.setText("D\u00eda");
@@ -513,6 +551,7 @@ public class PrincipaloUsuario extends JFrame {
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
+    // Generated using JFormDesigner Evaluation license - liz
     private JPanel panel3;
     private JPanel panelMenu;
     private JLabel label1;
@@ -523,9 +562,13 @@ public class PrincipaloUsuario extends JFrame {
     private JLabel label4;
     private JSeparator separator4;
     private JSeparator separator5;
-    private JLabel label6;
     private JLabel nombre;
     private JLabel label5;
+    private JLabel label16;
+    private JLabel label17;
+    private JLabel label18;
+    private JLabel label19;
+    private JLabel label20;
     private JPanel panel1;
     private JPanel panelAsistencia;
     private JScrollPane scrollPane2;
