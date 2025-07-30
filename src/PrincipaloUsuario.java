@@ -27,21 +27,96 @@ public class PrincipaloUsuario extends JFrame {
     }
 
     public void cargarRetardosEnPanel() {
+        // === Fecha ===
+        LocalDate fechaActual = LocalDate.now();
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String fechaFormateada = fechaActual.format(formato);
+        fechaact2.setText("Fecha: " + fechaFormateada);  // Asegúrate que sea el label correcto
+
+        // === Usuario ===
+        nombre2.setText(SesionUsuario.usuarioActual);
+
+        String usuario = nombre2.getText();
+
+        String sql = "SELECT " +
+                "    rc.fecha, " +
+                "    CASE " +
+                "        WHEN rc.tipo_registro LIKE 'ENTRADA_1%' THEN t.entrada_1 " +
+                "        WHEN rc.tipo_registro LIKE 'ENTRADA_2%' THEN t.entrada_2 " +
+                "        WHEN rc.tipo_registro LIKE 'ENTRADA_3%' THEN t.entrada_3 " +
+                "        ELSE NULL " +
+                "    END AS entrada_valida, " +
+                "    rc.hora, " +
+                "    CASE " +
+                "        WHEN rc.tipo_registro LIKE 'ENTRADA_1%' AND rc.hora > t.entrada_1 " +
+                "            THEN DATEDIFF(MINUTE, t.entrada_1, rc.hora) " +
+                "        WHEN rc.tipo_registro LIKE 'ENTRADA_2%' AND rc.hora > t.entrada_2 " +
+                "            THEN DATEDIFF(MINUTE, t.entrada_2, rc.hora) " +
+                "        WHEN rc.tipo_registro LIKE 'ENTRADA_3%' AND rc.hora > t.entrada_3 " +
+                "            THEN DATEDIFF(MINUTE, t.entrada_3, rc.hora) " +
+                "        ELSE 0 " +
+                "    END AS minutos_retraso_bruto, " +
+                "    rc.tipo_registro " +
+                "FROM Registros_Checada rc " +
+                "JOIN Empleados e ON rc.id_empleado = e.id " +
+                "JOIN Turnos t ON e.id_turno = t.id " +
+                "WHERE e.nombre = ? " +
+                "  AND ( " +
+                "        (rc.tipo_registro LIKE 'ENTRADA_1%' AND t.entrada_1 IS NOT NULL AND rc.hora > t.entrada_1) OR " +
+                "        (rc.tipo_registro LIKE 'ENTRADA_2%' AND t.entrada_2 IS NOT NULL AND rc.hora > t.entrada_2) OR " +
+                "        (rc.tipo_registro LIKE 'ENTRADA_3%' AND t.entrada_3 IS NOT NULL AND rc.hora > t.entrada_3) " +
+                "      ) " +
+                "ORDER BY rc.fecha, entrada_valida";
+
+        BaseSQL base = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
         try {
-            DefaultTableModel model = new DefaultTableModel();
-            model.addColumn("Fecha");
-            model.addColumn("Hora");
-            model.addColumn("Entrada/Salida");
+            base = new BaseSQL();
+            ps = base.conn.prepareStatement(sql);
+            ps.setString(1, usuario);
+            rs = ps.executeQuery();
 
-            // Simulando algunos datos
-            model.addRow(new Object[]{"2025-07-25", "08:05", "Entrada"});
-            model.addRow(new Object[]{"2025-07-26", "08:10", "Entrada"});
+            DefaultTableModel model = new DefaultTableModel(
+                    new String[]{"Fecha", "Entrada Válida", "Hora Checada", "Minutos Retraso Bruto", "Tipo Registro"}, 0);
 
-            table2.setModel(model); // table2 ya está en el panelRetardos
-        } catch (Exception e) {
+            int minutosAcumuladosTotales = 0;
+
+            while (rs.next()) {
+                Object[] fila = new Object[5];
+                fila[0] = rs.getDate("fecha");
+                fila[1] = rs.getTime("entrada_valida");
+                fila[2] = rs.getTime("hora");
+                int minutosRetrasoBruto = rs.getInt("minutos_retraso_bruto");
+                fila[3] = minutosRetrasoBruto;
+                fila[4] = rs.getString("tipo_registro");
+
+                if (minutosRetrasoBruto > 0) {
+                    model.addRow(fila);
+                    minutosAcumuladosTotales += minutosRetrasoBruto;
+                }
+            }
+
+            table2.setModel(model); // Usa la tabla en tu panel
+            minacum2.setText("Minutos acumulados : " + minutosAcumuladosTotales);
+
+            if (minutosAcumuladosTotales > 15) {
+                minacum2.setForeground(Color.RED);
+            } else {
+                minacum2.setForeground(Color.GREEN);
+            }
+
+        } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error al cargar los retardos:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al cargar retardos: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            try { if (rs != null) rs.close(); } catch (SQLException ex) { ex.printStackTrace(); }
+            try { if (ps != null) ps.close(); } catch (SQLException ex) { ex.printStackTrace(); }
+            try { if (base != null) base.cerrar(); } catch (SQLException ex) { ex.printStackTrace(); }
         }
+
     }
 
 
@@ -101,7 +176,6 @@ public class PrincipaloUsuario extends JFrame {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
-        // Generated using JFormDesigner Evaluation license - liz
         panel3 = new JPanel();
         panelMenu = new JPanel();
         label1 = new JLabel();
@@ -156,12 +230,6 @@ public class PrincipaloUsuario extends JFrame {
 
         //======== panel3 ========
         {
-            panel3.setBorder ( new javax . swing. border .CompoundBorder ( new javax . swing. border .TitledBorder ( new javax . swing. border .
-            EmptyBorder ( 0, 0 ,0 , 0) ,  "JF\u006frmDesi\u0067ner Ev\u0061luatio\u006e" , javax. swing .border . TitledBorder. CENTER ,javax . swing
-            . border .TitledBorder . BOTTOM, new java. awt .Font ( "Dialo\u0067", java .awt . Font. BOLD ,12 ) ,
-            java . awt. Color .red ) ,panel3. getBorder () ) ); panel3. addPropertyChangeListener( new java. beans .PropertyChangeListener ( )
-            { @Override public void propertyChange (java . beans. PropertyChangeEvent e) { if( "borde\u0072" .equals ( e. getPropertyName () ) )
-            throw new RuntimeException( ) ;} } );
             panel3.setLayout(new BorderLayout());
 
             //======== panelMenu ========
@@ -551,7 +619,6 @@ public class PrincipaloUsuario extends JFrame {
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
-    // Generated using JFormDesigner Evaluation license - liz
     private JPanel panel3;
     private JPanel panelMenu;
     private JLabel label1;
