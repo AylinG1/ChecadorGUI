@@ -8,13 +8,6 @@ import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import javax.swing.SwingUtilities;
 import java.sql.*;
-import javax.swing.SwingUtilities;
-
-
-/*
- * Created by JFormDesigner on Wed Jul 23 11:52:47 GMT-06:00 2025
- */
-
 
 
 /**
@@ -240,7 +233,7 @@ public class LoginPrincipal extends JFrame {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
-        // Generated using JFormDesigner Evaluation license - liz
+        // Generated using JFormDesigner Evaluation license - Juan
         labelInicio = new JLabel();
         labelUsuario = new JLabel();
         campoUsuario = new JTextField();
@@ -298,10 +291,6 @@ public class LoginPrincipal extends JFrame {
         button1.setForeground(Color.black);
         button1.addActionListener(e -> {
 			button1(e);
-			button1(e);
-			button1(e);
-			button1(e);
-			button1(e);
 		});
         contentPane.add(button1);
         button1.setBounds(135, 430, 120, button1.getPreferredSize().height);
@@ -338,7 +327,7 @@ public class LoginPrincipal extends JFrame {
 
     }
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
-    // Generated using JFormDesigner Evaluation license - liz
+    // Generated using JFormDesigner Evaluation license - Juan
     private JLabel labelInicio;
     private JLabel labelUsuario;
     private JTextField campoUsuario;

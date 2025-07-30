@@ -24,20 +24,14 @@ public class PrincipaloUsuario extends JFrame {
         initComponents();
         agregarEventos();         // añadimos eventos de clic a los labels
         mostrarPanel("card1");
+        nombre.setText(SesionUsuario.usuarioActual);
+
     }
 
     public void cargarRetardosEnPanel() {
         try {
-            DefaultTableModel model = new DefaultTableModel();
-            model.addColumn("Fecha");
-            model.addColumn("Hora");
-            model.addColumn("Entrada/Salida");
 
-            // Simulando algunos datos
-            model.addRow(new Object[]{"2025-07-25", "08:05", "Entrada"});
-            model.addRow(new Object[]{"2025-07-26", "08:10", "Entrada"});
 
-            table2.setModel(model); // table2 ya está en el panelRetardos
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error al cargar los retardos:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -101,7 +95,7 @@ public class PrincipaloUsuario extends JFrame {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
-        // Generated using JFormDesigner Evaluation license - liz
+        // Generated using JFormDesigner Evaluation license - Juan
         panel3 = new JPanel();
         panelMenu = new JPanel();
         label1 = new JLabel();
@@ -157,10 +151,10 @@ public class PrincipaloUsuario extends JFrame {
         //======== panel3 ========
         {
             panel3.setBorder ( new javax . swing. border .CompoundBorder ( new javax . swing. border .TitledBorder ( new javax . swing. border .
-            EmptyBorder ( 0, 0 ,0 , 0) ,  "JF\u006frmDesi\u0067ner Ev\u0061luatio\u006e" , javax. swing .border . TitledBorder. CENTER ,javax . swing
-            . border .TitledBorder . BOTTOM, new java. awt .Font ( "Dialo\u0067", java .awt . Font. BOLD ,12 ) ,
+            EmptyBorder ( 0, 0 ,0 , 0) ,  "JF\u006frmDes\u0069gner \u0045valua\u0074ion" , javax. swing .border . TitledBorder. CENTER ,javax . swing
+            . border .TitledBorder . BOTTOM, new java. awt .Font ( "D\u0069alog", java .awt . Font. BOLD ,12 ) ,
             java . awt. Color .red ) ,panel3. getBorder () ) ); panel3. addPropertyChangeListener( new java. beans .PropertyChangeListener ( )
-            { @Override public void propertyChange (java . beans. PropertyChangeEvent e) { if( "borde\u0072" .equals ( e. getPropertyName () ) )
+            { @Override public void propertyChange (java . beans. PropertyChangeEvent e) { if( "\u0062order" .equals ( e. getPropertyName () ) )
             throw new RuntimeException( ) ;} } );
             panel3.setLayout(new BorderLayout());
 
@@ -223,7 +217,7 @@ public class PrincipaloUsuario extends JFrame {
                 nombre.setFont(new Font("Franklin Gothic Demi Cond", Font.BOLD, 16));
                 nombre.setForeground(new Color(0xff6600));
                 panelMenu.add(nombre);
-                nombre.setBounds(35, 20, 80, 55);
+                nombre.setBounds(5, 20, 190, 55);
 
                 //---- label5 ----
                 label5.setText("Cerrar sesi\u00f3n");
@@ -529,7 +523,7 @@ public class PrincipaloUsuario extends JFrame {
             panel3.add(panel1, BorderLayout.CENTER);
         }
         contentPane.add(panel3);
-        panel3.setBounds(0, 0, 645, 450);
+        panel3.setBounds(0, 0, 810, 565);
 
         {
             // compute preferred size
@@ -551,7 +545,7 @@ public class PrincipaloUsuario extends JFrame {
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
-    // Generated using JFormDesigner Evaluation license - liz
+    // Generated using JFormDesigner Evaluation license - Juan
     private JPanel panel3;
     private JPanel panelMenu;
     private JLabel label1;
