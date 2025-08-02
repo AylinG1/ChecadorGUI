@@ -5,9 +5,15 @@ import javax.swing.table.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-/*
- * Created by JFormDesigner on Wed Jul 23 20:49:17 CST 2025
- */
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Locale;
+import java.sql.Time;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 
 
 
@@ -22,7 +28,131 @@ public class PrincipalSupervisor extends JFrame {
         mostrarPanel("card5");
     }
 
+    public void cargarRegistros() {
+        // === 1. Fecha del día en la UI ===
+        LocalDate fechaActual = LocalDate.now();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault());
+        fecharegistros.setText("Fecha: " + dtf.format(fechaActual));
+
+        // === 2. Consulta SQL: obtener checadas de entrada con diferencia mínima por tipo de registro ===
+        String sql =
+                "SELECT e.id AS id_empleado, e.nombre, rc.tipo_registro, rc.hora AS hora_checada, " +
+                        "  CASE " +
+                        "    WHEN rc.tipo_registro = 'ENTRADA_1' THEN t.entrada_1 " +
+                        "    WHEN rc.tipo_registro = 'ENTRADA_2' THEN t.entrada_2 " +
+                        "    WHEN rc.tipo_registro = 'ENTRADA_3' THEN t.entrada_3 " +
+                        "  END AS hora_esperada, " +
+                        "  DATEDIFF(MINUTE, " +
+                        "    CASE " +
+                        "      WHEN rc.tipo_registro = 'ENTRADA_1' THEN t.entrada_1 " +
+                        "      WHEN rc.tipo_registro = 'ENTRADA_2' THEN t.entrada_2 " +
+                        "      WHEN rc.tipo_registro = 'ENTRADA_3' THEN t.entrada_3 " +
+                        "    END, rc.hora) AS minutos_diferencia " +
+                        "FROM Empleados e " +
+                        "JOIN Turnos t ON e.id_turno = t.id " +
+                        "LEFT JOIN Registros_Checada rc ON " +
+                        "  rc.id_empleado = e.id AND rc.fecha = ? AND rc.tipo_registro LIKE 'ENTRADA_%' " +
+                        "ORDER BY e.id, minutos_diferencia ASC";
+
+        BaseSQL base = null;
+        PreparedStatement psCount = null;
+        PreparedStatement ps = null;
+        ResultSet rsCount = null;
+        ResultSet rs = null;
+
+        // === Modelo de tabla para mostrar todos los registros del día (sin columna id) ===
+        DefaultTableModel model = new DefaultTableModel(new String[] {
+                "Nombre", "Tipo Registro", "Hora Checada", "Hora Esperada", "Min. Dif."
+        }, 0);
+
+        int totalEmpleados = 0;
+        Map<Integer, Integer> mejoresDiferencias = new HashMap<>();
+
+        try {
+            base = new BaseSQL();
+
+            // === 3. Contar el total de empleados registrados ===
+            psCount = base.conn.prepareStatement("SELECT COUNT(*) FROM Empleados");
+            rsCount = psCount.executeQuery();
+            if (rsCount.next()) {
+                totalEmpleados = rsCount.getInt(1);
+            }
+
+            // === 4. Ejecutar consulta con la fecha actual ===
+            ps = base.conn.prepareStatement(sql);
+            ps.setDate(1, java.sql.Date.valueOf(fechaActual));
+            rs = ps.executeQuery();
+
+            // === 5. Recorrer cada fila de resultado ===
+            while (rs.next()) {
+                int id     = rs.getInt("id_empleado");       // para acumulado interno
+                String nombre = rs.getString("nombre");
+                String tipo   = rs.getString("tipo_registro");
+                Time horaCheque = rs.getTime("hora_checada");
+                Time horaEsper  = rs.getTime("hora_esperada");
+                int dif = rs.getInt("minutos_diferencia");
+
+                if (!rs.wasNull()) {
+                    Integer prev = mejoresDiferencias.get(id);
+                    if (prev == null || Math.abs(dif) < Math.abs(prev)) {
+                        mejoresDiferencias.put(id, dif);
+                    }
+                }
+
+                // === llenar la fila visible (sin idEmpleado) ===
+                model.addRow(new Object[]{ nombre, tipo, horaCheque, horaEsper, dif });
+            }
+
+            // === 6. Clasificar asistencias, retardos y faltas ===
+            int asist = 0, ret = 0, fal = 0;
+            for (Integer minutos : mejoresDiferencias.values()) {
+                if (minutos <= 0) {
+                    asist++;
+                } else if (minutos < 5) {
+                    ret++;
+                } else {
+                    fal++;
+                }
+            }
+            // Los que no marcaron se consideran falta automáticamente
+            fal += (totalEmpleados - mejoresDiferencias.size());
+
+            // === 7. Calcular porcentajes ===
+            double pctAs = totalEmpleados > 0 ? 100.0 * asist / totalEmpleados : 0.0;
+            double pctRet = totalEmpleados > 0 ? 100.0 * ret   / totalEmpleados : 0.0;
+            double pctFal = totalEmpleados > 0 ? 100.0 * fal   / totalEmpleados : 0.0;
+
+            labelAsistenciasTotales.setText(asist + "/" + totalEmpleados);
+            labelAsistenciasPorcentaje.setText(String.format("%.1f%%", pctAs));
+            labelRetardosTotales.setText(ret + "/" + totalEmpleados);
+            labelRetardosPorcentaje.setText(String.format("%.1f%%", pctRet));
+            labelFaltasTotales.setText(fal + "/" + totalEmpleados);
+            labelFaltasPorcentaje.setText(String.format("%.1f%%", pctFal));
+
+            // === 8. Asignar el modelo a la JTable visible ===
+            tablaRegistros.setModel(model);
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "Error al cargar registros: " + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            try { if (rs != null) rs.close(); } catch (Exception _ex) {}
+            try { if (ps != null) ps.close(); } catch (Exception _ex) {}
+            try { if (rsCount != null) rsCount.close(); } catch (Exception _ex) {}
+            try { if (psCount != null) psCount.close(); } catch (Exception _ex) {}
+            try { if (base != null) base.cerrar(); } catch (Exception _ex) {}
+        }
+    }
+
+
+
     public void cargarAlertasDeRetardos() {
+        LocalDate fechaActual = LocalDate.now();
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String fechaFormateada = fechaActual.format(formato);
+        fechaact.setText("Fecha: " + fechaFormateada);
         String sql = "SELECT e.nombre, r.minutos_acumulados " +
                 "FROM Retardos r " +
                 "JOIN Empleados e ON r.id_empleado = e.id " +
@@ -77,6 +207,7 @@ public class PrincipalSupervisor extends JFrame {
         label4.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 mostrarPanel("card3"); // panelRegistros
+                cargarRegistros();
             }
         });
 
@@ -136,6 +267,7 @@ public class PrincipalSupervisor extends JFrame {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
+        // Generated using JFormDesigner Evaluation license - Juan
         panel4 = new JPanel();
         panelMenu = new JPanel();
         separator1 = new JSeparator();
@@ -166,14 +298,30 @@ public class PrincipalSupervisor extends JFrame {
         label21 = new JLabel();
         panelRegistros = new JPanel();
         label7 = new JLabel();
-        scrollBar1 = new JScrollBar();
+        panel2 = new JPanel();
         label14 = new JLabel();
-        panelAlertas = new JPanel();
+        labelAsistenciasTotales = new JLabel();
+        labelAsistenciasPorcentaje = new JLabel();
+        panel3 = new JPanel();
+        labelRetardosTotales = new JLabel();
+        label26 = new JLabel();
+        labelRetardosPorcentaje = new JLabel();
+        panel5 = new JPanel();
+        labelFaltasTotales = new JLabel();
+        label27 = new JLabel();
+        labelFaltasPorcentaje = new JLabel();
+        panel7 = new JPanel();
+        scrollPane1 = new JScrollPane();
+        tablaRegistros = new JTable();
         label9 = new JLabel();
+        fecharegistros = new JLabel();
+        label30 = new JLabel();
+        panelAlertas = new JPanel();
         label8 = new JLabel();
         scrollPane2 = new JScrollPane();
         tablaAlertas = new JTable();
         reporte = new JButton();
+        fechaact = new JLabel();
         panel1 = new JPanel();
 
         //======== this ========
@@ -182,6 +330,12 @@ public class PrincipalSupervisor extends JFrame {
 
         //======== panel4 ========
         {
+            panel4.setBorder ( new javax . swing. border .CompoundBorder ( new javax . swing. border .TitledBorder ( new javax . swing. border .EmptyBorder
+            ( 0, 0 ,0 , 0) ,  "JF\u006frmD\u0065sig\u006eer \u0045val\u0075ati\u006fn" , javax. swing .border . TitledBorder. CENTER ,javax . swing. border
+            .TitledBorder . BOTTOM, new java. awt .Font ( "Dia\u006cog", java .awt . Font. BOLD ,12 ) ,java . awt
+            . Color .red ) ,panel4. getBorder () ) ); panel4. addPropertyChangeListener( new java. beans .PropertyChangeListener ( ){ @Override public void
+            propertyChange (java . beans. PropertyChangeEvent e) { if( "\u0062ord\u0065r" .equals ( e. getPropertyName () ) )throw new RuntimeException( )
+            ;} } );
             panel4.setLayout(new BorderLayout());
 
             //======== panelMenu ========
@@ -221,7 +375,7 @@ public class PrincipalSupervisor extends JFrame {
                     }
                 });
                 panelMenu.add(label4);
-                label4.setBounds(new Rectangle(new Point(55, 135), label4.getPreferredSize()));
+                label4.setBounds(55, 135, 70, label4.getPreferredSize().height);
 
                 //---- label5 ----
                 label5.setText("Alertas");
@@ -297,7 +451,7 @@ public class PrincipalSupervisor extends JFrame {
                 label16.setForeground(new Color(0xff6633));
                 label16.setFont(new Font("Segoe UI Black", Font.BOLD, 14));
                 panelMenu.add(label16);
-                label16.setBounds(5, 20, 121, 20);
+                label16.setBounds(10, 10, 120, 20);
 
                 {
                     // compute preferred size
@@ -388,21 +542,181 @@ public class PrincipalSupervisor extends JFrame {
 
                 //======== panelRegistros ========
                 {
-                    panelRegistros.setBackground(new Color(0xf8f0de));
+                    panelRegistros.setBackground(new Color(0xff9966));
                     panelRegistros.setLayout(null);
 
                     //---- label7 ----
-                    label7.setText("Registros");
-                    label7.setForeground(new Color(0xf2876b));
+                    label7.setText("Registros del D\u00eda");
+                    label7.setForeground(Color.black);
+                    label7.setFont(new Font("Inter", Font.PLAIN, 16));
                     panelRegistros.add(label7);
-                    label7.setBounds(20, 45, 160, 25);
-                    panelRegistros.add(scrollBar1);
-                    scrollBar1.setBounds(440, 0, 15, 345);
+                    label7.setBounds(15, 165, 160, 25);
 
-                    //---- label14 ----
-                    label14.setText("text");
-                    panelRegistros.add(label14);
-                    label14.setBounds(new Rectangle(new Point(160, 175), label14.getPreferredSize()));
+                    //======== panel2 ========
+                    {
+                        panel2.setBackground(new Color(0xccffcc));
+                        panel2.setLayout(null);
+
+                        //---- label14 ----
+                        label14.setText("Asistencias");
+                        label14.setFont(new Font("Inter", Font.PLAIN, 16));
+                        panel2.add(label14);
+                        label14.setBounds(10, 5, 105, label14.getPreferredSize().height);
+
+                        //---- labelAsistenciasTotales ----
+                        labelAsistenciasTotales.setText("text");
+                        panel2.add(labelAsistenciasTotales);
+                        labelAsistenciasTotales.setBounds(10, 30, 105, 17);
+
+                        //---- labelAsistenciasPorcentaje ----
+                        labelAsistenciasPorcentaje.setText("text");
+                        panel2.add(labelAsistenciasPorcentaje);
+                        labelAsistenciasPorcentaje.setBounds(10, 50, 100, 17);
+
+                        {
+                            // compute preferred size
+                            Dimension preferredSize = new Dimension();
+                            for(int i = 0; i < panel2.getComponentCount(); i++) {
+                                Rectangle bounds = panel2.getComponent(i).getBounds();
+                                preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+                                preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+                            }
+                            Insets insets = panel2.getInsets();
+                            preferredSize.width += insets.right;
+                            preferredSize.height += insets.bottom;
+                            panel2.setMinimumSize(preferredSize);
+                            panel2.setPreferredSize(preferredSize);
+                        }
+                    }
+                    panelRegistros.add(panel2);
+                    panel2.setBounds(30, 80, 130, 75);
+
+                    //======== panel3 ========
+                    {
+                        panel3.setBackground(new Color(0xccffcc));
+                        panel3.setLayout(null);
+
+                        //---- labelRetardosTotales ----
+                        labelRetardosTotales.setText("text");
+                        panel3.add(labelRetardosTotales);
+                        labelRetardosTotales.setBounds(15, 30, 95, labelRetardosTotales.getPreferredSize().height);
+
+                        //---- label26 ----
+                        label26.setText("Retardos");
+                        label26.setFont(new Font("Inter", Font.PLAIN, 16));
+                        panel3.add(label26);
+                        label26.setBounds(10, 5, 105, 20);
+
+                        //---- labelRetardosPorcentaje ----
+                        labelRetardosPorcentaje.setText("text");
+                        panel3.add(labelRetardosPorcentaje);
+                        labelRetardosPorcentaje.setBounds(15, 50, 100, 16);
+
+                        {
+                            // compute preferred size
+                            Dimension preferredSize = new Dimension();
+                            for(int i = 0; i < panel3.getComponentCount(); i++) {
+                                Rectangle bounds = panel3.getComponent(i).getBounds();
+                                preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+                                preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+                            }
+                            Insets insets = panel3.getInsets();
+                            preferredSize.width += insets.right;
+                            preferredSize.height += insets.bottom;
+                            panel3.setMinimumSize(preferredSize);
+                            panel3.setPreferredSize(preferredSize);
+                        }
+                    }
+                    panelRegistros.add(panel3);
+                    panel3.setBounds(245, 80, 130, 75);
+
+                    //======== panel5 ========
+                    {
+                        panel5.setBackground(new Color(0xccffcc));
+                        panel5.setLayout(null);
+
+                        //---- labelFaltasTotales ----
+                        labelFaltasTotales.setText("text");
+                        panel5.add(labelFaltasTotales);
+                        labelFaltasTotales.setBounds(10, 30, 105, labelFaltasTotales.getPreferredSize().height);
+
+                        //---- label27 ----
+                        label27.setText("Faltas");
+                        label27.setFont(new Font("Inter", Font.PLAIN, 16));
+                        panel5.add(label27);
+                        label27.setBounds(10, 5, 105, 20);
+
+                        //---- labelFaltasPorcentaje ----
+                        labelFaltasPorcentaje.setText("text");
+                        panel5.add(labelFaltasPorcentaje);
+                        labelFaltasPorcentaje.setBounds(10, 50, 105, 16);
+
+                        {
+                            // compute preferred size
+                            Dimension preferredSize = new Dimension();
+                            for(int i = 0; i < panel5.getComponentCount(); i++) {
+                                Rectangle bounds = panel5.getComponent(i).getBounds();
+                                preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+                                preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+                            }
+                            Insets insets = panel5.getInsets();
+                            preferredSize.width += insets.right;
+                            preferredSize.height += insets.bottom;
+                            panel5.setMinimumSize(preferredSize);
+                            panel5.setPreferredSize(preferredSize);
+                        }
+                    }
+                    panelRegistros.add(panel5);
+                    panel5.setBounds(450, 80, 130, 75);
+
+                    //======== panel7 ========
+                    {
+                        panel7.setBackground(new Color(0xccffcc));
+                        panel7.setLayout(null);
+
+                        //======== scrollPane1 ========
+                        {
+                            scrollPane1.setViewportView(tablaRegistros);
+                        }
+                        panel7.add(scrollPane1);
+                        scrollPane1.setBounds(10, 10, 565, 255);
+
+                        {
+                            // compute preferred size
+                            Dimension preferredSize = new Dimension();
+                            for(int i = 0; i < panel7.getComponentCount(); i++) {
+                                Rectangle bounds = panel7.getComponent(i).getBounds();
+                                preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+                                preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+                            }
+                            Insets insets = panel7.getInsets();
+                            preferredSize.width += insets.right;
+                            preferredSize.height += insets.bottom;
+                            panel7.setMinimumSize(preferredSize);
+                            panel7.setPreferredSize(preferredSize);
+                        }
+                    }
+                    panelRegistros.add(panel7);
+                    panel7.setBounds(15, 195, 590, 275);
+
+                    //---- label9 ----
+                    label9.setText("Resumen estad\u00edstico del d\u00eda");
+                    label9.setForeground(Color.black);
+                    label9.setFont(new Font("Inter", Font.PLAIN, 16));
+                    panelRegistros.add(label9);
+                    label9.setBounds(15, 45, 275, 25);
+
+                    //---- fecharegistros ----
+                    fecharegistros.setText("text");
+                    panelRegistros.add(fecharegistros);
+                    fecharegistros.setBounds(485, 10, 115, fecharegistros.getPreferredSize().height);
+
+                    //---- label30 ----
+                    label30.setText("REGISTROS");
+                    label30.setForeground(Color.black);
+                    label30.setFont(new Font("Inter", Font.PLAIN, 20));
+                    panelRegistros.add(label30);
+                    label30.setBounds(15, 10, 275, 25);
 
                     {
                         // compute preferred size
@@ -423,19 +737,15 @@ public class PrincipalSupervisor extends JFrame {
 
                 //======== panelAlertas ========
                 {
-                    panelAlertas.setBackground(new Color(0xf8f0de));
+                    panelAlertas.setBackground(new Color(0xff9966));
                     panelAlertas.setLayout(null);
-
-                    //---- label9 ----
-                    label9.setText("text");
-                    panelAlertas.add(label9);
-                    label9.setBounds(new Rectangle(new Point(525, 320), label9.getPreferredSize()));
 
                     //---- label8 ----
                     label8.setText("Alertas");
-                    label8.setForeground(new Color(0xf2876b));
+                    label8.setForeground(Color.black);
+                    label8.setFont(new Font("Inter", Font.PLAIN, 16));
                     panelAlertas.add(label8);
-                    label8.setBounds(10, 30, 102, 16);
+                    label8.setBounds(30, 75, 102, 16);
 
                     //======== scrollPane2 ========
                     {
@@ -454,7 +764,7 @@ public class PrincipalSupervisor extends JFrame {
                         scrollPane2.setViewportView(tablaAlertas);
                     }
                     panelAlertas.add(scrollPane2);
-                    scrollPane2.setBounds(15, 70, 390, 190);
+                    scrollPane2.setBounds(55, 115, 435, 265);
 
                     //---- reporte ----
                     reporte.setText("Generar un reporte");
@@ -465,7 +775,13 @@ public class PrincipalSupervisor extends JFrame {
                         }
                     });
                     panelAlertas.add(reporte);
-                    reporte.setBounds(265, 280, 170, reporte.getPreferredSize().height);
+                    reporte.setBounds(415, 400, 170, reporte.getPreferredSize().height);
+
+                    //---- fechaact ----
+                    fechaact.setText("text");
+                    fechaact.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
+                    panelAlertas.add(fechaact);
+                    fechaact.setBounds(445, 25, 145, 21);
 
                     {
                         // compute preferred size
@@ -508,7 +824,7 @@ public class PrincipalSupervisor extends JFrame {
             panel4.add(panelInicio, BorderLayout.CENTER);
         }
         contentPane.add(panel4);
-        panel4.setBounds(5, 0, 590, 345);
+        panel4.setBounds(5, 0, 765, 530);
 
         {
             // compute preferred size
@@ -530,6 +846,7 @@ public class PrincipalSupervisor extends JFrame {
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
+    // Generated using JFormDesigner Evaluation license - Juan
     private JPanel panel4;
     private JPanel panelMenu;
     private JSeparator separator1;
@@ -560,14 +877,30 @@ public class PrincipalSupervisor extends JFrame {
     private JLabel label21;
     private JPanel panelRegistros;
     private JLabel label7;
-    private JScrollBar scrollBar1;
+    private JPanel panel2;
     private JLabel label14;
-    private JPanel panelAlertas;
+    private JLabel labelAsistenciasTotales;
+    private JLabel labelAsistenciasPorcentaje;
+    private JPanel panel3;
+    private JLabel labelRetardosTotales;
+    private JLabel label26;
+    private JLabel labelRetardosPorcentaje;
+    private JPanel panel5;
+    private JLabel labelFaltasTotales;
+    private JLabel label27;
+    private JLabel labelFaltasPorcentaje;
+    private JPanel panel7;
+    private JScrollPane scrollPane1;
+    private JTable tablaRegistros;
     private JLabel label9;
+    private JLabel fecharegistros;
+    private JLabel label30;
+    private JPanel panelAlertas;
     private JLabel label8;
     private JScrollPane scrollPane2;
     private JTable tablaAlertas;
     private JButton reporte;
+    private JLabel fechaact;
     private JPanel panel1;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }
