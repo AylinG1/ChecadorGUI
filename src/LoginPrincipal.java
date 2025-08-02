@@ -155,6 +155,7 @@ public class LoginPrincipal extends JFrame {
                     switch (rol) {
                         case "admin":
                             labelMensaje.setText("¡Login exitoso! Bienvenido administrador.");
+                            SesionUsuario.usuarioActual = campoUsuario.getText().trim();
                             SwingUtilities.invokeLater(() -> {
                                 new InicioAdmin().setVisible(true);
                                 this.dispose();
@@ -173,6 +174,7 @@ public class LoginPrincipal extends JFrame {
 
                         case "supervisor":
                             labelMensaje.setText("¡Login exitoso! Bienvenido supervisor.");
+                            SesionUsuario.usuarioActual = campoUsuario.getText().trim();
                             SwingUtilities.invokeLater(() -> {
                                 new PrincipalSupervisor().setVisible(true);
                                 this.dispose();

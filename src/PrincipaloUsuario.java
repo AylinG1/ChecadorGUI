@@ -477,7 +477,6 @@ public class PrincipaloUsuario extends JFrame {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
-        // Generated using JFormDesigner Evaluation license - Juan
         panel3 = new JPanel();
         panelMenu = new JPanel();
         label1 = new JLabel();
@@ -533,13 +532,6 @@ public class PrincipaloUsuario extends JFrame {
 
         //======== panel3 ========
         {
-            panel3.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.TitledBorder(new
-            javax.swing.border.EmptyBorder(0,0,0,0), "JF\u006frm\u0044es\u0069gn\u0065r \u0045va\u006cua\u0074io\u006e",javax
-            .swing.border.TitledBorder.CENTER,javax.swing.border.TitledBorder.BOTTOM,new java
-            .awt.Font("D\u0069al\u006fg",java.awt.Font.BOLD,12),java.awt
-            .Color.red),panel3. getBorder()));panel3. addPropertyChangeListener(new java.beans.
-            PropertyChangeListener(){@Override public void propertyChange(java.beans.PropertyChangeEvent e){if("\u0062or\u0064er".
-            equals(e.getPropertyName()))throw new RuntimeException();}});
             panel3.setLayout(new BorderLayout());
 
             //======== panelMenu ========
@@ -561,11 +553,11 @@ public class PrincipaloUsuario extends JFrame {
                 separator1.setBounds(0, 120, 145, 3);
 
                 //---- label2 ----
-                label2.setText("USUARIO");
+                label2.setText("EMPLEADO");
                 label2.setForeground(new Color(0xff6633));
                 label2.setFont(new Font("Segoe UI Black", Font.BOLD, 14));
                 panelMenu.add(label2);
-                label2.setBounds(15, 80, 105, 16);
+                label2.setBounds(10, 80, 105, 16);
 
                 //---- separator2 ----
                 separator2.setForeground(new Color(0xff6600));
@@ -984,7 +976,6 @@ public class PrincipaloUsuario extends JFrame {
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
-    // Generated using JFormDesigner Evaluation license - Juan
     private JPanel panel3;
     private JPanel panelMenu;
     private JLabel label1;

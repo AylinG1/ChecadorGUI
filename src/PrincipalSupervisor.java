@@ -1,6 +1,10 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.table.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 /*
  * Created by JFormDesigner on Wed Jul 23 20:49:17 CST 2025
  */
@@ -13,8 +17,47 @@ import javax.swing.*;
 public class PrincipalSupervisor extends JFrame {
     public PrincipalSupervisor() {
         initComponents();
-        agregarEventos();        // Añadimos eventos de clic a los labels
-        mostrarPanel("reportes"); // Mostramos panel por defecto al iniciar
+        agregarEventos();
+        label16.setText(SesionUsuario.usuarioActual);// Añadimos eventos de clic a los labels
+        mostrarPanel("card5");
+    }
+
+    public void cargarAlertasDeRetardos() {
+        String sql = "SELECT e.nombre, r.minutos_acumulados " +
+                "FROM Retardos r " +
+                "JOIN Empleados e ON r.id_empleado = e.id " +
+                "WHERE r.minutos_acumulados > 15";
+
+        BaseSQL base = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            base = new BaseSQL();
+            ps = base.conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            DefaultTableModel model = new DefaultTableModel(
+                    new String[]{"Nombre", "Minutos Acumulados"}, 0);
+
+            while (rs.next()) {
+                Object[] fila = new Object[2];
+                fila[0] = rs.getString("nombre");
+                fila[1] = rs.getInt("minutos_acumulados");
+                model.addRow(fila);
+            }
+
+            tablaAlertas.setModel(model);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al cargar alertas de retardos: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            try { if (rs != null) rs.close(); } catch (SQLException ex) { ex.printStackTrace(); }
+            try { if (ps != null) ps.close(); } catch (SQLException ex) { ex.printStackTrace(); }
+            try { if (base != null) base.cerrar(); } catch (SQLException ex) { ex.printStackTrace(); }
+        }
     }
 
 
@@ -27,19 +70,20 @@ public class PrincipalSupervisor extends JFrame {
         // Agregamos eventos a cada label para cambiar de panel
         label3.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                mostrarPanel("reportes");
+                mostrarPanel("card2"); // panelReportes
             }
         });
 
         label4.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                mostrarPanel("registros");
+                mostrarPanel("card3"); // panelRegistros
             }
         });
 
         label5.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                mostrarPanel("alertas");
+                mostrarPanel("card4"); // panelAlertas
+                cargarAlertasDeRetardos();
             }
         });
     }
@@ -85,9 +129,13 @@ public class PrincipalSupervisor extends JFrame {
         }
     }
 
+    private void reporteMouseClicked(MouseEvent e) {
+        // TODO add your code here
+        mostrarPanel("card2");
+    }
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
-        // Generated using JFormDesigner Evaluation license - Juan
         panel4 = new JPanel();
         panelMenu = new JPanel();
         separator1 = new JSeparator();
@@ -103,16 +151,30 @@ public class PrincipalSupervisor extends JFrame {
         label11 = new JLabel();
         label12 = new JLabel();
         label13 = new JLabel();
+        label16 = new JLabel();
         panelInicio = new JPanel();
         panelReportes = new JPanel();
         label10 = new JLabel();
-        panel1 = new JPanel();
+        label15 = new JLabel();
+        comboBox1 = new JComboBox();
+        textField1 = new JTextField();
+        button1 = new JButton();
+        label17 = new JLabel();
+        label18 = new JLabel();
+        label19 = new JLabel();
+        label20 = new JLabel();
+        label21 = new JLabel();
         panelRegistros = new JPanel();
         label7 = new JLabel();
         scrollBar1 = new JScrollBar();
+        label14 = new JLabel();
         panelAlertas = new JPanel();
         label9 = new JLabel();
         label8 = new JLabel();
+        scrollPane2 = new JScrollPane();
+        tablaAlertas = new JTable();
+        reporte = new JButton();
+        panel1 = new JPanel();
 
         //======== this ========
         var contentPane = getContentPane();
@@ -120,11 +182,6 @@ public class PrincipalSupervisor extends JFrame {
 
         //======== panel4 ========
         {
-            panel4.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax. swing. border. EmptyBorder( 0
-            , 0, 0, 0) , "JF\u006frmD\u0065sig\u006eer \u0045val\u0075ati\u006fn", javax. swing. border. TitledBorder. CENTER, javax. swing. border. TitledBorder. BOTTOM
-            , new java .awt .Font ("Dia\u006cog" ,java .awt .Font .BOLD ,12 ), java. awt. Color. red) ,
-            panel4. getBorder( )) ); panel4. addPropertyChangeListener (new java. beans. PropertyChangeListener( ){ @Override public void propertyChange (java .beans .PropertyChangeEvent e
-            ) {if ("\u0062ord\u0065r" .equals (e .getPropertyName () )) throw new RuntimeException( ); }} );
             panel4.setLayout(new BorderLayout());
 
             //======== panelMenu ========
@@ -235,6 +292,13 @@ public class PrincipalSupervisor extends JFrame {
                 panelMenu.add(label13);
                 label13.setBounds(new Rectangle(new Point(90, 295), label13.getPreferredSize()));
 
+                //---- label16 ----
+                label16.setText("SUPERVISOR");
+                label16.setForeground(new Color(0xff6633));
+                label16.setFont(new Font("Segoe UI Black", Font.BOLD, 14));
+                panelMenu.add(label16);
+                label16.setBounds(5, 20, 121, 20);
+
                 {
                     // compute preferred size
                     Dimension preferredSize = new Dimension();
@@ -268,29 +332,42 @@ public class PrincipalSupervisor extends JFrame {
                     label10.setForeground(new Color(0xcccccc));
                     panelReportes.add(label10);
                     label10.setBounds(20, 35, 155, 16);
+                    panelReportes.add(label15);
+                    label15.setBounds(new Rectangle(new Point(115, 175), label15.getPreferredSize()));
+                    panelReportes.add(comboBox1);
+                    comboBox1.setBounds(new Rectangle(new Point(40, 110), comboBox1.getPreferredSize()));
+                    panelReportes.add(textField1);
+                    textField1.setBounds(55, 220, 120, 50);
 
-                    //======== panel1 ========
-                    {
-                        panel1.setBackground(new Color(0xffcc99));
-                        panel1.setLayout(null);
+                    //---- button1 ----
+                    button1.setText("Enviar");
+                    panelReportes.add(button1);
+                    button1.setBounds(new Rectangle(new Point(295, 255), button1.getPreferredSize()));
 
-                        {
-                            // compute preferred size
-                            Dimension preferredSize = new Dimension();
-                            for(int i = 0; i < panel1.getComponentCount(); i++) {
-                                Rectangle bounds = panel1.getComponent(i).getBounds();
-                                preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
-                                preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
-                            }
-                            Insets insets = panel1.getInsets();
-                            preferredSize.width += insets.right;
-                            preferredSize.height += insets.bottom;
-                            panel1.setMinimumSize(preferredSize);
-                            panel1.setPreferredSize(preferredSize);
-                        }
-                    }
-                    panelReportes.add(panel1);
-                    panel1.setBounds(25, 70, 110, 65);
+                    //---- label17 ----
+                    label17.setText("Escribe el reporte aqu\u00ed");
+                    panelReportes.add(label17);
+                    label17.setBounds(new Rectangle(new Point(35, 195), label17.getPreferredSize()));
+
+                    //---- label18 ----
+                    label18.setText("empleado");
+                    panelReportes.add(label18);
+                    label18.setBounds(new Rectangle(new Point(155, 110), label18.getPreferredSize()));
+
+                    //---- label19 ----
+                    label19.setText("minutos de retardo");
+                    panelReportes.add(label19);
+                    label19.setBounds(new Rectangle(new Point(260, 110), label19.getPreferredSize()));
+
+                    //---- label20 ----
+                    label20.setText("No. de semana");
+                    panelReportes.add(label20);
+                    label20.setBounds(new Rectangle(new Point(155, 135), label20.getPreferredSize()));
+
+                    //---- label21 ----
+                    label21.setText("d\u00edas");
+                    panelReportes.add(label21);
+                    label21.setBounds(new Rectangle(new Point(265, 140), label21.getPreferredSize()));
 
                     {
                         // compute preferred size
@@ -321,6 +398,11 @@ public class PrincipalSupervisor extends JFrame {
                     label7.setBounds(20, 45, 160, 25);
                     panelRegistros.add(scrollBar1);
                     scrollBar1.setBounds(440, 0, 15, 345);
+
+                    //---- label14 ----
+                    label14.setText("text");
+                    panelRegistros.add(label14);
+                    label14.setBounds(new Rectangle(new Point(160, 175), label14.getPreferredSize()));
 
                     {
                         // compute preferred size
@@ -355,6 +437,36 @@ public class PrincipalSupervisor extends JFrame {
                     panelAlertas.add(label8);
                     label8.setBounds(10, 30, 102, 16);
 
+                    //======== scrollPane2 ========
+                    {
+
+                        //---- tablaAlertas ----
+                        tablaAlertas.setModel(new DefaultTableModel(
+                            new Object[][] {
+                                {null, null},
+                                {null, null},
+                                {null, null},
+                            },
+                            new String[] {
+                                "Nombre", "Minutos de retardo"
+                            }
+                        ));
+                        scrollPane2.setViewportView(tablaAlertas);
+                    }
+                    panelAlertas.add(scrollPane2);
+                    scrollPane2.setBounds(15, 70, 390, 190);
+
+                    //---- reporte ----
+                    reporte.setText("Generar un reporte");
+                    reporte.addMouseListener(new MouseAdapter() {
+                        @Override
+                        public void mouseClicked(MouseEvent e) {
+                            reporteMouseClicked(e);
+                        }
+                    });
+                    panelAlertas.add(reporte);
+                    reporte.setBounds(265, 280, 170, reporte.getPreferredSize().height);
+
                     {
                         // compute preferred size
                         Dimension preferredSize = new Dimension();
@@ -371,6 +483,27 @@ public class PrincipalSupervisor extends JFrame {
                     }
                 }
                 panelInicio.add(panelAlertas, "card4");
+
+                //======== panel1 ========
+                {
+                    panel1.setLayout(null);
+
+                    {
+                        // compute preferred size
+                        Dimension preferredSize = new Dimension();
+                        for(int i = 0; i < panel1.getComponentCount(); i++) {
+                            Rectangle bounds = panel1.getComponent(i).getBounds();
+                            preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+                            preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+                        }
+                        Insets insets = panel1.getInsets();
+                        preferredSize.width += insets.right;
+                        preferredSize.height += insets.bottom;
+                        panel1.setMinimumSize(preferredSize);
+                        panel1.setPreferredSize(preferredSize);
+                    }
+                }
+                panelInicio.add(panel1, "card5");
             }
             panel4.add(panelInicio, BorderLayout.CENTER);
         }
@@ -397,7 +530,6 @@ public class PrincipalSupervisor extends JFrame {
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
-    // Generated using JFormDesigner Evaluation license - Juan
     private JPanel panel4;
     private JPanel panelMenu;
     private JSeparator separator1;
@@ -413,15 +545,29 @@ public class PrincipalSupervisor extends JFrame {
     private JLabel label11;
     private JLabel label12;
     private JLabel label13;
+    private JLabel label16;
     private JPanel panelInicio;
     private JPanel panelReportes;
     private JLabel label10;
-    private JPanel panel1;
+    private JLabel label15;
+    private JComboBox comboBox1;
+    private JTextField textField1;
+    private JButton button1;
+    private JLabel label17;
+    private JLabel label18;
+    private JLabel label19;
+    private JLabel label20;
+    private JLabel label21;
     private JPanel panelRegistros;
     private JLabel label7;
     private JScrollBar scrollBar1;
+    private JLabel label14;
     private JPanel panelAlertas;
     private JLabel label9;
     private JLabel label8;
+    private JScrollPane scrollPane2;
+    private JTable tablaAlertas;
+    private JButton reporte;
+    private JPanel panel1;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }
