@@ -241,9 +241,9 @@ public class LoginPrincipal extends JFrame {
         campoPassword = new JPasswordField();
         botonLogin = new JButton();
         labelMensaje = new JLabel();
-        button1 = new JButton();
         checkRecordar = new JCheckBox();
         label2 = new JLabel();
+        hSpacer1 = new JPanel(null);
 
         //======== this ========
         setBackground(new Color(0x333333));
@@ -261,51 +261,52 @@ public class LoginPrincipal extends JFrame {
         //---- labelUsuario ----
         labelUsuario.setText("Usuario");
         labelUsuario.setForeground(new Color(0xff9966));
+        labelUsuario.setFont(new Font("Inter", Font.PLAIN, 16));
         contentPane.add(labelUsuario);
-        labelUsuario.setBounds(new Rectangle(new Point(295, 245), labelUsuario.getPreferredSize()));
+        labelUsuario.setBounds(new Rectangle(new Point(300, 235), labelUsuario.getPreferredSize()));
+
+        //---- campoUsuario ----
+        campoUsuario.setFont(new Font("Inter", Font.PLAIN, 16));
         contentPane.add(campoUsuario);
-        campoUsuario.setBounds(360, 235, 130, campoUsuario.getPreferredSize().height);
+        campoUsuario.setBounds(380, 230, 250, campoUsuario.getPreferredSize().height);
 
         //---- labelPassword ----
         labelPassword.setText("Contrase\u00f1a:");
         labelPassword.setForeground(new Color(0xff9966));
+        labelPassword.setFont(new Font("Inter", Font.PLAIN, 16));
         contentPane.add(labelPassword);
-        labelPassword.setBounds(new Rectangle(new Point(270, 305), labelPassword.getPreferredSize()));
+        labelPassword.setBounds(new Rectangle(new Point(270, 300), labelPassword.getPreferredSize()));
+
+        //---- campoPassword ----
+        campoPassword.setFont(new Font("Inter", Font.PLAIN, 16));
         contentPane.add(campoPassword);
-        campoPassword.setBounds(360, 295, 125, campoPassword.getPreferredSize().height);
+        campoPassword.setBounds(380, 295, 250, campoPassword.getPreferredSize().height);
 
         //---- botonLogin ----
         botonLogin.setText("Iniciar sesi\u00f3n");
         botonLogin.setForeground(Color.black);
         botonLogin.addActionListener(e -> botonLogin(e));
         contentPane.add(botonLogin);
-        botonLogin.setBounds(new Rectangle(new Point(360, 375), botonLogin.getPreferredSize()));
+        botonLogin.setBounds(new Rectangle(new Point(510, 415), botonLogin.getPreferredSize()));
 
         //---- labelMensaje ----
         labelMensaje.setText("\u3164");
         contentPane.add(labelMensaje);
-        labelMensaje.setBounds(355, 250, 145, labelMensaje.getPreferredSize().height);
-
-        //---- button1 ----
-        button1.setText("text");
-        button1.setForeground(Color.black);
-        button1.addActionListener(e -> {
-			button1(e);
-		});
-        contentPane.add(button1);
-        button1.setBounds(135, 430, 120, button1.getPreferredSize().height);
+        labelMensaje.setBounds(290, 360, 180, labelMensaje.getPreferredSize().height);
 
         //---- checkRecordar ----
         checkRecordar.setText("Recordar usuario");
         checkRecordar.setForeground(new Color(0xff9966));
         contentPane.add(checkRecordar);
-        checkRecordar.setBounds(new Rectangle(new Point(480, 340), checkRecordar.getPreferredSize()));
+        checkRecordar.setBounds(new Rectangle(new Point(635, 360), checkRecordar.getPreferredSize()));
 
         //---- label2 ----
         label2.setText("Bienvenido");
         label2.setFont(new Font("Bernard MT Condensed", Font.PLAIN, 100));
         contentPane.add(label2);
         label2.setBounds(170, 35, 440, 95);
+        contentPane.add(hSpacer1);
+        hSpacer1.setBounds(150, 555, 730, hSpacer1.getPreferredSize().height);
 
         {
             // compute preferred size
@@ -335,8 +336,8 @@ public class LoginPrincipal extends JFrame {
     private JPasswordField campoPassword;
     private JButton botonLogin;
     private JLabel labelMensaje;
-    private JButton button1;
     private JCheckBox checkRecordar;
     private JLabel label2;
+    private JPanel hSpacer1;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }
