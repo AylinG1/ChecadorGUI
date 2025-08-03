@@ -10,12 +10,8 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.awt.*;
 import java.sql.SQLException;
-import java.sql.Time;
-import java.time.LocalTime;
-import java.util.Date;
-import java.time.DayOfWeek;
-import java.time.temporal.WeekFields;
-import java.util.Locale;
+
+
 /*
  * Created by JFormDesigner on Wed Jul 23 10:49:29 GMT-06:00 2025
  */
@@ -29,315 +25,32 @@ public class PrincipaloUsuario extends JFrame {
     public PrincipaloUsuario() {
         initComponents();
         agregarEventos();         // añadimos eventos de clic a los labels
-        mostrarPanel("card4");
+        mostrarPanel("card1");
         nombre.setText(SesionUsuario.usuarioActual);
+        lblRetardos.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                mostrarPanel("card3"); // Muestra el panelRetardos
+                cargarRetardosEnPanel(); // Llama la lógica para cargar los datos
+            }
+        });
 
     }
 
-    public void cargarAsistenciasEnPanel() {
-        LocalDate fechaActual = LocalDate.now();
-        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        String fechaFormateada = fechaActual.format(formato);
-        fechaact.setText("Fecha: " + fechaFormateada);
-
-        nombre3.setText(SesionUsuario.usuarioActual);
-        String usuario = nombre3.getText();
-
-        LocalDate inicioSemana = fechaActual.with(DayOfWeek.MONDAY);
-        LocalDate finSemana = fechaActual.with(DayOfWeek.SUNDAY);
-
-        String sql = "SELECT " +
-                "    rc.fecha, " +
-                "    CASE " +
-                "        WHEN rc.tipo_registro LIKE 'ENTRADA_1%' THEN t.entrada_1 " +
-                "        WHEN rc.tipo_registro LIKE 'ENTRADA_2%' THEN t.entrada_2 " +
-                "        WHEN rc.tipo_registro LIKE 'ENTRADA_3%' THEN t.entrada_3 " +
-                "        ELSE NULL " +
-                "    END AS entrada_valida, " +
-                "    rc.hora, " +
-                "    CASE " +
-                "        WHEN rc.tipo_registro LIKE 'ENTRADA_1%' THEN DATEDIFF(MINUTE, t.entrada_1, rc.hora) " +
-                "        WHEN rc.tipo_registro LIKE 'ENTRADA_2%' THEN DATEDIFF(MINUTE, t.entrada_2, rc.hora) " +
-                "        WHEN rc.tipo_registro LIKE 'ENTRADA_3%' THEN DATEDIFF(MINUTE, t.entrada_3, rc.hora) " +
-                "        ELSE NULL " +
-                "    END AS minutos_diferencia " +
-                "FROM Registros_Checada rc " +
-                "JOIN Empleados e ON rc.id_empleado = e.id " +
-                "JOIN Turnos t ON e.id_turno = t.id " +
-                "WHERE e.nombre = ? " +
-                "  AND rc.tipo_registro LIKE 'ENTRADA_%' " +
-                "  AND rc.fecha BETWEEN ? AND ? " +
-                "ORDER BY rc.fecha, entrada_valida";
-
-        BaseSQL base = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            base = new BaseSQL();
-            ps = base.conn.prepareStatement(sql);
-            ps.setString(1, usuario);
-            ps.setDate(2, java.sql.Date.valueOf(inicioSemana));
-            ps.setDate(3, java.sql.Date.valueOf(finSemana));
-            rs = ps.executeQuery();
-
-            DefaultTableModel model = new DefaultTableModel(
-                    new String[]{"Fecha", "Hora de Entrada", "Hora Checada", "Minutos Diferencia", "Clasificación"}, 0);
-
-            int totalRegistros = 0;
-            int asistencias = 0;
-            int retardos = 0;
-            int faltas = 0;
-
-            while (rs.next()) {
-                Object[] fila = new Object[5];
-
-                Date fecha = rs.getDate("fecha");
-                Time entradaValida = rs.getTime("entrada_valida");
-                Time horaChecada = rs.getTime("hora");
-                int minutosDif = rs.getInt("minutos_diferencia");
-
-                String clasificacion;
-                if (minutosDif <= 0) {
-                    clasificacion = "Asistencia";
-                    asistencias++;
-                } else if (minutosDif < 5) {
-                    clasificacion = "Retardo";
-                    retardos++;
-                } else {
-                    clasificacion = "Falta";
-                    faltas++;
-                }
-
-                fila[0] = fecha;
-                fila[1] = entradaValida;
-                fila[2] = horaChecada;
-                fila[3] = minutosDif;
-                fila[4] = clasificacion;
-
-                model.addRow(fila);
-                totalRegistros++;
-            }
-
-            table1.setModel(model);
-
-            if (totalRegistros > 0) {
-                double porcentajeAsistencias = ((double) asistencias / totalRegistros) * 100;
-                double porcentajeRetardos = ((double) retardos / totalRegistros) * 100;
-                double porcentajeFaltas = ((double) faltas / totalRegistros) * 100;
-
-                minacum.setText(String.format("Asistencias: %.2f%%", porcentajeAsistencias));
-                minacumretardo.setText(String.format("Retardos: %.2f%%", porcentajeRetardos));
-                minacumfalta.setText(String.format("Faltas: %.2f%%", porcentajeFaltas));
-
-                if (porcentajeAsistencias >= 90) {
-                    minacum.setForeground(Color.GREEN);
-                } else if (porcentajeAsistencias >= 70) {
-                    minacum.setForeground(Color.ORANGE);
-                } else {
-                    minacum.setForeground(Color.RED);
-                }
-
-                if (porcentajeRetardos < 5) {
-                    minacumretardo.setForeground(Color.GREEN);
-                } else if (porcentajeRetardos < 10) {
-                    minacumretardo.setForeground(Color.ORANGE);
-                } else {
-                    minacumretardo.setForeground(Color.RED);
-                }
-
-                if (porcentajeFaltas == 0) {
-                    minacumfalta.setForeground(Color.GREEN);
-                } else if (porcentajeFaltas < 5) {
-                    minacumfalta.setForeground(Color.ORANGE);
-                } else {
-                    minacumfalta.setForeground(Color.RED);
-                }
-
-            } else {
-                minacum.setText("Sin registros esta semana.");
-                minacumretardo.setText("Sin registros esta semana.");
-                minacumfalta.setText("Sin registros esta semana.");
-                minacum.setForeground(Color.GRAY);
-                minacumretardo.setForeground(Color.GRAY);
-                minacumfalta.setForeground(Color.GRAY);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error al cargar asistencias: " + e.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
-        } finally {
-            try { if (rs != null) rs.close(); } catch (SQLException ex) { ex.printStackTrace(); }
-            try { if (ps != null) ps.close(); } catch (SQLException ex) { ex.printStackTrace(); }
-            try { if (base != null) base.cerrar(); } catch (SQLException ex) { ex.printStackTrace(); }
-        }
-    }
-
-
-
-
-    public void cargarHorariosEnPanel() {
-        // Obtener el nombre del usuario desde el campo de texto
-        String usuario = nombre.getText();
-
-        // Consulta SQL para obtener el turno y los horarios de entrada/salida
-        String sql = "SELECT t.nombre AS turno, " +
-                "t.entrada_1, t.salida_1, " +
-                "t.entrada_2, t.salida_2, " +
-                "t.entrada_3, t.salida_3 " +
-                "FROM Empleados e " +
-                "JOIN Turnos t ON e.id_turno = t.id " +
-                "WHERE e.nombre = ?";
-
-        BaseSQL base = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            // Conexión a la base de datos usando tu clase BaseSQL
-            base = new BaseSQL();
-            ps = base.conn.prepareStatement(sql);
-            ps.setString(1, usuario); // Insertar el nombre del usuario como parámetro
-            rs = ps.executeQuery();
-
-            // Crear el modelo para la tabla con columnas de hora y días de la semana
-            DefaultTableModel model = new DefaultTableModel(
-                    new String[]{"Hora Inicio", "Hora Fin", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes"}, 0);
-
-            if (rs.next()) {
-                // Mostrar el nombre del turno en el JLabel
-                String turno = rs.getString("turno");
-                labelTurno.setText("Turno: " + turno);
-
-                // Obtener las horas de entrada y salida para hasta 3 bloques
-                Time[] entradas = {
-                        rs.getTime("entrada_1"),
-                        rs.getTime("entrada_2"),
-                        rs.getTime("entrada_3")
-                };
-                Time[] salidas = {
-                        rs.getTime("salida_1"),
-                        rs.getTime("salida_2"),
-                        rs.getTime("salida_3")
-                };
-
-                for (int i = 0; i < 3; i++) {
-                    if (entradas[i] != null && salidas[i] != null) {
-                        // Convertir las horas a LocalTime
-                        LocalTime inicio = entradas[i].toLocalTime();
-                        LocalTime fin = salidas[i].toLocalTime();
-
-                        // Verificar si el horario cruza la medianoche
-                        boolean cruzaMedianoche = fin.isBefore(inicio);
-                        int duracionHoras = (int) java.time.Duration.between(inicio, fin).toHours();
-                        if (cruzaMedianoche) {
-                            duracionHoras = 24 - inicio.getHour() + fin.getHour(); // Ejemplo: 22 a 6 → 8 horas
-                        }
-
-                        // Crear filas por cada hora de trabajo
-                        for (int h = 0; h < duracionHoras; h++) {
-                            LocalTime horaActual = inicio.plusHours(h);
-                            LocalTime horaFin = horaActual.plusHours(1);
-                            if (horaFin.getHour() == 0 && cruzaMedianoche) {
-                                horaFin = LocalTime.MIDNIGHT;
-                            }
-
-                            Object[] fila = new Object[7];
-                            fila[0] = horaActual; // Columna Hora Inicio
-                            fila[1] = horaFin;    // Columna Hora Fin
-                            for (int d = 2; d < 7; d++) {
-                                fila[d] = "X"; // Marcar como laborable en todos los días
-                            }
-                            model.addRow(fila);
-                        }
-
-                        // Si hay bloques adicionales, calcular y mostrar las horas de descanso
-                        if (i < 2 && entradas[i + 1] != null) {
-                            LocalTime salidaActual = salidas[i].toLocalTime();
-                            LocalTime siguienteEntrada = entradas[i + 1].toLocalTime();
-
-                            // Ajustar si el descanso cruza medianoche
-                            if (siguienteEntrada.isBefore(salidaActual)) {
-                                siguienteEntrada = siguienteEntrada.plusHours(24);
-                            }
-
-                            int descansoHoras = (int) java.time.Duration.between(salidaActual, siguienteEntrada).toHours();
-
-                            for (int h = 0; h < descansoHoras; h++) {
-                                LocalTime descansoInicio = salidaActual.plusHours(h);
-                                LocalTime descansoFin = descansoInicio.plusHours(1);
-                                if (descansoFin.getHour() == 0 && descansoFin.isAfter(descansoInicio)) {
-                                    descansoFin = LocalTime.MIDNIGHT;
-                                }
-
-                                Object[] filaDescanso = new Object[7];
-                                filaDescanso[0] = descansoInicio; // Columna Hora Inicio
-                                filaDescanso[1] = descansoFin;    // Columna Hora Fin
-                                for (int d = 2; d < 7; d++) {
-                                    filaDescanso[d] = "DESCANSO"; // Marcar descanso
-                                }
-                                model.addRow(filaDescanso);
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Aplicar el modelo a la tabla
-            tablaHorarios.setModel(model);
-
-            // Obtener el día actual (1=Lunes, ..., 7=Domingo)
-            int diaActual = LocalDate.now().getDayOfWeek().getValue();
-
-            // Si es de lunes a viernes, pintar la columna del día actual de azul claro
-            if (diaActual >= 1 && diaActual <= 5) {
-                tablaHorarios.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-                    @Override
-                    public Component getTableCellRendererComponent(JTable table, Object value,
-                                                                   boolean isSelected, boolean hasFocus,
-                                                                   int row, int column) {
-                        Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
-                        // La columna del día actual está desplazada por 1 (porque columnas 0 y 1 son horas)
-                        if (column == diaActual + 1) {
-                            c.setBackground(new Color(173, 216, 230)); // Azul claro
-                        } else {
-                            c.setBackground(Color.WHITE);
-                        }
-
-                        return c;
-                    }
-                });
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error al cargar el horario del empleado: " + e.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
-        } finally {
-            try { if (rs != null) rs.close(); } catch (SQLException ex) { ex.printStackTrace(); }
-            try { if (ps != null) ps.close(); } catch (SQLException ex) { ex.printStackTrace(); }
-            try { if (base != null) base.cerrar(); } catch (SQLException ex) { ex.printStackTrace(); }
-        }
-    }
 
 
     public void cargarRetardosEnPanel() {
-        // === Fecha actual ===
+        // === Fecha ===
         LocalDate fechaActual = LocalDate.now();
-        java.time.format.DateTimeFormatter formato = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         String fechaFormateada = fechaActual.format(formato);
-        fechaact2.setText("Fecha: " + fechaFormateada);  // Label de la fecha
+        fechaact2.setText("Fecha: " + fechaFormateada);  // Asegúrate que sea el label correcto
 
-        // === Usuario actual ===
+        // === Usuario ===
         nombre2.setText(SesionUsuario.usuarioActual);
+
         String usuario = nombre2.getText();
 
-        // === Cálculo de semana actual y año ===
-        int semanaActual = fechaActual.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());
-        int añoActual = fechaActual.getYear();
-
-        // === Consulta SQL con filtro por semana ===
         String sql = "SELECT " +
                 "    rc.fecha, " +
                 "    CASE " +
@@ -366,8 +79,6 @@ public class PrincipaloUsuario extends JFrame {
                 "        (rc.tipo_registro LIKE 'ENTRADA_2%' AND t.entrada_2 IS NOT NULL AND rc.hora > t.entrada_2) OR " +
                 "        (rc.tipo_registro LIKE 'ENTRADA_3%' AND t.entrada_3 IS NOT NULL AND rc.hora > t.entrada_3) " +
                 "      ) " +
-                "  AND DATEPART(WEEK, rc.fecha) = ? " +
-                "  AND DATEPART(YEAR, rc.fecha) = ? " +
                 "ORDER BY rc.fecha, entrada_valida";
 
         BaseSQL base = null;
@@ -378,12 +89,10 @@ public class PrincipaloUsuario extends JFrame {
             base = new BaseSQL();
             ps = base.conn.prepareStatement(sql);
             ps.setString(1, usuario);
-            ps.setInt(2, semanaActual);
-            ps.setInt(3, añoActual);
             rs = ps.executeQuery();
 
             DefaultTableModel model = new DefaultTableModel(
-                    new String[]{"Fecha", "Entrada Esperada", "Hora Checada", "Min. de Retraso", "Tipo de Registro"}, 0);
+                    new String[]{"Fecha", "Entrada Válida", "Hora Checada", "Minutos Retraso Bruto", "Tipo Registro"}, 0);
 
             int minutosAcumuladosTotales = 0;
 
@@ -402,8 +111,8 @@ public class PrincipaloUsuario extends JFrame {
                 }
             }
 
-            table2.setModel(model);
-            minacum2.setText("Minutos acumulados: " + minutosAcumuladosTotales);
+            table2.setModel(model); // Usa la tabla en tu panel
+            minacum2.setText("Minutos acumulados : " + minutosAcumuladosTotales);
 
             if (minutosAcumuladosTotales > 15) {
                 minacum2.setForeground(Color.RED);
@@ -420,7 +129,9 @@ public class PrincipaloUsuario extends JFrame {
             try { if (ps != null) ps.close(); } catch (SQLException ex) { ex.printStackTrace(); }
             try { if (base != null) base.cerrar(); } catch (SQLException ex) { ex.printStackTrace(); }
         }
+
     }
+
 
     private void agregarEventos() {
         // Hacemos que los labels se vean como clicables
@@ -428,24 +139,23 @@ public class PrincipaloUsuario extends JFrame {
         label3.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         lblRetardos.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        lblRetardos.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                mostrarPanel("card3"); // Muestra el panelRetardos
-                cargarRetardosEnPanel(); // Llama la lógica para cargar los datos
-            }
-        });
-        label3.addMouseListener(new MouseAdapter() {
-
-            public void mouseClicked(MouseEvent e) {
-                mostrarPanel("card2"); // Horario
-                cargarHorariosEnPanel();
-            }
-        });
+        // Agregamos eventos a cada label para cambiar de panel
         label1.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 mostrarPanel("card1"); // Asistencia
-                cargarAsistenciasEnPanel();
+            }
+        });
+
+        label3.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                mostrarPanel("card2"); // Horario
+            }
+        });
+
+        lblRetardos.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                mostrarPanel("card3"); // Retardos
+                cargarRetardosEnPanel();
             }
         });
     }
@@ -477,7 +187,7 @@ public class PrincipaloUsuario extends JFrame {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
-        // Generated using JFormDesigner Evaluation license - Juan
+        // Generated using JFormDesigner Evaluation license - liz
         panel3 = new JPanel();
         panelMenu = new JPanel();
         label1 = new JLabel();
@@ -533,13 +243,12 @@ public class PrincipaloUsuario extends JFrame {
 
         //======== panel3 ========
         {
-            panel3.setBorder ( new javax . swing. border .CompoundBorder ( new javax . swing. border .TitledBorder ( new javax . swing
-            . border .EmptyBorder ( 0, 0 ,0 , 0) ,  "JFor\u006dDesi\u0067ner \u0045valu\u0061tion" , javax. swing .border . TitledBorder
-            . CENTER ,javax . swing. border .TitledBorder . BOTTOM, new java. awt .Font ( "Dia\u006cog", java .
-            awt . Font. BOLD ,12 ) ,java . awt. Color .red ) ,panel3. getBorder () ) )
-            ; panel3. addPropertyChangeListener( new java. beans .PropertyChangeListener ( ){ @Override public void propertyChange (java . beans. PropertyChangeEvent e
-            ) { if( "bord\u0065r" .equals ( e. getPropertyName () ) )throw new RuntimeException( ) ;} } )
-            ;
+            panel3.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax. swing. border
+            . EmptyBorder( 0, 0, 0, 0) , "JFor\u006dDesi\u0067ner \u0045valu\u0061tion", javax. swing. border. TitledBorder. CENTER, javax
+            . swing. border. TitledBorder. BOTTOM, new java .awt .Font ("Dia\u006cog" ,java .awt .Font .BOLD ,
+            12 ), java. awt. Color. red) ,panel3. getBorder( )) ); panel3. addPropertyChangeListener (new java. beans
+            . PropertyChangeListener( ){ @Override public void propertyChange (java .beans .PropertyChangeEvent e) {if ("bord\u0065r" .equals (e .
+            getPropertyName () )) throw new RuntimeException( ); }} );
             panel3.setLayout(new BorderLayout());
 
             //======== panelMenu ========
@@ -720,7 +429,7 @@ public class PrincipaloUsuario extends JFrame {
                     //======== panel2 ========
                     {
                         panel2.setForeground(new Color(0xccffcc));
-                        panel2.setBackground(new Color(0xccffcc));
+                        panel2.setBackground(new Color(0xffb096));
                         panel2.setLayout(null);
 
                         //---- minacum ----
@@ -984,7 +693,7 @@ public class PrincipaloUsuario extends JFrame {
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
-    // Generated using JFormDesigner Evaluation license - Juan
+    // Generated using JFormDesigner Evaluation license - liz
     private JPanel panel3;
     private JPanel panelMenu;
     private JLabel label1;

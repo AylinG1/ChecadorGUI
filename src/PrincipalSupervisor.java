@@ -267,7 +267,7 @@ public class PrincipalSupervisor extends JFrame {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
-        // Generated using JFormDesigner Evaluation license - Juan
+        // Generated using JFormDesigner Evaluation license - liz
         panel4 = new JPanel();
         panelMenu = new JPanel();
         separator1 = new JSeparator();
@@ -330,12 +330,12 @@ public class PrincipalSupervisor extends JFrame {
 
         //======== panel4 ========
         {
-            panel4.setBorder ( new javax . swing. border .CompoundBorder ( new javax . swing. border .TitledBorder ( new javax . swing. border .EmptyBorder
-            ( 0, 0 ,0 , 0) ,  "JF\u006frmD\u0065sig\u006eer \u0045val\u0075ati\u006fn" , javax. swing .border . TitledBorder. CENTER ,javax . swing. border
-            .TitledBorder . BOTTOM, new java. awt .Font ( "Dia\u006cog", java .awt . Font. BOLD ,12 ) ,java . awt
-            . Color .red ) ,panel4. getBorder () ) ); panel4. addPropertyChangeListener( new java. beans .PropertyChangeListener ( ){ @Override public void
-            propertyChange (java . beans. PropertyChangeEvent e) { if( "\u0062ord\u0065r" .equals ( e. getPropertyName () ) )throw new RuntimeException( )
-            ;} } );
+            panel4.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax. swing.
+            border. EmptyBorder( 0, 0, 0, 0) , "JF\u006frmD\u0065sig\u006eer \u0045val\u0075ati\u006fn", javax. swing. border. TitledBorder. CENTER
+            , javax. swing. border. TitledBorder. BOTTOM, new java .awt .Font ("Dia\u006cog" ,java .awt .Font
+            .BOLD ,12 ), java. awt. Color. red) ,panel4. getBorder( )) ); panel4. addPropertyChangeListener (
+            new java. beans. PropertyChangeListener( ){ @Override public void propertyChange (java .beans .PropertyChangeEvent e) {if ("\u0062ord\u0065r"
+            .equals (e .getPropertyName () )) throw new RuntimeException( ); }} );
             panel4.setLayout(new BorderLayout());
 
             //======== panelMenu ========
@@ -846,7 +846,7 @@ public class PrincipalSupervisor extends JFrame {
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
-    // Generated using JFormDesigner Evaluation license - Juan
+    // Generated using JFormDesigner Evaluation license - liz
     private JPanel panel4;
     private JPanel panelMenu;
     private JSeparator separator1;
