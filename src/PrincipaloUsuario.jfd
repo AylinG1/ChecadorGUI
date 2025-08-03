@@ -253,7 +253,7 @@ new FormModel {
 						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
 							name: "panel2"
 							"foreground": new java.awt.Color( 204, 255, 204, 255 )
-							"background": new java.awt.Color( 204, 255, 204, 255 )
+							"background": new java.awt.Color( 255, 176, 150, 255 )
 							add( new FormComponent( "javax.swing.JLabel" ) {
 								name: "minacum"
 								"text": "text"

@@ -1,0 +1,105 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.7" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "panelBase"
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.CardLayout ) ) {
+					name: "panelInicio"
+					"foreground": new java.awt.Color( 248, 240, 222, 255 )
+					"background": new java.awt.Color( 248, 240, 222, 255 )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
+						name: "panelSeguridadYrol"
+						"background": new java.awt.Color( 248, 240, 222, 255 )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label10"
+							"foreground": &Color0 new java.awt.Color( 242, 135, 107, 255 )
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 155
+							"height": 16
+							"x": 15
+							"y": 65
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "button1"
+							"text": "Entrar"
+							"background": new java.awt.Color( 255, 129, 66, 255 )
+							"font": new java.awt.Font( "Franklin Gothic Demi Cond", 0, 12 )
+							"foreground": new java.awt.Color( 255, 255, 255, 255 )
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "Entrar", true ) )
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"x": 320
+							"y": 300
+							"height": 20
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label1"
+							"icon": new com.jformdesigner.model.SwingIcon( 0, "/loi.jpg" )
+							"font": new java.awt.Font( "Impact", 0, 12 )
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"x": 10
+							"y": 5
+							"width": 705
+							"height": 375
+						} )
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "card2"
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
+						name: "panelBitácoraAct"
+						"background": new java.awt.Color( 248, 240, 222, 255 )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label7"
+							"text": "Bitácora de actividades"
+							"foreground": #Color0
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"x": 20
+							"y": 45
+							"width": 160
+							"height": 25
+						} )
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "card3"
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
+						name: "panelReglas"
+						"background": new java.awt.Color( 248, 240, 222, 255 )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label9"
+							"text": "text"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"x": 525
+							"y": 320
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label8"
+							"text": "Reglas"
+							"foreground": #Color0
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 102
+							"height": 16
+							"x": 10
+							"y": 30
+						} )
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "card4"
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+				"x": -10
+				"y": -5
+				"height": 380
+				"width": 730
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 20, 0 )
+			"size": new java.awt.Dimension( 705, 405 )
+		} )
+	}
+}
+
