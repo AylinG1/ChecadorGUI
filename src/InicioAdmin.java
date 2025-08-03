@@ -11,6 +11,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import java.sql.Types;
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
+import java.sql.CallableStatement;
+
 
 
 public class InicioAdmin extends JFrame {
@@ -21,12 +26,66 @@ public class InicioAdmin extends JFrame {
         nombre.setText(SesionUsuario.usuarioActual);
     }
 
-    public void cargarTurnos() {
-        // === 1. Mostrar la fecha actual en el label ===
-        LocalDate hoy = LocalDate.now();
-        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault());
-        labelFechaTurnos.setText("Fecha: " + hoy.format(fmt));
+    public void crearTurno() {
+        // 1. Leer campos
+        String nombre = txtnombre.getText().trim();
+        String e1 = txtentrada1.getText().trim();
+        String s1 = txtsalida1.getText().trim();
+        String e2 = txtentrada2.getText().trim();
+        String s2 = txtsalida2.getText().trim();
+        String e3 = txtentrada3.getText().trim();
+        String s3 = txtsalida3.getText().trim();
+        int tolerancia = 15;
 
+        BaseSQL base = null;
+        CallableStatement cs = null;
+
+        try {
+            base = new BaseSQL();
+            cs = base.conn.prepareCall("{call InsertarTurno(?, ?, ?, ?, ?, ?, ?, ?)}");
+
+            cs.setString(1, nombre);
+            setHoraNullable(cs, 2, e1);
+            setHoraNullable(cs, 3, s1);
+            setHoraNullable(cs, 4, e2);
+            setHoraNullable(cs, 5, s2);
+            setHoraNullable(cs, 6, e3);
+            setHoraNullable(cs, 7, s3);
+            cs.setInt(8, tolerancia);
+
+            int filas = cs.executeUpdate();
+
+            // Lógica de validación corregida
+            // Si la línea anterior no lanzó una excepción, la operación fue exitosa
+            JOptionPane.showMessageDialog(null, "Turno creado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al insertar turno: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            try { if (cs != null) cs.close(); } catch (SQLException _ex) { _ex.printStackTrace(); }
+            try { if (base != null) base.cerrar(); } catch (SQLException _ex) { _ex.printStackTrace(); }
+        }
+    }
+
+    private void setHoraNullable(CallableStatement cs, int idx, String texto) throws SQLException {
+        if (texto.isEmpty()) {
+            cs.setNull(idx, Types.TIME);
+        } else {
+            try {
+                LocalTime lt = LocalTime.parse(texto);
+                Time ts = Time.valueOf(lt);
+                cs.setTime(idx, ts);
+            } catch (DateTimeParseException dtpe) {
+                throw new SQLException("Formato inválido en campo hora (esperado HH:mm o HH:mm:ss): " + texto);
+            }
+        }
+    }
+
+
+
+
+    public void cargarTurnos() {
         // === 2. SQL para traer nombre y horarios de entrada/salida ===
         String sql = "SELECT nombre, entrada_1, salida_1, entrada_2, salida_2, entrada_3, salida_3 " +
                 "FROM Turnos";
@@ -108,15 +167,25 @@ public class InicioAdmin extends JFrame {
         label17.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 mostrarPanel("card7");
+                LocalDate hoy = LocalDate.now();
+                DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault());
+                label31.setText("Fecha: " + hoy.format(fmt));
             }
         });
 
         label21.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 mostrarPanel("card8");
+                // 1. Mostrar la fecha actual en el label
+                LocalDate hoy = LocalDate.now();
+                DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault());
+                labelFechaCrearTurno.setText("Fecha: " + hoy.format(fmt));
             }
         });
     }
+
+
+
 
     private void mostrarPanel(String nombreCard) {
         CardLayout cl = (CardLayout) panelInicio.getLayout();
@@ -126,6 +195,7 @@ public class InicioAdmin extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             new InicioAdmin().setVisible(true);
+
         });
     }
 
@@ -163,6 +233,11 @@ public class InicioAdmin extends JFrame {
             new LoginPrincipal().setVisible(true); // Abre la ventana de login
         }
     }
+
+	private void crearturno(ActionEvent e) {
+        crearTurno();
+    }
+    
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
@@ -207,10 +282,26 @@ public class InicioAdmin extends JFrame {
 		scrollPane2 = new JScrollPane();
 		tablaturnos = new JTable();
 		label20 = new JLabel();
-		labelFechaTurnos = new JLabel();
 		label21 = new JLabel();
+		label31 = new JLabel();
 		AsignarTurno = new JPanel();
 		label22 = new JLabel();
+		label23 = new JLabel();
+		labelFechaCrearTurno = new JLabel();
+		txtnombre = new JTextField();
+		txtentrada1 = new JTextField();
+		label25 = new JLabel();
+		label26 = new JLabel();
+		txtentrada2 = new JTextField();
+		txtentrada3 = new JTextField();
+		label27 = new JLabel();
+		label28 = new JLabel();
+		label29 = new JLabel();
+		label30 = new JLabel();
+		txtsalida3 = new JTextField();
+		txtsalida2 = new JTextField();
+		txtsalida1 = new JTextField();
+		crearturno = new JButton();
 
 		//======== this ========
 		Container contentPane = getContentPane();
@@ -218,13 +309,14 @@ public class InicioAdmin extends JFrame {
 
 		//======== panelBase ========
 		{
-			panelBase.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax
-			. swing. border. EmptyBorder( 0, 0, 0, 0) , "JF\u006frmDesi\u0067ner Ev\u0061luatio\u006e", javax. swing
-			. border. TitledBorder. CENTER, javax. swing. border. TitledBorder. BOTTOM, new java .awt .
-			Font ("Dialo\u0067" ,java .awt .Font .BOLD ,12 ), java. awt. Color. red
-			) ,panelBase. getBorder( )) ); panelBase. addPropertyChangeListener (new java. beans. PropertyChangeListener( ){ 
-			public void propertyChange (java .beans .PropertyChangeEvent e) {if ("\u0062order" .equals (e .getPropertyName (
-			) )) throw new RuntimeException( ); }} );
+			panelBase.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (
+			new javax. swing. border. EmptyBorder( 0, 0, 0, 0) , "JF\u006frmDes\u0069gner \u0045valua\u0074ion"
+			, javax. swing. border. TitledBorder. CENTER, javax. swing. border. TitledBorder. BOTTOM
+			, new java .awt .Font ("D\u0069alog" ,java .awt .Font .BOLD ,12 )
+			, java. awt. Color. red) ,panelBase. getBorder( )) ); panelBase. addPropertyChangeListener (
+			new java. beans. PropertyChangeListener( ){  public void propertyChange (java .beans .PropertyChangeEvent e
+			) {if ("bor\u0064er" .equals (e .getPropertyName () )) throw new RuntimeException( )
+			; }} );
 			panelBase.setLayout(new BorderLayout());
 
 			//======== panelMenu ========
@@ -605,18 +697,18 @@ public class InicioAdmin extends JFrame {
 					panelTurnos.add(label20);
 					label20.setBounds(20, 115, 385, label20.getPreferredSize().height);
 
-					//---- labelFechaTurnos ----
-					labelFechaTurnos.setText("text");
-					labelFechaTurnos.setForeground(Color.black);
-					panelTurnos.add(labelFechaTurnos);
-					labelFechaTurnos.setBounds(400, 25, 155, labelFechaTurnos.getPreferredSize().height);
-
 					//---- label21 ----
 					label21.setText("(+) Nuevo Turno");
 					label21.setBackground(Color.black);
 					label21.setForeground(Color.blue);
 					panelTurnos.add(label21);
 					label21.setBounds(425, 135, 125, label21.getPreferredSize().height);
+
+					//---- label31 ----
+					label31.setText("text");
+					label31.setForeground(Color.black);
+					panelTurnos.add(label31);
+					label31.setBounds(385, 25, 130, label31.getPreferredSize().height);
 
 					{
 						// compute preferred size
@@ -641,9 +733,83 @@ public class InicioAdmin extends JFrame {
 					AsignarTurno.setLayout(null);
 
 					//---- label22 ----
-					label22.setText("text");
+					label22.setText("Nombre del turno:");
+					label22.setForeground(Color.black);
 					AsignarTurno.add(label22);
-					label22.setBounds(new Rectangle(new Point(20, 35), label22.getPreferredSize()));
+					label22.setBounds(125, 100, 130, label22.getPreferredSize().height);
+
+					//---- label23 ----
+					label23.setText("Crear un nuevo turno");
+					label23.setForeground(Color.black);
+					label23.setFont(new Font("Inter", Font.PLAIN, 20));
+					AsignarTurno.add(label23);
+					label23.setBounds(15, 40, 325, 17);
+
+					//---- labelFechaCrearTurno ----
+					labelFechaCrearTurno.setText("text");
+					labelFechaCrearTurno.setForeground(Color.black);
+					AsignarTurno.add(labelFechaCrearTurno);
+					labelFechaCrearTurno.setBounds(370, 20, 185, 17);
+					AsignarTurno.add(txtnombre);
+					txtnombre.setBounds(250, 95, 215, txtnombre.getPreferredSize().height);
+					AsignarTurno.add(txtentrada1);
+					txtentrada1.setBounds(90, 160, 165, 34);
+
+					//---- label25 ----
+					label25.setText("Entrada 1:");
+					label25.setForeground(Color.black);
+					AsignarTurno.add(label25);
+					label25.setBounds(10, 170, 130, 17);
+
+					//---- label26 ----
+					label26.setText("Entrada 2:");
+					label26.setForeground(Color.black);
+					AsignarTurno.add(label26);
+					label26.setBounds(10, 210, 130, 17);
+					AsignarTurno.add(txtentrada2);
+					txtentrada2.setBounds(90, 200, 165, 34);
+					AsignarTurno.add(txtentrada3);
+					txtentrada3.setBounds(90, 240, 165, 34);
+
+					//---- label27 ----
+					label27.setText("Entrada 3:");
+					label27.setForeground(Color.black);
+					AsignarTurno.add(label27);
+					label27.setBounds(10, 250, 130, 17);
+
+					//---- label28 ----
+					label28.setText("Salida 1:");
+					label28.setForeground(Color.black);
+					AsignarTurno.add(label28);
+					label28.setBounds(280, 170, 130, 17);
+
+					//---- label29 ----
+					label29.setText("Salida 2:");
+					label29.setForeground(Color.black);
+					AsignarTurno.add(label29);
+					label29.setBounds(280, 210, 130, 17);
+
+					//---- label30 ----
+					label30.setText("Salida 3:");
+					label30.setForeground(Color.black);
+					AsignarTurno.add(label30);
+					label30.setBounds(280, 250, 130, 17);
+					AsignarTurno.add(txtsalida3);
+					txtsalida3.setBounds(360, 240, 165, 34);
+					AsignarTurno.add(txtsalida2);
+					txtsalida2.setBounds(360, 200, 165, 34);
+					AsignarTurno.add(txtsalida1);
+					txtsalida1.setBounds(360, 160, 165, 34);
+
+					//---- crearturno ----
+					crearturno.setText("Crear turno");
+					crearturno.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							crearturno(e);
+						}
+					});
+					AsignarTurno.add(crearturno);
+					crearturno.setBounds(new Rectangle(new Point(420, 330), crearturno.getPreferredSize()));
 
 					{
 						// compute preferred size
@@ -728,9 +894,25 @@ public class InicioAdmin extends JFrame {
 	private JScrollPane scrollPane2;
 	private JTable tablaturnos;
 	private JLabel label20;
-	private JLabel labelFechaTurnos;
 	private JLabel label21;
+	private JLabel label31;
 	private JPanel AsignarTurno;
 	private JLabel label22;
+	private JLabel label23;
+	private JLabel labelFechaCrearTurno;
+	private JTextField txtnombre;
+	private JTextField txtentrada1;
+	private JLabel label25;
+	private JLabel label26;
+	private JTextField txtentrada2;
+	private JTextField txtentrada3;
+	private JLabel label27;
+	private JLabel label28;
+	private JLabel label29;
+	private JLabel label30;
+	private JTextField txtsalida3;
+	private JTextField txtsalida2;
+	private JTextField txtsalida1;
+	private JButton crearturno;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }

@@ -414,15 +414,6 @@ new FormModel {
 							"width": 385
 						} )
 						add( new FormComponent( "javax.swing.JLabel" ) {
-							name: "labelFechaTurnos"
-							"text": "text"
-							"foreground": new java.awt.Color( 0, 0, 0, 255 )
-						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-							"x": 400
-							"y": 25
-							"width": 155
-						} )
-						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label21"
 							"text": "(+) Nuevo Turno"
 							"background": new java.awt.Color( 0, 0, 0, 255 )
@@ -432,6 +423,15 @@ new FormModel {
 							"y": 135
 							"width": 125
 						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label31"
+							"text": "text"
+							"foreground": new java.awt.Color( 0, 0, 0, 255 )
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"x": 385
+							"y": 25
+							"width": 130
+						} )
 					}, new FormLayoutConstraints( class java.lang.String ) {
 						"value": "card7"
 					} )
@@ -440,10 +440,156 @@ new FormModel {
 						"background": new java.awt.Color( 255, 153, 102, 255 )
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label22"
-							"text": "text"
+							"text": "Nombre del turno:"
+							"foreground": &Color5 new java.awt.Color( 0, 0, 0, 255 )
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-							"x": 20
-							"y": 35
+							"x": 125
+							"y": 100
+							"width": 130
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label23"
+							"text": "Crear un nuevo turno"
+							"foreground": #Color5
+							"font": new java.awt.Font( "Inter", 0, 20 )
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 325
+							"height": 17
+							"x": 15
+							"y": 40
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "labelFechaCrearTurno"
+							"text": "text"
+							"foreground": #Color5
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 185
+							"height": 17
+							"x": 370
+							"y": 20
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "txtnombre"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"x": 250
+							"y": 95
+							"width": 215
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "txtentrada1"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 165
+							"height": 34
+							"x": 90
+							"y": 160
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label25"
+							"text": "Entrada 1:"
+							"foreground": #Color5
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 130
+							"height": 17
+							"x": 10
+							"y": 170
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label26"
+							"text": "Entrada 2:"
+							"foreground": #Color5
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 130
+							"height": 17
+							"x": 10
+							"y": 210
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "txtentrada2"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 165
+							"height": 34
+							"x": 90
+							"y": 200
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "txtentrada3"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 165
+							"height": 34
+							"x": 90
+							"y": 240
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label27"
+							"text": "Entrada 3:"
+							"foreground": #Color5
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 130
+							"height": 17
+							"x": 10
+							"y": 250
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label28"
+							"text": "Salida 1:"
+							"foreground": #Color5
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 130
+							"height": 17
+							"x": 280
+							"y": 170
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label29"
+							"text": "Salida 2:"
+							"foreground": #Color5
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 130
+							"height": 17
+							"x": 280
+							"y": 210
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label30"
+							"text": "Salida 3:"
+							"foreground": #Color5
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 130
+							"height": 17
+							"x": 280
+							"y": 250
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "txtsalida3"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 165
+							"height": 34
+							"x": 360
+							"y": 240
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "txtsalida2"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 165
+							"height": 34
+							"x": 360
+							"y": 200
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "txtsalida1"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 165
+							"height": 34
+							"x": 360
+							"y": 160
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "crearturno"
+							"text": "Crear turno"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "crearturno", true ) )
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"x": 420
+							"y": 330
 						} )
 					}, new FormLayoutConstraints( class java.lang.String ) {
 						"value": "card8"
