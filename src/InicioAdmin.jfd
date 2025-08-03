@@ -206,6 +206,28 @@ new FormModel {
 						"x": 15
 						"y": 15
 					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label24"
+						"text": "Empleados"
+						"foreground": #Color0
+						"cursor": #Cursor0
+						"font": #Font0
+						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "label1MouseClicked", true ) )
+					}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+						"width": 140
+						"height": 18
+						"x": 65
+						"y": 320
+					} )
+					add( new FormComponent( "javax.swing.JSeparator" ) {
+						name: "separator8"
+						"foreground": #Color1
+					}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+						"width": 195
+						"height": 20
+						"x": 10
+						"y": 355
+					} )
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "West"
 				} )
@@ -386,7 +408,7 @@ new FormModel {
 							name: "label18"
 							"text": "Gestión de turnos"
 							"foreground": #Color4
-							"font": new java.awt.Font( "Inter", 0, 20 )
+							"font": &Font2 new java.awt.Font( "Inter", 0, 20 )
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 							"width": 250
 							"height": 40
@@ -399,15 +421,15 @@ new FormModel {
 								name: "tablaturnos"
 							} )
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-							"x": 30
+							"x": 15
 							"y": 200
-							"width": 515
+							"width": 540
 							"height": 230
 						} )
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label20"
-							"text": "Visualiza, crea y asigna turnos a los empleados."
-							"foreground": new java.awt.Color( 0, 0, 0, 255 )
+							"text": "Visualiza y crea turnos"
+							"foreground": &Color5 new java.awt.Color( 0, 0, 0, 255 )
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 							"x": 20
 							"y": 115
@@ -416,7 +438,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label21"
 							"text": "(+) Nuevo Turno"
-							"background": new java.awt.Color( 0, 0, 0, 255 )
+							"background": &Color6 new java.awt.Color( 0, 0, 0, 255 )
 							"foreground": sfield java.awt.Color blue
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 							"x": 425
@@ -441,7 +463,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label22"
 							"text": "Nombre del turno:"
-							"foreground": &Color5 new java.awt.Color( 0, 0, 0, 255 )
+							"foreground": &Color7 new java.awt.Color( 0, 0, 0, 255 )
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 							"x": 125
 							"y": 100
@@ -450,8 +472,8 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label23"
 							"text": "Crear un nuevo turno"
-							"foreground": #Color5
-							"font": new java.awt.Font( "Inter", 0, 20 )
+							"foreground": #Color7
+							"font": &Font3 new java.awt.Font( "Inter", 0, 20 )
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 							"width": 325
 							"height": 17
@@ -461,7 +483,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "labelFechaCrearTurno"
 							"text": "text"
-							"foreground": #Color5
+							"foreground": #Color7
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 							"width": 185
 							"height": 17
@@ -486,7 +508,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label25"
 							"text": "Entrada 1:"
-							"foreground": #Color5
+							"foreground": #Color7
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 							"width": 130
 							"height": 17
@@ -496,7 +518,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label26"
 							"text": "Entrada 2:"
-							"foreground": #Color5
+							"foreground": #Color7
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 							"width": 130
 							"height": 17
@@ -522,7 +544,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label27"
 							"text": "Entrada 3:"
-							"foreground": #Color5
+							"foreground": #Color7
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 							"width": 130
 							"height": 17
@@ -532,7 +554,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label28"
 							"text": "Salida 1:"
-							"foreground": #Color5
+							"foreground": #Color7
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 							"width": 130
 							"height": 17
@@ -542,7 +564,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label29"
 							"text": "Salida 2:"
-							"foreground": #Color5
+							"foreground": #Color7
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 							"width": 130
 							"height": 17
@@ -552,7 +574,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label30"
 							"text": "Salida 3:"
-							"foreground": #Color5
+							"foreground": #Color7
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 							"width": 130
 							"height": 17
@@ -593,6 +615,158 @@ new FormModel {
 						} )
 					}, new FormLayoutConstraints( class java.lang.String ) {
 						"value": "card8"
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
+						name: "panelempleados"
+						"background": new java.awt.Color( 255, 153, 102, 255 )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "labelFechaTurnos"
+							"text": "text"
+							"foreground": new java.awt.Color( 0, 0, 0, 255 )
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"x": 415
+							"y": 25
+							"width": 140
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label32"
+							"text": "(+) Nuevo Empleado"
+							"background": #Color6
+							"foreground": sfield java.awt.Color blue
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 140
+							"height": 17
+							"x": 410
+							"y": 150
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label33"
+							"text": "Visualiza, crea y asigna turnos a los empleados."
+							"foreground": #Color5
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 385
+							"height": 17
+							"x": 20
+							"y": 130
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label34"
+							"text": "Gestión de empleados"
+							"foreground": #Color4
+							"font": #Font2
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 250
+							"height": 40
+							"x": 20
+							"y": 35
+						} )
+						add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+							name: "scrollPane3"
+							add( new FormComponent( "javax.swing.JTable" ) {
+								name: "tablaempleados"
+							} )
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"x": 15
+							"y": 205
+							"height": 250
+							"width": 525
+						} )
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "card12"
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
+						name: "AsignarEmpleados"
+						"foreground": new java.awt.Color( 255, 153, 102, 255 )
+						"background": new java.awt.Color( 255, 153, 102, 255 )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label35"
+							"text": "Crear un nuevo perfil de empleado"
+							"foreground": #Color7
+							"font": #Font3
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 340
+							"height": 35
+							"x": 15
+							"y": 55
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "labelfe"
+							"text": "text"
+							"foreground": #Color7
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 185
+							"height": 17
+							"x": 370
+							"y": 25
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "txtnombreempleado"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 215
+							"height": 34
+							"x": 210
+							"y": 110
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label36"
+							"text": "Nombre del empleado:"
+							"foreground": #Color7
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 165
+							"height": 17
+							"x": 55
+							"y": 120
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label38"
+							"text": "Turno del empleado:"
+							"foreground": #Color7
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 145
+							"height": 17
+							"x": 55
+							"y": 180
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label39"
+							"text": "Rol del empleado: "
+							"foreground": #Color7
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 130
+							"height": 17
+							"x": 55
+							"y": 245
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "crearturno2"
+							"text": "Crear perfil"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "crearturno2", true ) )
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 104
+							"height": 34
+							"x": 420
+							"y": 335
+						} )
+						add( new FormComponent( "javax.swing.JComboBox" ) {
+							name: "cmbturnoempleado"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"x": 215
+							"y": 170
+							"width": 180
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label40"
+							"text": "Empleado"
+							"foreground": #Color7
+							"font": new java.awt.Font( "Inter", 1, 16 )
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 130
+							"height": 17
+							"x": 220
+							"y": 245
+						} )
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "card9"
 					} )
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "Center"
