@@ -2,43 +2,88 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.table.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Time;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 
 public class InicioAdmin extends JFrame {
-    /*
-    // JFormDesigner - Variables declaration
-    private JPanel panelBase;
-    private JPanel panelMenu;
-    private JLabel label1;
-    private JSeparator separator1;
-    private JLabel label2;
-    private JSeparator separator2;
-    private JLabel label3;
-    private JLabel label4;
-    private JLabel label5;
-    private JSeparator separator3;
-    private JSeparator separator4;
-    private JSeparator separator5;
-    private JPanel panelInicio;
-    private JPanel panelGestionEmp;
-    private JLabel label6;
-    private JPanel panelSeguridadYrol;
-    private JLabel label7;
-    private JPanel panelBitacoraAct;
-    private JLabel label8;
-    private JPanel panelReglas;
-    private JLabel label9;
-    // JFormDesigner - End of variables declaration
-    */
     public InicioAdmin() {
         initComponents(); // generado por JFormDesigner
         agregarEventos();
-        mostrarPanel("card1");
+        mostrarPanel("card6");
+        nombre.setText(SesionUsuario.usuarioActual);
+    }
+
+    public void cargarTurnos() {
+        // === 1. Mostrar la fecha actual en el label ===
+        LocalDate hoy = LocalDate.now();
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault());
+        labelFechaTurnos.setText("Fecha: " + hoy.format(fmt));
+
+        // === 2. SQL para traer nombre y horarios de entrada/salida ===
+        String sql = "SELECT nombre, entrada_1, salida_1, entrada_2, salida_2, entrada_3, salida_3 " +
+                "FROM Turnos";
+
+        BaseSQL base = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        // === Modelo para la tabla con las columnas deseadas ===
+        DefaultTableModel model = new DefaultTableModel(new String[] {
+                "Turno", "Entrada 1", "Salida 1", "Entrada 2", "Salida 2", "Entrada 3", "Salida 3"
+        }, 0);
+
+        try {
+            base = new BaseSQL();
+
+            // === Ejecución del SELECT ===
+            ps = base.conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            // === 3. Recorrer filas y llenar la tabla ===
+            while (rs.next()) {
+                String nombre = rs.getString("nombre");
+                Time e1 = rs.getTime("entrada_1");
+                Time s1 = rs.getTime("salida_1");
+                Time e2 = rs.getTime("entrada_2");
+                Time s2 = rs.getTime("salida_2");
+                Time e3 = rs.getTime("entrada_3");
+                Time s3 = rs.getTime("salida_3");
+
+                model.addRow(new Object[] {
+                        nombre,
+                        e1, s1,
+                        e2, s2,
+                        e3, s3
+                });
+            }
+
+            // === 4. Asigna el modelo a la JTable de la UI ===
+            tablaturnos.setModel(model);
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "Error al cargar turnos: " + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            try { if (rs != null) rs.close();      } catch (Exception _e) {}
+            try { if (ps != null) ps.close();      } catch (Exception _e) {}
+            try { if (base != null) base.cerrar(); } catch (Exception _e) {}
+        }
     }
 
     private void agregarEventos() {
         label1.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                mostrarPanel("card1");
+                mostrarPanel("card5");
             }
         });
 
@@ -60,11 +105,17 @@ public class InicioAdmin extends JFrame {
             }
         });
         
-        /*label17.addMouseListener(new MouseAdapter() {
+        label17.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                mostrarPanel("card5");
+                mostrarPanel("card7");
             }
-        });*/
+        });
+
+        label21.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                mostrarPanel("card8");
+            }
+        });
     }
 
     private void mostrarPanel(String nombreCard) {
@@ -129,15 +180,15 @@ public class InicioAdmin extends JFrame {
 		separator5 = new JSeparator();
 		label2 = new JLabel();
 		label11 = new JLabel();
-		panelGestionEmp = new JPanel();
-		label6 = new JLabel();
-		scrollPane1 = new JScrollPane();
-		table1 = new JTable();
 		label12 = new JLabel();
 		label13 = new JLabel();
 		label14 = new JLabel();
 		label15 = new JLabel();
 		label16 = new JLabel();
+		separator6 = new JSeparator();
+		label17 = new JLabel();
+		label19 = new JLabel();
+		nombre = new JLabel();
 		panelInicio = new JPanel();
 		panelSeguridadYrol = new JPanel();
 		label10 = new JLabel();
@@ -146,6 +197,20 @@ public class InicioAdmin extends JFrame {
 		panelReglas = new JPanel();
 		label9 = new JLabel();
 		label8 = new JLabel();
+		panelGestionEmp = new JPanel();
+		label6 = new JLabel();
+		scrollPane1 = new JScrollPane();
+		table1 = new JTable();
+		panelBienvenida = new JPanel();
+		panelTurnos = new JPanel();
+		label18 = new JLabel();
+		scrollPane2 = new JScrollPane();
+		tablaturnos = new JTable();
+		label20 = new JLabel();
+		labelFechaTurnos = new JLabel();
+		label21 = new JLabel();
+		AsignarTurno = new JPanel();
+		label22 = new JLabel();
 
 		//======== this ========
 		Container contentPane = getContentPane();
@@ -153,11 +218,13 @@ public class InicioAdmin extends JFrame {
 
 		//======== panelBase ========
 		{
-			panelBase.setBorder ( new javax . swing. border .CompoundBorder ( new javax . swing. border .TitledBorder ( new javax . swing. border .EmptyBorder ( 0
-			, 0 ,0 , 0) ,  "JF\u006frmD\u0065sig\u006eer \u0045val\u0075ati\u006fn" , javax. swing .border . TitledBorder. CENTER ,javax . swing. border .TitledBorder . BOTTOM
-			, new java. awt .Font ( "Dia\u006cog", java .awt . Font. BOLD ,12 ) ,java . awt. Color .red ) ,
-			panelBase. getBorder () ) ); panelBase. addPropertyChangeListener( new java. beans .PropertyChangeListener ( ){  public void propertyChange (java . beans. PropertyChangeEvent e
-			) { if( "b\u006frde\u0072" .equals ( e. getPropertyName () ) )throw new RuntimeException( ) ;} } );
+			panelBase.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax
+			. swing. border. EmptyBorder( 0, 0, 0, 0) , "JF\u006frmDesi\u0067ner Ev\u0061luatio\u006e", javax. swing
+			. border. TitledBorder. CENTER, javax. swing. border. TitledBorder. BOTTOM, new java .awt .
+			Font ("Dialo\u0067" ,java .awt .Font .BOLD ,12 ), java. awt. Color. red
+			) ,panelBase. getBorder( )) ); panelBase. addPropertyChangeListener (new java. beans. PropertyChangeListener( ){ 
+			public void propertyChange (java .beans .PropertyChangeEvent e) {if ("\u0062order" .equals (e .getPropertyName (
+			) )) throw new RuntimeException( ); }} );
 			panelBase.setLayout(new BorderLayout());
 
 			//======== panelMenu ========
@@ -248,7 +315,7 @@ public class InicioAdmin extends JFrame {
 				label2.setForeground(new Color(0xff8327));
 				label2.setFont(new Font("Segoe UI Black", Font.BOLD, 14));
 				panelMenu.add(label2);
-				label2.setBounds(15, 40, 155, label2.getPreferredSize().height);
+				label2.setBounds(30, 50, 155, label2.getPreferredSize().height);
 
 				//---- label11 ----
 				label11.setText("Cerrar sesi\u00f3n");
@@ -261,7 +328,174 @@ public class InicioAdmin extends JFrame {
 					}
 				});
 				panelMenu.add(label11);
-				label11.setBounds(15, 340, 125, 16);
+				label11.setBounds(15, 390, 125, 16);
+
+				//---- label12 ----
+				label12.setIcon(new ImageIcon(getClass().getResource("/lo.jpg")));
+				panelMenu.add(label12);
+				label12.setBounds(10, 70, 40, 50);
+
+				//---- label13 ----
+				label13.setIcon(new ImageIcon(getClass().getResource("/lolo.jpg")));
+				panelMenu.add(label13);
+				label13.setBounds(new Rectangle(new Point(10, 120), label13.getPreferredSize()));
+
+				//---- label14 ----
+				label14.setIcon(new ImageIcon(getClass().getResource("/lii.jpg")));
+				panelMenu.add(label14);
+				label14.setBounds(new Rectangle(new Point(15, 170), label14.getPreferredSize()));
+
+				//---- label15 ----
+				label15.setIcon(new ImageIcon(getClass().getResource("/jl.jpg")));
+				panelMenu.add(label15);
+				label15.setBounds(new Rectangle(new Point(15, 215), label15.getPreferredSize()));
+
+				//---- label16 ----
+				label16.setIcon(new ImageIcon(getClass().getResource("/sal.jpg")));
+				panelMenu.add(label16);
+				label16.setBounds(105, 380, 45, 40);
+
+				//---- separator6 ----
+				separator6.setForeground(new Color(0xff7c25));
+				panelMenu.add(separator6);
+				separator6.setBounds(15, 310, 195, 20);
+
+				//---- label17 ----
+				label17.setText("Turnos");
+				label17.setForeground(new Color(0xff8d1b));
+				label17.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+				label17.setFont(new Font("Microsoft JhengHei Light", Font.PLAIN, 13));
+				label17.addMouseListener(new MouseAdapter() {
+					public void mouseClicked(MouseEvent e) {
+						label1MouseClicked(e);
+					}
+				});
+				panelMenu.add(label17);
+				label17.setBounds(65, 275, 140, 18);
+
+				//---- label19 ----
+				label19.setIcon(new ImageIcon(getClass().getResource("/loc.jpg")));
+				panelMenu.add(label19);
+				label19.setBounds(15, 265, 40, 38);
+
+				//---- nombre ----
+				nombre.setText("ADMINISTRADOR");
+				nombre.setForeground(new Color(0xff8327));
+				nombre.setFont(new Font("Segoe UI Black", Font.BOLD, 14));
+				panelMenu.add(nombre);
+				nombre.setBounds(15, 15, 155, 20);
+
+				{
+					// compute preferred size
+					Dimension preferredSize = new Dimension();
+					for(int i = 0; i < panelMenu.getComponentCount(); i++) {
+						Rectangle bounds = panelMenu.getComponent(i).getBounds();
+						preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+						preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+					}
+					Insets insets = panelMenu.getInsets();
+					preferredSize.width += insets.right;
+					preferredSize.height += insets.bottom;
+					panelMenu.setMinimumSize(preferredSize);
+					panelMenu.setPreferredSize(preferredSize);
+				}
+			}
+			panelBase.add(panelMenu, BorderLayout.WEST);
+
+			//======== panelInicio ========
+			{
+				panelInicio.setForeground(new Color(0xf8f0de));
+				panelInicio.setBackground(new Color(0xf8f0de));
+				panelInicio.setLayout(new CardLayout());
+
+				//======== panelSeguridadYrol ========
+				{
+					panelSeguridadYrol.setBackground(new Color(0xff9966));
+					panelSeguridadYrol.setLayout(null);
+
+					//---- label10 ----
+					label10.setText("Panel seguridad y roles");
+					label10.setForeground(new Color(0xf2876b));
+					panelSeguridadYrol.add(label10);
+					label10.setBounds(15, 65, 155, 16);
+
+					{
+						// compute preferred size
+						Dimension preferredSize = new Dimension();
+						for(int i = 0; i < panelSeguridadYrol.getComponentCount(); i++) {
+							Rectangle bounds = panelSeguridadYrol.getComponent(i).getBounds();
+							preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+							preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+						}
+						Insets insets = panelSeguridadYrol.getInsets();
+						preferredSize.width += insets.right;
+						preferredSize.height += insets.bottom;
+						panelSeguridadYrol.setMinimumSize(preferredSize);
+						panelSeguridadYrol.setPreferredSize(preferredSize);
+					}
+				}
+				panelInicio.add(panelSeguridadYrol, "card2");
+
+				//======== panelBitácoraAct ========
+				{
+					panelBitácoraAct.setBackground(new Color(0xff9966));
+					panelBitácoraAct.setLayout(null);
+
+					//---- label7 ----
+					label7.setText("Bit\u00e1cora de actividades");
+					label7.setForeground(new Color(0xf2876b));
+					panelBitácoraAct.add(label7);
+					label7.setBounds(20, 45, 160, 25);
+
+					{
+						// compute preferred size
+						Dimension preferredSize = new Dimension();
+						for(int i = 0; i < panelBitácoraAct.getComponentCount(); i++) {
+							Rectangle bounds = panelBitácoraAct.getComponent(i).getBounds();
+							preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+							preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+						}
+						Insets insets = panelBitácoraAct.getInsets();
+						preferredSize.width += insets.right;
+						preferredSize.height += insets.bottom;
+						panelBitácoraAct.setMinimumSize(preferredSize);
+						panelBitácoraAct.setPreferredSize(preferredSize);
+					}
+				}
+				panelInicio.add(panelBitácoraAct, "card3");
+
+				//======== panelReglas ========
+				{
+					panelReglas.setBackground(new Color(0xff9966));
+					panelReglas.setLayout(null);
+
+					//---- label9 ----
+					label9.setText("text");
+					panelReglas.add(label9);
+					label9.setBounds(new Rectangle(new Point(525, 320), label9.getPreferredSize()));
+
+					//---- label8 ----
+					label8.setText("Reglas");
+					label8.setForeground(new Color(0xf2876b));
+					panelReglas.add(label8);
+					label8.setBounds(10, 30, 102, 16);
+
+					{
+						// compute preferred size
+						Dimension preferredSize = new Dimension();
+						for(int i = 0; i < panelReglas.getComponentCount(); i++) {
+							Rectangle bounds = panelReglas.getComponent(i).getBounds();
+							preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+							preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+						}
+						Insets insets = panelReglas.getInsets();
+						preferredSize.width += insets.right;
+						preferredSize.height += insets.bottom;
+						panelReglas.setMinimumSize(preferredSize);
+						panelReglas.setPreferredSize(preferredSize);
+					}
+				}
+				panelInicio.add(panelReglas, "card4");
 
 				//======== panelGestionEmp ========
 				{
@@ -322,150 +556,116 @@ public class InicioAdmin extends JFrame {
 						panelGestionEmp.setPreferredSize(preferredSize);
 					}
 				}
-				panelMenu.add(panelGestionEmp);
-				panelGestionEmp.setBounds(205, 0, 575, 380);
+				panelInicio.add(panelGestionEmp, "card5");
 
-				//---- label12 ----
-				label12.setIcon(new ImageIcon(getClass().getResource("/lo.jpg")));
-				panelMenu.add(label12);
-				label12.setBounds(10, 70, 40, 50);
-
-				//---- label13 ----
-				label13.setIcon(new ImageIcon(getClass().getResource("/lolo.jpg")));
-				panelMenu.add(label13);
-				label13.setBounds(new Rectangle(new Point(10, 120), label13.getPreferredSize()));
-
-				//---- label14 ----
-				label14.setIcon(new ImageIcon(getClass().getResource("/lii.jpg")));
-				panelMenu.add(label14);
-				label14.setBounds(new Rectangle(new Point(15, 170), label14.getPreferredSize()));
-
-				//---- label15 ----
-				label15.setIcon(new ImageIcon(getClass().getResource("/jl.jpg")));
-				panelMenu.add(label15);
-				label15.setBounds(new Rectangle(new Point(15, 215), label15.getPreferredSize()));
-
-				//---- label16 ----
-				label16.setIcon(new ImageIcon(getClass().getResource("/sal.jpg")));
-				panelMenu.add(label16);
-				label16.setBounds(105, 330, 45, 40);
-
+				//======== panelBienvenida ========
 				{
-					// compute preferred size
-					Dimension preferredSize = new Dimension();
-					for(int i = 0; i < panelMenu.getComponentCount(); i++) {
-						Rectangle bounds = panelMenu.getComponent(i).getBounds();
-						preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
-						preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
-					}
-					Insets insets = panelMenu.getInsets();
-					preferredSize.width += insets.right;
-					preferredSize.height += insets.bottom;
-					panelMenu.setMinimumSize(preferredSize);
-					panelMenu.setPreferredSize(preferredSize);
-				}
-			}
-			panelBase.add(panelMenu, BorderLayout.WEST);
-
-			//======== panelInicio ========
-			{
-				panelInicio.setForeground(new Color(0xf8f0de));
-				panelInicio.setBackground(new Color(0xf8f0de));
-				panelInicio.setLayout(new CardLayout());
-
-				//======== panelSeguridadYrol ========
-				{
-					panelSeguridadYrol.setBackground(new Color(0xf8f0de));
-					panelSeguridadYrol.setLayout(null);
-
-					//---- label10 ----
-					label10.setText("Panel seguridad y roles");
-					label10.setForeground(new Color(0xf2876b));
-					panelSeguridadYrol.add(label10);
-					label10.setBounds(15, 65, 155, 16);
+					panelBienvenida.setBackground(new Color(0xff9966));
+					panelBienvenida.setLayout(null);
 
 					{
 						// compute preferred size
 						Dimension preferredSize = new Dimension();
-						for(int i = 0; i < panelSeguridadYrol.getComponentCount(); i++) {
-							Rectangle bounds = panelSeguridadYrol.getComponent(i).getBounds();
+						for(int i = 0; i < panelBienvenida.getComponentCount(); i++) {
+							Rectangle bounds = panelBienvenida.getComponent(i).getBounds();
 							preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
 							preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
 						}
-						Insets insets = panelSeguridadYrol.getInsets();
+						Insets insets = panelBienvenida.getInsets();
 						preferredSize.width += insets.right;
 						preferredSize.height += insets.bottom;
-						panelSeguridadYrol.setMinimumSize(preferredSize);
-						panelSeguridadYrol.setPreferredSize(preferredSize);
+						panelBienvenida.setMinimumSize(preferredSize);
+						panelBienvenida.setPreferredSize(preferredSize);
 					}
 				}
-				panelInicio.add(panelSeguridadYrol, "card2");
+				panelInicio.add(panelBienvenida, "card6");
 
-				//======== panelBitácoraAct ========
+				//======== panelTurnos ========
 				{
-					panelBitácoraAct.setBackground(new Color(0xf8f0de));
-					panelBitácoraAct.setLayout(null);
+					panelTurnos.setBackground(new Color(0xff9966));
+					panelTurnos.setLayout(null);
 
-					//---- label7 ----
-					label7.setText("Bit\u00e1cora de actividades");
-					label7.setForeground(new Color(0xf2876b));
-					panelBitácoraAct.add(label7);
-					label7.setBounds(20, 45, 160, 25);
+					//---- label18 ----
+					label18.setText("Gesti\u00f3n de turnos");
+					label18.setForeground(Color.black);
+					label18.setFont(new Font("Inter", Font.PLAIN, 20));
+					panelTurnos.add(label18);
+					label18.setBounds(20, 35, 250, 40);
+
+					//======== scrollPane2 ========
+					{
+						scrollPane2.setViewportView(tablaturnos);
+					}
+					panelTurnos.add(scrollPane2);
+					scrollPane2.setBounds(30, 200, 515, 230);
+
+					//---- label20 ----
+					label20.setText("Visualiza, crea y asigna turnos a los empleados.");
+					label20.setForeground(Color.black);
+					panelTurnos.add(label20);
+					label20.setBounds(20, 115, 385, label20.getPreferredSize().height);
+
+					//---- labelFechaTurnos ----
+					labelFechaTurnos.setText("text");
+					labelFechaTurnos.setForeground(Color.black);
+					panelTurnos.add(labelFechaTurnos);
+					labelFechaTurnos.setBounds(400, 25, 155, labelFechaTurnos.getPreferredSize().height);
+
+					//---- label21 ----
+					label21.setText("(+) Nuevo Turno");
+					label21.setBackground(Color.black);
+					label21.setForeground(Color.blue);
+					panelTurnos.add(label21);
+					label21.setBounds(425, 135, 125, label21.getPreferredSize().height);
 
 					{
 						// compute preferred size
 						Dimension preferredSize = new Dimension();
-						for(int i = 0; i < panelBitácoraAct.getComponentCount(); i++) {
-							Rectangle bounds = panelBitácoraAct.getComponent(i).getBounds();
+						for(int i = 0; i < panelTurnos.getComponentCount(); i++) {
+							Rectangle bounds = panelTurnos.getComponent(i).getBounds();
 							preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
 							preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
 						}
-						Insets insets = panelBitácoraAct.getInsets();
+						Insets insets = panelTurnos.getInsets();
 						preferredSize.width += insets.right;
 						preferredSize.height += insets.bottom;
-						panelBitácoraAct.setMinimumSize(preferredSize);
-						panelBitácoraAct.setPreferredSize(preferredSize);
+						panelTurnos.setMinimumSize(preferredSize);
+						panelTurnos.setPreferredSize(preferredSize);
 					}
 				}
-				panelInicio.add(panelBitácoraAct, "card3");
+				panelInicio.add(panelTurnos, "card7");
 
-				//======== panelReglas ========
+				//======== AsignarTurno ========
 				{
-					panelReglas.setBackground(new Color(0xf8f0de));
-					panelReglas.setLayout(null);
+					AsignarTurno.setBackground(new Color(0xff9966));
+					AsignarTurno.setLayout(null);
 
-					//---- label9 ----
-					label9.setText("text");
-					panelReglas.add(label9);
-					label9.setBounds(new Rectangle(new Point(525, 320), label9.getPreferredSize()));
-
-					//---- label8 ----
-					label8.setText("Reglas");
-					label8.setForeground(new Color(0xf2876b));
-					panelReglas.add(label8);
-					label8.setBounds(10, 30, 102, 16);
+					//---- label22 ----
+					label22.setText("text");
+					AsignarTurno.add(label22);
+					label22.setBounds(new Rectangle(new Point(20, 35), label22.getPreferredSize()));
 
 					{
 						// compute preferred size
 						Dimension preferredSize = new Dimension();
-						for(int i = 0; i < panelReglas.getComponentCount(); i++) {
-							Rectangle bounds = panelReglas.getComponent(i).getBounds();
+						for(int i = 0; i < AsignarTurno.getComponentCount(); i++) {
+							Rectangle bounds = AsignarTurno.getComponent(i).getBounds();
 							preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
 							preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
 						}
-						Insets insets = panelReglas.getInsets();
+						Insets insets = AsignarTurno.getInsets();
 						preferredSize.width += insets.right;
 						preferredSize.height += insets.bottom;
-						panelReglas.setMinimumSize(preferredSize);
-						panelReglas.setPreferredSize(preferredSize);
+						AsignarTurno.setMinimumSize(preferredSize);
+						AsignarTurno.setPreferredSize(preferredSize);
 					}
 				}
-				panelInicio.add(panelReglas, "card4");
+				panelInicio.add(AsignarTurno, "card8");
 			}
 			panelBase.add(panelInicio, BorderLayout.CENTER);
 		}
 		contentPane.add(panelBase);
-		panelBase.setBounds(-10, -5, 730, 380);
+		panelBase.setBounds(-10, -5, 815, 500);
 
 		{
 			// compute preferred size
@@ -501,15 +701,15 @@ public class InicioAdmin extends JFrame {
 	private JSeparator separator5;
 	private JLabel label2;
 	private JLabel label11;
-	private JPanel panelGestionEmp;
-	private JLabel label6;
-	private JScrollPane scrollPane1;
-	private JTable table1;
 	private JLabel label12;
 	private JLabel label13;
 	private JLabel label14;
 	private JLabel label15;
 	private JLabel label16;
+	private JSeparator separator6;
+	private JLabel label17;
+	private JLabel label19;
+	private JLabel nombre;
 	private JPanel panelInicio;
 	private JPanel panelSeguridadYrol;
 	private JLabel label10;
@@ -518,5 +718,19 @@ public class InicioAdmin extends JFrame {
 	private JPanel panelReglas;
 	private JLabel label9;
 	private JLabel label8;
+	private JPanel panelGestionEmp;
+	private JLabel label6;
+	private JScrollPane scrollPane1;
+	private JTable table1;
+	private JPanel panelBienvenida;
+	private JPanel panelTurnos;
+	private JLabel label18;
+	private JScrollPane scrollPane2;
+	private JTable tablaturnos;
+	private JLabel label20;
+	private JLabel labelFechaTurnos;
+	private JLabel label21;
+	private JPanel AsignarTurno;
+	private JLabel label22;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }
