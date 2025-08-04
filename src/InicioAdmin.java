@@ -182,6 +182,72 @@ public class InicioAdmin extends JFrame {
     }
 
 
+    public void llenadotabla() {
+        // 1. Consulta SQL: Obtiene todas las checadas de entrada para la fecha actual
+        String sql =
+                "SELECT e.id AS id_empleado, e.nombre, rc.tipo_registro, rc.hora AS hora_checada, " +
+                        "  CASE " +
+                        "    WHEN rc.tipo_registro = 'ENTRADA_1' THEN t.entrada_1 " +
+                        "    WHEN rc.tipo_registro = 'ENTRADA_2' THEN t.entrada_2 " +
+                        "    WHEN rc.tipo_registro = 'ENTRADA_3' THEN t.entrada_3 " +
+                        "  END AS hora_esperada, " +
+                        "  DATEDIFF(MINUTE, " +
+                        "    CASE " +
+                        "      WHEN rc.tipo_registro = 'ENTRADA_1' THEN t.entrada_1 " +
+                        "      WHEN rc.tipo_registro = 'ENTRADA_2' THEN t.entrada_2 " +
+                        "      WHEN rc.tipo_registro = 'ENTRADA_3' THEN t.entrada_3 " +
+                        "    END, rc.hora) AS minutos_diferencia " +
+                        "FROM Empleados e " +
+                        "JOIN Turnos t ON e.id_turno = t.id " +
+                        "LEFT JOIN Registros_Checada rc ON " +
+                        "  rc.id_empleado = e.id AND rc.fecha = ? AND rc.tipo_registro LIKE 'ENTRADA_%' " +
+                        "ORDER BY e.id, minutos_diferencia ASC";
+
+        BaseSQL base = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        // 2. Modelo de tabla
+        DefaultTableModel model = new DefaultTableModel(new String[] {
+                "Nombre", "Tipo Registro", "Hora Checada", "Hora Esperada", "Min. Dif."
+        }, 0);
+
+        try {
+            base = new BaseSQL();
+            ps = base.conn.prepareStatement(sql);
+
+            // Declaramos la variable 'fechaActual' aquí
+            java.time.LocalDate fechaActual = java.time.LocalDate.now();
+
+            ps.setDate(1, java.sql.Date.valueOf(fechaActual));
+            rs = ps.executeQuery();
+
+            // 3. Llenar la tabla con los resultados
+            while (rs.next()) {
+                String nombre = rs.getString("nombre");
+                String tipo   = rs.getString("tipo_registro");
+                Time horaCheque = rs.getTime("hora_checada");
+                Time horaEsper  = rs.getTime("hora_esperada");
+                int dif = rs.getInt("minutos_diferencia");
+
+                model.addRow(new Object[]{ nombre, tipo, horaCheque, horaEsper, dif });
+            }
+
+            // 4. Asignar el modelo a la JTable
+            tabladia.setModel(model);
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "Error al cargar registros: " + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            try { if (rs != null) rs.close(); } catch (Exception _ex) {}
+            try { if (ps != null) ps.close(); } catch (Exception _ex) {}
+            try { if (base != null) base.cerrar(); } catch (Exception _ex) {}
+        }
+    }
+
 
     public void cargarRegistrosadmin() {
         // === 1. SQL para traer los datos de los registros ===
@@ -631,6 +697,7 @@ public class InicioAdmin extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 mostrarPanel("card2");
                 cargarRegistros();
+                llenadotabla();
             }
         });
 
@@ -791,7 +858,9 @@ public class InicioAdmin extends JFrame {
         labelFaltasTotales = new JLabel();
         label45 = new JLabel();
         labelFaltasPorcentaje = new JLabel();
-        panel7 = new JPanel();
+        panelgrafica = new JPanel();
+        scrollPane6 = new JScrollPane();
+        tabladia = new JTable();
         panelhoras = new JPanel();
         labelhorasTotales = new JLabel();
         label46 = new JLabel();
@@ -864,12 +933,12 @@ public class InicioAdmin extends JFrame {
 
         //======== panelBase ========
         {
-            panelBase.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.TitledBorder(new javax.swing.border
-            .EmptyBorder(0,0,0,0), "JF\u006frm\u0044es\u0069gn\u0065r \u0045va\u006cua\u0074io\u006e",javax.swing.border.TitledBorder.CENTER,javax
-            .swing.border.TitledBorder.BOTTOM,new java.awt.Font("D\u0069al\u006fg",java.awt.Font.BOLD,
-            12),java.awt.Color.red),panelBase. getBorder()));panelBase. addPropertyChangeListener(new java.beans
-            .PropertyChangeListener(){@Override public void propertyChange(java.beans.PropertyChangeEvent e){if("\u0062or\u0064er".equals(e.
-            getPropertyName()))throw new RuntimeException();}});
+            panelBase.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax. swing. border
+            . EmptyBorder( 0, 0, 0, 0) , "JFor\u006dDesi\u0067ner \u0045valu\u0061tion", javax. swing. border. TitledBorder. CENTER, javax
+            . swing. border. TitledBorder. BOTTOM, new java .awt .Font ("Dia\u006cog" ,java .awt .Font .BOLD ,
+            12 ), java. awt. Color. red) ,panelBase. getBorder( )) ); panelBase. addPropertyChangeListener (new java. beans
+            . PropertyChangeListener( ){ @Override public void propertyChange (java .beans .PropertyChangeEvent e) {if ("bord\u0065r" .equals (e .
+            getPropertyName () )) throw new RuntimeException( ); }} );
             panelBase.setLayout(new BorderLayout());
 
             //======== panelMenu ========
@@ -1161,28 +1230,35 @@ public class InicioAdmin extends JFrame {
                     panelSeguridadYrol.add(panelfaltas);
                     panelfaltas.setBounds(225, 90, 130, 75);
 
-                    //======== panel7 ========
+                    //======== panelgrafica ========
                     {
-                        panel7.setBackground(new Color(0xccffcc));
-                        panel7.setLayout(null);
+                        panelgrafica.setBackground(new Color(0xccffcc));
+                        panelgrafica.setLayout(null);
+
+                        //======== scrollPane6 ========
+                        {
+                            scrollPane6.setViewportView(tabladia);
+                        }
+                        panelgrafica.add(scrollPane6);
+                        scrollPane6.setBounds(15, 10, 560, 285);
 
                         {
                             // compute preferred size
                             Dimension preferredSize = new Dimension();
-                            for(int i = 0; i < panel7.getComponentCount(); i++) {
-                                Rectangle bounds = panel7.getComponent(i).getBounds();
+                            for(int i = 0; i < panelgrafica.getComponentCount(); i++) {
+                                Rectangle bounds = panelgrafica.getComponent(i).getBounds();
                                 preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
                                 preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
                             }
-                            Insets insets = panel7.getInsets();
+                            Insets insets = panelgrafica.getInsets();
                             preferredSize.width += insets.right;
                             preferredSize.height += insets.bottom;
-                            panel7.setMinimumSize(preferredSize);
-                            panel7.setPreferredSize(preferredSize);
+                            panelgrafica.setMinimumSize(preferredSize);
+                            panelgrafica.setPreferredSize(preferredSize);
                         }
                     }
-                    panelSeguridadYrol.add(panel7);
-                    panel7.setBounds(25, 225, 590, 275);
+                    panelSeguridadYrol.add(panelgrafica);
+                    panelgrafica.setBounds(25, 225, 590, 310);
 
                     //======== panelhoras ========
                     {
@@ -1224,11 +1300,11 @@ public class InicioAdmin extends JFrame {
                     panelhoras.setBounds(415, 90, 150, 75);
 
                     //---- label47 ----
-                    label47.setText("Asistencia semanal");
+                    label47.setText("Registro de asistencia en el dia");
                     label47.setForeground(Color.black);
                     label47.setFont(new Font("Inter", Font.BOLD, 20));
                     panelSeguridadYrol.add(label47);
-                    label47.setBounds(25, 180, 300, 30);
+                    label47.setBounds(25, 180, 395, 30);
 
                     {
                         // compute preferred size
@@ -1771,7 +1847,9 @@ public class InicioAdmin extends JFrame {
     private JLabel labelFaltasTotales;
     private JLabel label45;
     private JLabel labelFaltasPorcentaje;
-    private JPanel panel7;
+    private JPanel panelgrafica;
+    private JScrollPane scrollPane6;
+    private JTable tabladia;
     private JPanel panelhoras;
     private JLabel labelhorasTotales;
     private JLabel label46;
