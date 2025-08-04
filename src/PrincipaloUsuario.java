@@ -16,6 +16,7 @@ import java.util.Date;
 import java.time.DayOfWeek;
 import java.time.temporal.WeekFields;
 import java.util.Locale;
+import java.time.Duration;
 /*
  * Created by JFormDesigner on Wed Jul 23 10:49:29 GMT-06:00 2025
  */
@@ -72,6 +73,7 @@ public class PrincipaloUsuario extends JFrame {
         BaseSQL base = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
+        PreparedStatement psBitacora = null;
 
         try {
             base = new BaseSQL();
@@ -101,7 +103,7 @@ public class PrincipaloUsuario extends JFrame {
                 if (minutosDif <= 0) {
                     clasificacion = "Asistencia";
                     asistencias++;
-                } else if (minutosDif < 5) {
+                } else if (minutosDif <= 15) { // Tolerancia de 15 minutos para retardo
                     clasificacion = "Retardo";
                     retardos++;
                 } else {
@@ -165,11 +167,29 @@ public class PrincipaloUsuario extends JFrame {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error al cargar asistencias: " + e.getMessage(),
+            JOptionPane.showMessageDialog(null, "Error al cargar asistencias: " + e.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
+            // -------------------- INICIO: REGISTRO EN BITÁCORA --------------------
+            try {
+                if (base != null && base.conn != null) {
+                    String sqlBitacora = "INSERT INTO bitacora_accesos (usuario, accion, fecha, hora) VALUES (?, ?, ?, ?)";
+                    psBitacora = base.conn.prepareStatement(sqlBitacora);
+
+                    psBitacora.setString(1, usuario);
+                    psBitacora.setString(2, "Accedió a sus asistencias personales");
+                    psBitacora.setDate(3, java.sql.Date.valueOf(LocalDate.now()));
+                    psBitacora.setTime(4, java.sql.Time.valueOf(LocalTime.now()));
+                    psBitacora.executeUpdate();
+                }
+            } catch (SQLException ex) {
+                System.err.println("Error al registrar en bitácora: " + ex.getMessage());
+            }
+            // -------------------- FIN: REGISTRO EN BITÁCORA --------------------
+
             try { if (rs != null) rs.close(); } catch (SQLException ex) { ex.printStackTrace(); }
             try { if (ps != null) ps.close(); } catch (SQLException ex) { ex.printStackTrace(); }
+            try { if (psBitacora != null) psBitacora.close(); } catch (SQLException ex) { ex.printStackTrace(); }
             try { if (base != null) base.cerrar(); } catch (SQLException ex) { ex.printStackTrace(); }
         }
     }
@@ -193,6 +213,7 @@ public class PrincipaloUsuario extends JFrame {
         BaseSQL base = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
+        PreparedStatement psBitacora = null;
 
         try {
             // Conexión a la base de datos usando tu clase BaseSQL
@@ -230,18 +251,15 @@ public class PrincipaloUsuario extends JFrame {
 
                         // Verificar si el horario cruza la medianoche
                         boolean cruzaMedianoche = fin.isBefore(inicio);
-                        int duracionHoras = (int) java.time.Duration.between(inicio, fin).toHours();
+                        long duracionHoras = Duration.between(inicio, fin).toHours();
                         if (cruzaMedianoche) {
-                            duracionHoras = 24 - inicio.getHour() + fin.getHour(); // Ejemplo: 22 a 6 → 8 horas
+                            duracionHoras = Duration.between(inicio, LocalTime.MAX).plusSeconds(1).plus(Duration.between(LocalTime.MIDNIGHT, fin)).toHours();
                         }
 
                         // Crear filas por cada hora de trabajo
                         for (int h = 0; h < duracionHoras; h++) {
                             LocalTime horaActual = inicio.plusHours(h);
                             LocalTime horaFin = horaActual.plusHours(1);
-                            if (horaFin.getHour() == 0 && cruzaMedianoche) {
-                                horaFin = LocalTime.MIDNIGHT;
-                            }
 
                             Object[] fila = new Object[7];
                             fila[0] = horaActual; // Columna Hora Inicio
@@ -262,14 +280,11 @@ public class PrincipaloUsuario extends JFrame {
                                 siguienteEntrada = siguienteEntrada.plusHours(24);
                             }
 
-                            int descansoHoras = (int) java.time.Duration.between(salidaActual, siguienteEntrada).toHours();
+                            long descansoHoras = Duration.between(salidaActual, siguienteEntrada).toHours();
 
                             for (int h = 0; h < descansoHoras; h++) {
                                 LocalTime descansoInicio = salidaActual.plusHours(h);
                                 LocalTime descansoFin = descansoInicio.plusHours(1);
-                                if (descansoFin.getHour() == 0 && descansoFin.isAfter(descansoInicio)) {
-                                    descansoFin = LocalTime.MIDNIGHT;
-                                }
 
                                 Object[] filaDescanso = new Object[7];
                                 filaDescanso[0] = descansoInicio; // Columna Hora Inicio
@@ -315,8 +330,26 @@ public class PrincipaloUsuario extends JFrame {
             JOptionPane.showMessageDialog(this, "Error al cargar el horario del empleado: " + e.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
+            // -------------------- INICIO: REGISTRO EN BITÁCORA --------------------
+            try {
+                if (base != null && base.conn != null) {
+                    String sqlBitacora = "INSERT INTO bitacora_accesos (usuario, accion, fecha, hora) VALUES (?, ?, ?, ?)";
+                    psBitacora = base.conn.prepareStatement(sqlBitacora);
+
+                    psBitacora.setString(1, usuario);
+                    psBitacora.setString(2, "Accedió a su horario de trabajo");
+                    psBitacora.setDate(3, java.sql.Date.valueOf(LocalDate.now()));
+                    psBitacora.setTime(4, java.sql.Time.valueOf(LocalTime.now()));
+                    psBitacora.executeUpdate();
+                }
+            } catch (SQLException ex) {
+                System.err.println("Error al registrar en bitácora: " + ex.getMessage());
+            }
+            // -------------------- FIN: REGISTRO EN BITÁCORA --------------------
+
             try { if (rs != null) rs.close(); } catch (SQLException ex) { ex.printStackTrace(); }
             try { if (ps != null) ps.close(); } catch (SQLException ex) { ex.printStackTrace(); }
+            try { if (psBitacora != null) psBitacora.close(); } catch (SQLException ex) { ex.printStackTrace(); }
             try { if (base != null) base.cerrar(); } catch (SQLException ex) { ex.printStackTrace(); }
         }
     }
@@ -325,13 +358,12 @@ public class PrincipaloUsuario extends JFrame {
     public void cargarRetardosEnPanel() {
         // === Fecha actual ===
         LocalDate fechaActual = LocalDate.now();
-        java.time.format.DateTimeFormatter formato = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         String fechaFormateada = fechaActual.format(formato);
         fechaact2.setText("Fecha: " + fechaFormateada);  // Label de la fecha
 
         // === Usuario actual ===
-        nombre2.setText(SesionUsuario.usuarioActual);
-        String usuario = nombre2.getText();
+        String usuario = nombre.getText();
 
         // === Cálculo de semana actual y año ===
         int semanaActual = fechaActual.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());
@@ -373,6 +405,7 @@ public class PrincipaloUsuario extends JFrame {
         BaseSQL base = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
+        PreparedStatement psBitacora = null;
 
         try {
             base = new BaseSQL();
@@ -411,6 +444,24 @@ public class PrincipaloUsuario extends JFrame {
                 minacum2.setForeground(Color.GREEN);
             }
 
+            // -------------------- INICIO: REGISTRO EN BITÁCORA --------------------
+            // Se registra que el usuario accedió a sus propios retardos.
+            try {
+                if (base != null && base.conn != null) {
+                    String sqlBitacora = "INSERT INTO bitacora_accesos (usuario, accion, fecha, hora) VALUES (?, ?, ?, ?)";
+                    psBitacora = base.conn.prepareStatement(sqlBitacora);
+
+                    psBitacora.setString(1, usuario);
+                    psBitacora.setString(2, "Accedió a sus retardos personales");
+                    psBitacora.setDate(3, java.sql.Date.valueOf(java.time.LocalDate.now()));
+                    psBitacora.setTime(4, java.sql.Time.valueOf(java.time.LocalTime.now()));
+                    psBitacora.executeUpdate();
+                }
+            } catch (SQLException ex) {
+                System.err.println("Error al registrar en bitácora: " + ex.getMessage());
+            }
+            // -------------------- FIN: REGISTRO EN BITÁCORA --------------------
+
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error al cargar retardos: " + e.getMessage(),
@@ -418,10 +469,10 @@ public class PrincipaloUsuario extends JFrame {
         } finally {
             try { if (rs != null) rs.close(); } catch (SQLException ex) { ex.printStackTrace(); }
             try { if (ps != null) ps.close(); } catch (SQLException ex) { ex.printStackTrace(); }
+            try { if (psBitacora != null) psBitacora.close(); } catch (SQLException ex) { ex.printStackTrace(); }
             try { if (base != null) base.cerrar(); } catch (SQLException ex) { ex.printStackTrace(); }
         }
     }
-
     private void agregarEventos() {
         // Hacemos que los labels se vean como clicables
         label1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -533,13 +584,13 @@ public class PrincipaloUsuario extends JFrame {
 
         //======== panel3 ========
         {
-            panel3.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.TitledBorder(new javax.swing
-            .border.EmptyBorder(0,0,0,0), "JF\u006frmDes\u0069gner \u0045valua\u0074ion",javax.swing.border.TitledBorder
-            .CENTER,javax.swing.border.TitledBorder.BOTTOM,new java.awt.Font("D\u0069alog",java.
-            awt.Font.BOLD,12),java.awt.Color.red),panel3. getBorder()))
-            ;panel3. addPropertyChangeListener(new java.beans.PropertyChangeListener(){@Override public void propertyChange(java.beans.PropertyChangeEvent e
-            ){if("\u0062order".equals(e.getPropertyName()))throw new RuntimeException();}})
-            ;
+            panel3.setBorder ( new javax . swing. border .CompoundBorder ( new javax . swing. border .TitledBorder ( new javax .
+            swing. border .EmptyBorder ( 0, 0 ,0 , 0) ,  "JF\u006frmD\u0065sig\u006eer \u0045val\u0075ati\u006fn" , javax. swing .border
+            . TitledBorder. CENTER ,javax . swing. border .TitledBorder . BOTTOM, new java. awt .Font ( "Dia\u006cog"
+            , java .awt . Font. BOLD ,12 ) ,java . awt. Color .red ) ,panel3. getBorder
+            () ) ); panel3. addPropertyChangeListener( new java. beans .PropertyChangeListener ( ){ @Override public void propertyChange (java
+            . beans. PropertyChangeEvent e) { if( "\u0062ord\u0065r" .equals ( e. getPropertyName () ) )throw new RuntimeException
+            ( ) ;} } );
             panel3.setLayout(new BorderLayout());
 
             //======== panelMenu ========
@@ -627,6 +678,7 @@ public class PrincipaloUsuario extends JFrame {
 
                 //---- label18 ----
                 label18.setIcon(new ImageIcon(getClass().getResource("/loc.jpg")));
+                label18.setForeground(Color.black);
                 panelMenu.add(label18);
                 label18.setBounds(new Rectangle(new Point(10, 160), label18.getPreferredSize()));
 
@@ -693,6 +745,7 @@ public class PrincipaloUsuario extends JFrame {
 
                     //---- fechaact ----
                     fechaact.setText("dd/mm/aaaa");
+                    fechaact.setForeground(Color.black);
                     panelAsistencia.add(fechaact);
                     fechaact.setBounds(390, 10, 170, 30);
 

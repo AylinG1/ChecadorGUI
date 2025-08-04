@@ -323,16 +323,21 @@ public class InicioAdmin extends JFrame {
         }
     }
 
+
     public void crearEmpleado() {
         // 1. Leer los campos de la interfaz de usuario
-        String nombre = txtnombreempleado.getText().trim();
+        String nombre2 = txtnombreempleado.getText().trim(); // Nombre del empleado (variable cambiada a 'nombre2')
         String rol = label40.getText().trim();
 
         // Obtener el objeto 'Turno' completo desde el JComboBox
         Turno turnoSeleccionado = (Turno) cmbturnoempleado.getSelectedItem();
 
+        // Variable para el nombre del usuario, que se obtiene de la JLabel
+        // Asume que la variable de la JLabel se llama 'nombre'.
+        String nombreUsuario = nombre.getText();
+
         // Validar que el nombre no esté vacío y que se haya seleccionado un turno
-        if (nombre.isEmpty()) {
+        if (nombre2.isEmpty()) {
             JOptionPane.showMessageDialog(null, "El nombre del empleado no puede estar vacío.", "Advertencia", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -345,16 +350,21 @@ public class InicioAdmin extends JFrame {
 
         BaseSQL base = null;
         CallableStatement cs = null;
+        PreparedStatement psBitacora = null;
+
+        String accionBitacora = "intentó agregar un nuevo perfil de empleado"; // Mensaje por defecto en caso de error
 
         try {
             base = new BaseSQL();
             cs = base.conn.prepareCall("{call InsertarEmpleado(?, ?, ?)}");
 
-            cs.setString(1, nombre);
+            cs.setString(1, nombre2); // Usa la nueva variable 'nombre2' para el nombre del empleado
             cs.setInt(2, idTurno);
             cs.setString(3, rol);
 
             cs.executeUpdate();
+
+            accionBitacora = "agregó un nuevo perfil de empleado: " + nombre2; // Mensaje de éxito
 
             JOptionPane.showMessageDialog(null, "Empleado creado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
@@ -362,7 +372,26 @@ public class InicioAdmin extends JFrame {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error al insertar empleado: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
+            // -------------------- INICIO: REGISTRO EN BITÁCORA --------------------
+            try {
+                if (base != null && base.conn != null) {
+                    String sqlBitacora = "INSERT INTO bitacora_accesos (usuario, accion, fecha, hora) VALUES (?, ?, ?, ?)";
+                    psBitacora = base.conn.prepareStatement(sqlBitacora);
+
+                    psBitacora.setString(1, nombreUsuario); // Usa la variable 'nombreUsuario' para la bitácora
+                    psBitacora.setString(2, accionBitacora);
+                    psBitacora.setDate(3, java.sql.Date.valueOf(java.time.LocalDate.now()));
+                    psBitacora.setTime(4, java.sql.Time.valueOf(java.time.LocalTime.now()));
+                    psBitacora.executeUpdate();
+                }
+            } catch (SQLException ex) {
+                System.err.println("Error al registrar en bitácora: " + ex.getMessage());
+            }
+            // -------------------- FIN: REGISTRO EN BITÁCORA --------------------
+
+            // Cierre de recursos
             try { if (cs != null) cs.close(); } catch (SQLException _ex) { _ex.printStackTrace(); }
+            try { if (psBitacora != null) psBitacora.close(); } catch (SQLException _ex) { _ex.printStackTrace(); }
             try { if (base != null) base.cerrar(); } catch (SQLException _ex) { _ex.printStackTrace(); }
         }
     }
@@ -430,7 +459,7 @@ public class InicioAdmin extends JFrame {
 
     public void crearTurno() {
         // 1. Leer campos
-        String nombre = txtnombre.getText().trim();
+        String nombre2 = txtnombre.getText().trim(); // Nombre del turno (VARIABLE CAMBIADA A nombre2)
         String e1 = txtentrada1.getText().trim();
         String s1 = txtsalida1.getText().trim();
         String e2 = txtentrada2.getText().trim();
@@ -441,12 +470,19 @@ public class InicioAdmin extends JFrame {
 
         BaseSQL base = null;
         CallableStatement cs = null;
+        PreparedStatement psBitacora = null;
+
+        String accionBitacora = "intentó insertar un nuevo turno";
+
+        // --- CORRECCIÓN AQUÍ ---
+        // Se obtiene el nombre del usuario de la JLabel llamada 'nombre'.
+        String nombreUsuario = nombre.getText();
 
         try {
             base = new BaseSQL();
             cs = base.conn.prepareCall("{call InsertarTurno(?, ?, ?, ?, ?, ?, ?, ?)}");
 
-            cs.setString(1, nombre);
+            cs.setString(1, nombre2); // Usa la nueva variable 'nombre2' para el nombre del turno
             setHoraNullable(cs, 2, e1);
             setHoraNullable(cs, 3, s1);
             setHoraNullable(cs, 4, e2);
@@ -457,15 +493,33 @@ public class InicioAdmin extends JFrame {
 
             int filas = cs.executeUpdate();
 
-            // Lógica de validación corregida
-            // Si la línea anterior no lanzó una excepción, la operación fue exitosa
+            accionBitacora = "insertó un nuevo turno";
+
             JOptionPane.showMessageDialog(null, "Turno creado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error al insertar turno: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
+            // -------------------- INICIO: REGISTRO EN BITÁCORA --------------------
+            try {
+                if (base != null && base.conn != null) {
+                    String sqlBitacora = "INSERT INTO bitacora_accesos (usuario, accion, fecha, hora) VALUES (?, ?, ?, ?)";
+                    psBitacora = base.conn.prepareStatement(sqlBitacora);
+
+                    psBitacora.setString(1, nombreUsuario); // Usa la variable 'nombreUsuario'
+                    psBitacora.setString(2, accionBitacora);
+                    psBitacora.setDate(3, java.sql.Date.valueOf(java.time.LocalDate.now()));
+                    psBitacora.setTime(4, java.sql.Time.valueOf(java.time.LocalTime.now()));
+                    psBitacora.executeUpdate();
+                }
+            } catch (SQLException ex) {
+                System.err.println("Error al registrar en bitácora: " + ex.getMessage());
+            }
+            // -------------------- FIN: REGISTRO EN BITÁCORA --------------------
+
             try { if (cs != null) cs.close(); } catch (SQLException _ex) { _ex.printStackTrace(); }
+            try { if (psBitacora != null) psBitacora.close(); } catch (SQLException _ex) { _ex.printStackTrace(); }
             try { if (base != null) base.cerrar(); } catch (SQLException _ex) { _ex.printStackTrace(); }
         }
     }
@@ -486,9 +540,13 @@ public class InicioAdmin extends JFrame {
 
 
 
+
     public void cargarTurnos() {
+        // Variable para obtener el nombre del usuario, asumiendo que lo obtienes de un JLabel
+        String nombreUsuario = nombre.getText();
+
         // === 2. SQL para traer nombre y horarios de entrada/salida ===
-        String sql = "SELECT nombre, entrada_1, salida_1, entrada_2, salida_2, entrada_3, salida_3 " +
+        String sqlSelect = "SELECT nombre, entrada_1, salida_1, entrada_2, salida_2, entrada_3, salida_3 " +
                 "FROM Turnos";
 
         BaseSQL base = null;
@@ -503,8 +561,8 @@ public class InicioAdmin extends JFrame {
         try {
             base = new BaseSQL();
 
-            // === Ejecución del SELECT ===
-            ps = base.conn.prepareStatement(sql);
+            // === Ejecución del SELECT para cargar los turnos ===
+            ps = base.conn.prepareStatement(sqlSelect);
             rs = ps.executeQuery();
 
             // === 3. Recorrer filas y llenar la tabla ===
@@ -527,6 +585,31 @@ public class InicioAdmin extends JFrame {
 
             // === 4. Asigna el modelo a la JTable de la UI ===
             tablaturnos.setModel(model);
+
+            // -------------------- INICIO: REGISTRO EN BITÁCORA --------------------
+            // Esta sección registra la acción en la tabla 'bitacora_accesos'
+            // cada vez que los datos de los turnos son visualizados.
+            try {
+                // Obtenemos la fecha y hora actuales
+                LocalDate fechaActual = LocalDate.now();
+                LocalTime horaActual = LocalTime.now();
+
+                // SQL para insertar el registro en la bitácora
+                String sqlInsert = "INSERT INTO bitacora_accesos (usuario, accion, fecha, hora) VALUES (?, ?, ?, ?)";
+
+                // Usamos un nuevo PreparedStatement para el INSERT
+                try (PreparedStatement psInsert = base.conn.prepareStatement(sqlInsert)) {
+                    psInsert.setString(1, nombreUsuario);
+                    psInsert.setString(2, "Visualizó datos sobre los empleados");
+                    psInsert.setObject(3, fechaActual);
+                    psInsert.setObject(4, horaActual);
+                    psInsert.executeUpdate();
+                }
+            } catch (SQLException ex) {
+                // Manejar errores si falla el registro en la bitácora
+                System.err.println("Error al registrar en bitácora: " + ex.getMessage());
+            }
+            // -------------------- FIN: REGISTRO EN BITÁCORA --------------------
 
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -660,6 +743,7 @@ public class InicioAdmin extends JFrame {
     }
 
 	private void crearturno(ActionEvent e) {
+
         crearTurno();
     }
 

@@ -132,6 +132,7 @@ new FormModel {
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "label18"
 						"icon": new com.jformdesigner.model.SwingIcon( 0, "/loc.jpg" )
+						"foreground": new java.awt.Color( 0, 0, 0, 255 )
 					}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 						"x": 10
 						"y": 160
@@ -211,6 +212,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "fechaact"
 							"text": "dd/mm/aaaa"
+							"foreground": new java.awt.Color( 0, 0, 0, 255 )
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 							"width": 170
 							"height": 30
