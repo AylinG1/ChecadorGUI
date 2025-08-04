@@ -24,8 +24,6 @@ import java.util.Map;
 import javax.swing.JLabel;
 
 
-
-
 public class InicioAdmin extends JFrame {
     public InicioAdmin() {
         initComponents(); // generado por JFormDesigner
@@ -33,7 +31,6 @@ public class InicioAdmin extends JFrame {
         mostrarPanel("card6");
         nombre.setText(SesionUsuario.usuarioActual);
     }
-
 
     public void cargarRegistros() {
         // === 1. Fecha del día en la UI ===
@@ -169,7 +166,6 @@ public class InicioAdmin extends JFrame {
             double totalMinutosEsperadosGlobal = horasEsperadasPorEmpleado.values().stream().mapToDouble(Double::doubleValue).sum();
             double pctHoras = totalMinutosEsperadosGlobal > 0 ? 100.0 * totalMinutosHorasEsperadas / totalMinutosEsperadosGlobal : 0.0;
             labelhorasPorcentaje.setText(String.format("%.1f%%", pctHoras));
-
         } catch (SQLException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(null,

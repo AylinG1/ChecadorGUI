@@ -320,7 +320,7 @@ new FormModel {
 							"y": 90
 						} )
 						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
-							name: "panel7"
+							name: "panelgrafica"
 							"background": new java.awt.Color( 204, 255, 204, 255 )
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 							"width": 590
