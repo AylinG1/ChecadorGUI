@@ -613,13 +613,12 @@ public class InicioAdmin extends JFrame {
 
         //======== panelBase ========
         {
-            panelBase.setBorder ( new javax . swing. border .CompoundBorder ( new javax . swing. border .TitledBorder ( new
-            javax . swing. border .EmptyBorder ( 0, 0 ,0 , 0) ,  "JF\u006frmD\u0065sig\u006eer \u0045val\u0075ati\u006fn" , javax
-            . swing .border . TitledBorder. CENTER ,javax . swing. border .TitledBorder . BOTTOM, new java
-            . awt .Font ( "Dia\u006cog", java .awt . Font. BOLD ,12 ) ,java . awt
-            . Color .red ) ,panelBase. getBorder () ) ); panelBase. addPropertyChangeListener( new java. beans .
-            PropertyChangeListener ( ){ @Override public void propertyChange (java . beans. PropertyChangeEvent e) { if( "\u0062ord\u0065r" .
-            equals ( e. getPropertyName () ) )throw new RuntimeException( ) ;} } );
+            panelBase.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.TitledBorder(new javax.swing.border
+            .EmptyBorder(0,0,0,0), "JFor\u006dDesi\u0067ner \u0045valu\u0061tion",javax.swing.border.TitledBorder.CENTER,javax
+            .swing.border.TitledBorder.BOTTOM,new java.awt.Font("Dia\u006cog",java.awt.Font.BOLD,
+            12),java.awt.Color.red),panelBase. getBorder()));panelBase. addPropertyChangeListener(new java.beans
+            .PropertyChangeListener(){@Override public void propertyChange(java.beans.PropertyChangeEvent e){if("bord\u0065r".equals(e.
+            getPropertyName()))throw new RuntimeException();}});
             panelBase.setLayout(new BorderLayout());
 
             //======== panelMenu ========
@@ -628,7 +627,7 @@ public class InicioAdmin extends JFrame {
                 panelMenu.setLayout(null);
 
                 //---- label1 ----
-                label1.setText("Gesti\u00f3n de empleados");
+                label1.setText("Gesti\u00f3n de Empleados");
                 label1.setForeground(new Color(0xff8d1b));
                 label1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 label1.setFont(new Font("Microsoft JhengHei Light", Font.PLAIN, 13));
@@ -653,7 +652,7 @@ public class InicioAdmin extends JFrame {
                 separator2.setBounds(10, 260, 195, 20);
 
                 //---- label3 ----
-                label3.setText("Seguridad y roles");
+                label3.setText("Centro Administrativo");
                 label3.setForeground(new Color(0xff871d));
                 label3.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 label3.setFont(new Font("Microsoft YaHei Light", Font.PLAIN, 13));
@@ -664,7 +663,7 @@ public class InicioAdmin extends JFrame {
                     }
                 });
                 panelMenu.add(label3);
-                label3.setBounds(65, 85, 121, label3.getPreferredSize().height);
+                label3.setBounds(65, 85, 150, label3.getPreferredSize().height);
 
                 //---- label4 ----
                 label4.setText("Bit\u00e1cora de actividades");
@@ -761,7 +760,7 @@ public class InicioAdmin extends JFrame {
                 separator6.setBounds(15, 310, 195, 20);
 
                 //---- label17 ----
-                label17.setText("Turnos");
+                label17.setText("Gesti\u00f3n de Turnos");
                 label17.setForeground(new Color(0xff8d1b));
                 label17.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 label17.setFont(new Font("Microsoft JhengHei Light", Font.PLAIN, 13));
