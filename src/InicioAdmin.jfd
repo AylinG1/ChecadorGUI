@@ -322,9 +322,20 @@ new FormModel {
 						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
 							name: "panelgrafica"
 							"background": new java.awt.Color( 204, 255, 204, 255 )
+							add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+								name: "scrollPane6"
+								add( new FormComponent( "javax.swing.JTable" ) {
+									name: "tabladia"
+								} )
+							}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+								"x": 15
+								"y": 10
+								"width": 560
+								"height": 285
+							} )
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 							"width": 590
-							"height": 275
+							"height": 310
 							"x": 25
 							"y": 225
 						} )
@@ -366,11 +377,11 @@ new FormModel {
 						} )
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label47"
-							"text": "Asistencia semanal"
+							"text": "Registro de asistencia en el dia"
 							"foreground": #Color3
 							"font": #Font2
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-							"width": 300
+							"width": 395
 							"height": 30
 							"x": 25
 							"y": 180
