@@ -15,6 +15,13 @@ import java.sql.Types;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.sql.CallableStatement;
+import java.sql.Timestamp;
+import javax.swing.JTable;
+import java.sql.Date;
+
+
+
+
 
 public class InicioAdmin extends JFrame {
     public InicioAdmin() {
@@ -22,6 +29,115 @@ public class InicioAdmin extends JFrame {
         agregarEventos();
         mostrarPanel("card6");
         nombre.setText(SesionUsuario.usuarioActual);
+    }
+
+
+
+    public void cargarRegistros() {
+        // === 1. SQL para traer los datos de los registros ===
+        String sql = "SELECT usuario, accion, fecha, hora FROM bitacora_accesos"; // Suponiendo que la tabla se llama 'Registros'
+
+        BaseSQL base = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        // === 2. Modelo para la tabla con las columnas deseadas ===
+        DefaultTableModel model = new DefaultTableModel(new String[] {
+                "Usuario", "Acción", "Fecha", "Hora"
+        }, 0);
+
+        try {
+            base = new BaseSQL();
+            ps = base.conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            // === 3. Recorrer filas y llenar el modelo ===
+            while (rs.next()) {
+                String usuario = rs.getString("usuario");
+                String accion = rs.getString("accion");
+                Date fecha = rs.getDate("fecha");
+                Time hora = rs.getTime("hora");
+
+                model.addRow(new Object[] {
+                        usuario,
+                        accion,
+                        fecha,
+                        hora
+                });
+            }
+
+            // === 4. Asignar el modelo a la JTable ===
+            if (tablaregistros != null) {
+                tablaregistros.setModel(model);
+            } else {
+                System.err.println("Error: La tabla 'tablaregistros' no está inicializada.");
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "Error al cargar registros: " + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            try { if (rs != null) rs.close();      } catch (Exception _e) {}
+            try { if (ps != null) ps.close();      } catch (Exception _e) {}
+            try { if (base != null) base.cerrar(); } catch (Exception _e) {}
+        }
+    }
+
+
+
+    public void cargarSesiones() {
+        // === 1. SQL para traer los datos de las sesiones con JOIN a la tabla de Usuarios ===
+        String sql = "SELECT u.Usuario, l.FechaHora, l.Accion " +
+                "FROM LogsActividad l " +
+                "JOIN Usuarios u ON l.UsuarioID = u.UsuarioID " +
+                "ORDER BY l.FechaHora DESC";
+
+        BaseSQL base = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        // === 2. Modelo para la tabla con las columnas deseadas ===
+        DefaultTableModel model = new DefaultTableModel(new String[] {
+                "Usuario", "Fecha y Hora", "Acción"
+        }, 0);
+
+        try {
+            base = new BaseSQL();
+            ps = base.conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            // === 3. Recorrer filas y llenar el modelo ===
+            while (rs.next()) {
+                String usuario = rs.getString("Usuario");
+                Timestamp fechaHora = rs.getTimestamp("FechaHora");
+                String accion = rs.getString("Accion");
+
+                model.addRow(new Object[] {
+                        usuario,
+                        fechaHora,
+                        accion
+                });
+            }
+
+            // === 4. Asignar el modelo a la JTable ===
+            if (tablasesiones != null) {
+                tablasesiones.setModel(model);
+            } else {
+                System.err.println("Error: La tabla 'tablasesiones' no está inicializada.");
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "Error al cargar sesiones: " + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            try { if (rs != null) rs.close();      } catch (Exception _e) {}
+            try { if (ps != null) ps.close();      } catch (Exception _e) {}
+            try { if (base != null) base.cerrar(); } catch (Exception _e) {}
+        }
     }
 
     public void cargarTurnosEnComboBox() {
@@ -287,6 +403,11 @@ public class InicioAdmin extends JFrame {
         label4.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 mostrarPanel("card3");
+                LocalDate hoy = LocalDate.now();
+                DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault());
+                fechabitacora.setText("Fecha: " + hoy.format(fmt));
+                cargarRegistros();
+                cargarSesiones();
             }
         });
 
@@ -427,6 +548,14 @@ public class InicioAdmin extends JFrame {
         label10 = new JLabel();
         panelBitácoraAct = new JPanel();
         label7 = new JLabel();
+        label24 = new JLabel();
+        fechabitacora = new JLabel();
+        label37 = new JLabel();
+        scrollPane4 = new JScrollPane();
+        tablaregistros = new JTable();
+        label41 = new JLabel();
+        scrollPane5 = new JScrollPane();
+        tablasesiones = new JTable();
         panelReglas = new JPanel();
         label9 = new JLabel();
         label8 = new JLabel();
@@ -484,12 +613,13 @@ public class InicioAdmin extends JFrame {
 
         //======== panelBase ========
         {
-            panelBase.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax. swing. border.
-            EmptyBorder( 0, 0, 0, 0) , "JFor\u006dDesi\u0067ner \u0045valu\u0061tion", javax. swing. border. TitledBorder. CENTER, javax. swing
-            . border. TitledBorder. BOTTOM, new java .awt .Font ("Dia\u006cog" ,java .awt .Font .BOLD ,12 ),
-            java. awt. Color. red) ,panelBase. getBorder( )) ); panelBase. addPropertyChangeListener (new java. beans. PropertyChangeListener( )
-            { @Override public void propertyChange (java .beans .PropertyChangeEvent e) {if ("bord\u0065r" .equals (e .getPropertyName () ))
-            throw new RuntimeException( ); }} );
+            panelBase.setBorder ( new javax . swing. border .CompoundBorder ( new javax . swing. border .TitledBorder ( new
+            javax . swing. border .EmptyBorder ( 0, 0 ,0 , 0) ,  "JF\u006frmD\u0065sig\u006eer \u0045val\u0075ati\u006fn" , javax
+            . swing .border . TitledBorder. CENTER ,javax . swing. border .TitledBorder . BOTTOM, new java
+            . awt .Font ( "Dia\u006cog", java .awt . Font. BOLD ,12 ) ,java . awt
+            . Color .red ) ,panelBase. getBorder () ) ); panelBase. addPropertyChangeListener( new java. beans .
+            PropertyChangeListener ( ){ @Override public void propertyChange (java . beans. PropertyChangeEvent e) { if( "\u0062ord\u0065r" .
+            equals ( e. getPropertyName () ) )throw new RuntimeException( ) ;} } );
             panelBase.setLayout(new BorderLayout());
 
             //======== panelMenu ========
@@ -714,9 +844,50 @@ public class InicioAdmin extends JFrame {
 
                     //---- label7 ----
                     label7.setText("Bit\u00e1cora de actividades");
-                    label7.setForeground(new Color(0xf2876b));
+                    label7.setForeground(Color.black);
+                    label7.setFont(new Font("Inter", Font.BOLD, 20));
                     panelBitácoraAct.add(label7);
-                    label7.setBounds(20, 45, 160, 25);
+                    label7.setBounds(15, 10, 300, 30);
+
+                    //---- label24 ----
+                    label24.setText("Registro de acciones importantes en el sistema.");
+                    label24.setForeground(Color.black);
+                    panelBitácoraAct.add(label24);
+                    label24.setBounds(30, 45, 365, 25);
+
+                    //---- fechabitacora ----
+                    fechabitacora.setText("text");
+                    fechabitacora.setForeground(Color.black);
+                    panelBitácoraAct.add(fechabitacora);
+                    fechabitacora.setBounds(445, 15, 160, 25);
+
+                    //---- label37 ----
+                    label37.setText("Registros recientes");
+                    label37.setForeground(Color.black);
+                    label37.setFont(new Font("Inter", Font.BOLD, 20));
+                    panelBitácoraAct.add(label37);
+                    label37.setBounds(10, 80, 300, 30);
+
+                    //======== scrollPane4 ========
+                    {
+                        scrollPane4.setViewportView(tablaregistros);
+                    }
+                    panelBitácoraAct.add(scrollPane4);
+                    scrollPane4.setBounds(10, 120, 595, 190);
+
+                    //---- label41 ----
+                    label41.setText("Inicios de Sesi\u00f3n recientes");
+                    label41.setForeground(Color.black);
+                    label41.setFont(new Font("Inter", Font.BOLD, 20));
+                    panelBitácoraAct.add(label41);
+                    label41.setBounds(15, 320, 300, 30);
+
+                    //======== scrollPane5 ========
+                    {
+                        scrollPane5.setViewportView(tablasesiones);
+                    }
+                    panelBitácoraAct.add(scrollPane5);
+                    scrollPane5.setBounds(10, 350, 590, 200);
 
                     {
                         // compute preferred size
@@ -1132,7 +1303,7 @@ public class InicioAdmin extends JFrame {
             panelBase.add(panelInicio, BorderLayout.CENTER);
         }
         contentPane.add(panelBase);
-        panelBase.setBounds(-10, -5, 815, 500);
+        panelBase.setBounds(-10, -5, 910, 605);
 
         {
             // compute preferred size
@@ -1182,6 +1353,14 @@ public class InicioAdmin extends JFrame {
     private JLabel label10;
     private JPanel panelBitácoraAct;
     private JLabel label7;
+    private JLabel label24;
+    private JLabel fechabitacora;
+    private JLabel label37;
+    private JScrollPane scrollPane4;
+    private JTable tablaregistros;
+    private JLabel label41;
+    private JScrollPane scrollPane5;
+    private JTable tablasesiones;
     private JPanel panelReglas;
     private JLabel label9;
     private JLabel label8;
