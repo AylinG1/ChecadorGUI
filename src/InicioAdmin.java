@@ -1461,6 +1461,7 @@ public class InicioAdmin extends JFrame {
                     label21.setText("(+) Nuevo Turno");
                     label21.setBackground(Color.black);
                     label21.setForeground(Color.blue);
+                    label21.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                     panelTurnos.add(label21);
                     label21.setBounds(425, 135, 125, label21.getPreferredSize().height);
 
@@ -1599,6 +1600,7 @@ public class InicioAdmin extends JFrame {
                     label32.setText("(+) Nuevo Empleado");
                     label32.setBackground(Color.black);
                     label32.setForeground(Color.blue);
+                    label32.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                     panelempleados.add(label32);
                     label32.setBounds(410, 150, 140, 17);
 
