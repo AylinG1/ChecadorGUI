@@ -277,11 +277,6 @@ public class InicioAdmin extends JFrame {
 
 
     private void agregarEventos() {
-        label1.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                mostrarPanel("card5");
-            }
-        });
 
         label3.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
@@ -320,7 +315,7 @@ public class InicioAdmin extends JFrame {
                 labelFechaCrearTurno.setText("Fecha: " + hoy.format(fmt));
             }
         });
-        label24.addMouseListener(new MouseAdapter() {
+        label1.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 mostrarPanel("card12");
                 // 1. Mostrar la fecha actual en el label
@@ -427,8 +422,6 @@ public class InicioAdmin extends JFrame {
         label17 = new JLabel();
         label19 = new JLabel();
         nombre = new JLabel();
-        label24 = new JLabel();
-        separator8 = new JSeparator();
         panelInicio = new JPanel();
         panelSeguridadYrol = new JPanel();
         label10 = new JLabel();
@@ -491,12 +484,12 @@ public class InicioAdmin extends JFrame {
 
         //======== panelBase ========
         {
-            panelBase.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax. swing. border. EmptyBorder
-            ( 0, 0, 0, 0) , "JF\u006frmDesi\u0067ner Ev\u0061luatio\u006e", javax. swing. border. TitledBorder. CENTER, javax. swing. border
-            . TitledBorder. BOTTOM, new java .awt .Font ("Dialo\u0067" ,java .awt .Font .BOLD ,12 ), java. awt
-            . Color. red) ,panelBase. getBorder( )) ); panelBase. addPropertyChangeListener (new java. beans. PropertyChangeListener( ){ @Override public void
-            propertyChange (java .beans .PropertyChangeEvent e) {if ("borde\u0072" .equals (e .getPropertyName () )) throw new RuntimeException( )
-            ; }} );
+            panelBase.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax. swing. border.
+            EmptyBorder( 0, 0, 0, 0) , "JFor\u006dDesi\u0067ner \u0045valu\u0061tion", javax. swing. border. TitledBorder. CENTER, javax. swing
+            . border. TitledBorder. BOTTOM, new java .awt .Font ("Dia\u006cog" ,java .awt .Font .BOLD ,12 ),
+            java. awt. Color. red) ,panelBase. getBorder( )) ); panelBase. addPropertyChangeListener (new java. beans. PropertyChangeListener( )
+            { @Override public void propertyChange (java .beans .PropertyChangeEvent e) {if ("bord\u0065r" .equals (e .getPropertyName () ))
+            throw new RuntimeException( ); }} );
             panelBase.setLayout(new BorderLayout());
 
             //======== panelMenu ========
@@ -662,25 +655,6 @@ public class InicioAdmin extends JFrame {
                 nombre.setFont(new Font("Segoe UI Black", Font.BOLD, 14));
                 panelMenu.add(nombre);
                 nombre.setBounds(15, 15, 155, 20);
-
-                //---- label24 ----
-                label24.setText("Empleados");
-                label24.setForeground(new Color(0xff8d1b));
-                label24.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                label24.setFont(new Font("Microsoft JhengHei Light", Font.PLAIN, 13));
-                label24.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        label1MouseClicked(e);
-                    }
-                });
-                panelMenu.add(label24);
-                label24.setBounds(65, 320, 140, 18);
-
-                //---- separator8 ----
-                separator8.setForeground(new Color(0xff7c25));
-                panelMenu.add(separator8);
-                separator8.setBounds(10, 355, 195, 20);
 
                 {
                     // compute preferred size
@@ -1203,8 +1177,6 @@ public class InicioAdmin extends JFrame {
     private JLabel label17;
     private JLabel label19;
     private JLabel nombre;
-    private JLabel label24;
-    private JSeparator separator8;
     private JPanel panelInicio;
     private JPanel panelSeguridadYrol;
     private JLabel label10;
