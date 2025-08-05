@@ -155,76 +155,112 @@ new FormModel {
 						name: "panelReportes"
 						"background": new java.awt.Color( 255, 153, 102, 255 )
 						add( new FormComponent( "javax.swing.JLabel" ) {
-							name: "label10"
-							"text": "Panel reportes"
-							"foreground": new java.awt.Color( 204, 204, 204, 255 )
-						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-							"width": 155
-							"height": 16
-							"x": 20
-							"y": 35
-						} )
-						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label15"
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 							"x": 115
 							"y": 175
 						} )
-						add( new FormComponent( "javax.swing.JComboBox" ) {
-							name: "comboBox1"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label22"
+							"text": "empleado"
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-							"x": 40
+							"width": 120
+							"height": 17
+							"x": 15
 							"y": 110
+						} )
+						add( new FormComponent( "javax.swing.JComboBox" ) {
+							name: "cmbempleado"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 165
+							"height": 34
+							"x": 105
+							"y": 100
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label23"
+							"text": "Desde:"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 115
+							"height": 17
+							"x": 15
+							"y": 160
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label21"
+							"text": "Escribe el reporte aquí:"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 142
+							"height": 17
+							"x": 340
+							"y": 145
 						} )
 						add( new FormComponent( "javax.swing.JTextField" ) {
 							name: "textField1"
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-							"x": 55
-							"y": 220
+							"width": 310
+							"height": 240
+							"x": 315
+							"y": 175
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label24"
+							"text": "Hasta"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 130
+							"height": 17
+							"x": 20
+							"y": 225
+						} )
+						add( new FormComponent( "javax.swing.JComboBox" ) {
+							name: "cmbturnoempleado"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"width": 160
+							"height": 34
+							"x": 100
+							"y": 310
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label25"
+							"text": "Turno"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 							"width": 120
-							"height": 50
+							"height": 17
+							"x": 20
+							"y": 320
 						} )
 						add( new FormComponent( "javax.swing.JButton" ) {
 							name: "button1"
-							"text": "Enviar"
+							"text": "Generar PDF"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "button1", true ) )
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-							"x": 295
+							"width": 112
+							"height": 34
+							"x": 475
+							"y": 425
+						} )
+						add( new FormComponent( "com.toedter.calendar.JDateChooser" ) {
+							name: "dateChooser1"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"x": 15
+							"y": 190
+							"width": 255
+						} )
+						add( new FormComponent( "com.toedter.calendar.JDateChooser" ) {
+							name: "dateChooser2"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+							"x": 20
 							"y": 255
+							"width": 250
 						} )
 						add( new FormComponent( "javax.swing.JLabel" ) {
-							name: "label17"
-							"text": "Escribe el reporte aquí"
+							name: "label28"
+							"text": "GENERAR REPORTES"
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-							"x": 35
-							"y": 195
-						} )
-						add( new FormComponent( "javax.swing.JLabel" ) {
-							name: "label18"
-							"text": "empleado"
-						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-							"x": 155
-							"y": 110
-						} )
-						add( new FormComponent( "javax.swing.JLabel" ) {
-							name: "label19"
-							"text": "minutos de retardo"
-						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-							"x": 260
-							"y": 110
-						} )
-						add( new FormComponent( "javax.swing.JLabel" ) {
-							name: "label20"
-							"text": "No. de semana"
-						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-							"x": 155
-							"y": 135
-						} )
-						add( new FormComponent( "javax.swing.JLabel" ) {
-							name: "label21"
-							"text": "días"
-						}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-							"x": 265
-							"y": 140
+							"width": 220
+							"height": 17
+							"x": 15
+							"y": 25
 						} )
 					}, new FormLayoutConstraints( class java.lang.String ) {
 						"value": "card2"

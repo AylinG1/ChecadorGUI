@@ -162,14 +162,41 @@ public class LoginPrincipal extends JFrame {
                             });
                             break;
 
-                        case "empleado":
+                        /*case "empleado":
                             labelMensaje.setText("¡Login exitoso! Bienvenido empleado.");
                             SesionUsuario.usuarioActual = campoUsuario.getText().trim(); //guarda el usuario
+                            int minutos = RetardoUtil.obtenerMinutosRetardo(SesionUsuario.usuarioActual);
                             SwingUtilities.invokeLater(() -> {
                                 new PrincipaloUsuario().setVisible(true);
                                 this.dispose();
                             });
+                            break;*/
+                        case "empleado":
+                            labelMensaje.setText("¡Login exitoso! Bienvenido empleado.");
+                            SesionUsuario.usuarioActual = campoUsuario.getText().trim();
+
+                            SwingUtilities.invokeLater(() -> {
+                                PrincipaloUsuario ventana = new PrincipaloUsuario();
+
+                                int minutos = RetardoUtil.obtenerMinutosRetardo(SesionUsuario.usuarioActual);
+
+                                // Si tiene más de 15 minutos, ir directo al panel "retardos"
+                                if (minutos > 15) {
+                                    JOptionPane.showMessageDialog(
+                                            ventana,
+                                            "Tienes " + minutos + " minutos de retardo acumulados.\nRevisa los detalles en tu historial.",
+                                            "Alerta de retardo",
+                                            JOptionPane.WARNING_MESSAGE
+                                    );
+                                    ventana.mostrarPanel("retardos");
+                                }
+
+                                ventana.setVisible(true);
+                                this.dispose();
+                            });
                             break;
+
+
 
 
                         case "supervisor":

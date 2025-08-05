@@ -13,6 +13,11 @@ import java.util.Locale;
 import java.sql.Time;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import com.toedter.calendar.*;
+import java.awt.event.ActionEvent;
+import java.util.Date;
+import javax.swing.JLabel;
+import java.util.Calendar;
 
 
 
@@ -149,7 +154,71 @@ public class PrincipalSupervisor extends JFrame {
         }
     }
 
+    public void cargarEmpleadosEnComboBox() {
+        String sql = "SELECT id, nombre FROM Empleados ORDER BY nombre";
 
+        BaseSQL base = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            base = new BaseSQL();
+            ps = base.conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            // Limpiar el JComboBox antes de llenarlo
+            cmbempleado.removeAllItems();
+
+            while (rs.next()) {
+                int idEmpleado = rs.getInt("id");
+                String nombreEmpleado = rs.getString("nombre");
+
+                // Creamos un nuevo objeto 'Empleado' y lo agregamos al JComboBox
+                cmbempleado.addItem(new Empleado(idEmpleado, nombreEmpleado));
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            // Manejo de errores
+        } finally {
+            try { if (rs != null) rs.close();      } catch (Exception _e) {}
+            try { if (ps != null) ps.close();      } catch (Exception _e) {}
+            try { if (base != null) base.cerrar(); } catch (Exception _e) {}
+        }
+    }
+
+    public void cargarTurnosEnComboBox() {
+        String sql = "SELECT id, nombre FROM Turnos ORDER BY nombre";
+
+        BaseSQL base = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            base = new BaseSQL();
+            ps = base.conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            // Limpiar el JComboBox y establecer el tipo de objeto que guardará
+            cmbturnoempleado.removeAllItems();
+
+            while (rs.next()) {
+                int idTurno = rs.getInt("id");
+                String nombreTurno = rs.getString("nombre");
+
+                // Creamos un nuevo objeto 'Turno' y lo agregamos al JComboBox
+                cmbturnoempleado.addItem(new Turno(idTurno, nombreTurno));
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            // Manejo de errores
+        } finally {
+            try { if (rs != null) rs.close();      } catch (Exception _e) {}
+            try { if (ps != null) ps.close();      } catch (Exception _e) {}
+            try { if (base != null) base.cerrar(); } catch (Exception _e) {}
+        }
+    }
 
     public void cargarAlertasDeRetardos() {
         LocalDate fechaActual = LocalDate.now();
@@ -204,6 +273,8 @@ public class PrincipalSupervisor extends JFrame {
         label3.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 mostrarPanel("card2"); // panelReportes
+                cargarTurnosEnComboBox();
+                cargarEmpleadosEnComboBox();
                 cargarReporte();
             }
         });
@@ -269,6 +340,51 @@ public class PrincipalSupervisor extends JFrame {
         mostrarPanel("card2");
     }
 
+    private void button1(ActionEvent e) {
+        // 1. Obtener el objeto Empleado del JComboBox y validar que se haya seleccionado uno
+        Object selectedItem = cmbempleado.getSelectedItem();
+        if (selectedItem == null || !(selectedItem instanceof Empleado)) {
+            JOptionPane.showMessageDialog(null, "Por favor, seleccione un empleado válido.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        Empleado empleadoSeleccionado = (Empleado) selectedItem;
+
+        // 2. Obtener las fechas del DateChooser y el comentario del campo de texto
+        Date fechaInicio = dateChooser1.getDate();
+        Date fechaFin = dateChooser2.getDate();
+        String comentario = textField1.getText();
+
+        // 3. Validar que las fechas no estén vacías
+        if (fechaInicio == null || fechaFin == null) {
+            JOptionPane.showMessageDialog(null, "Por favor, complete las fechas de inicio y fin.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // 4. Extraer los datos necesarios del objeto Empleado
+        int idEmpleado = empleadoSeleccionado.getId();
+        String nombreEmpleado = empleadoSeleccionado.getNombre();
+
+        // --- CAMBIO A REALIZAR AQUÍ ---
+        // Extrae el nombre de usuario del texto de la etiqueta label16
+        String usuarioLogueado = label16.getText();
+
+        // 5. Crear una instancia de la clase GeneradorPDF y llamar al método
+        GeneradorPDF generador = new GeneradorPDF();
+        generador.generarReporteDeRetardos(idEmpleado, nombreEmpleado, fechaInicio, fechaFin, comentario);
+
+        // 6. Registrar la acción en la bitácora
+        // Obtenemos el número de la semana del año de la fecha de inicio para el registro
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(fechaInicio);
+        int semanaDelAnio = cal.get(Calendar.WEEK_OF_YEAR);
+
+        String accion = "Generó reporte de retardos de la semana " + semanaDelAnio + " para el empleado " + nombreEmpleado;
+
+        // Asume que la clase UtilidadesBitacora existe y tiene el método registrarAccionEnBitacora
+        UtilidadesBitacora bitacora = new UtilidadesBitacora();
+        bitacora.registrarAccionEnBitacora(usuarioLogueado, accion);
+    }
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
         // Generated using JFormDesigner Evaluation license - Juan
@@ -290,16 +406,19 @@ public class PrincipalSupervisor extends JFrame {
         label16 = new JLabel();
         panelInicio = new JPanel();
         panelReportes = new JPanel();
-        label10 = new JLabel();
         label15 = new JLabel();
-        comboBox1 = new JComboBox();
-        textField1 = new JTextField();
-        button1 = new JButton();
-        label17 = new JLabel();
-        label18 = new JLabel();
-        label19 = new JLabel();
-        label20 = new JLabel();
+        label22 = new JLabel();
+        cmbempleado = new JComboBox();
+        label23 = new JLabel();
         label21 = new JLabel();
+        textField1 = new JTextField();
+        label24 = new JLabel();
+        cmbturnoempleado = new JComboBox();
+        label25 = new JLabel();
+        button1 = new JButton();
+        dateChooser1 = new JDateChooser();
+        dateChooser2 = new JDateChooser();
+        label28 = new JLabel();
         panelRegistros = new JPanel();
         label7 = new JLabel();
         panel2 = new JPanel();
@@ -334,11 +453,12 @@ public class PrincipalSupervisor extends JFrame {
 
         //======== panel4 ========
         {
-            panel4.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax. swing. border. EmptyBorder( 0
-            , 0, 0, 0) , "JF\u006frm\u0044es\u0069gn\u0065r \u0045va\u006cua\u0074io\u006e", javax. swing. border. TitledBorder. CENTER, javax. swing. border. TitledBorder. BOTTOM
-            , new java .awt .Font ("D\u0069al\u006fg" ,java .awt .Font .BOLD ,12 ), java. awt. Color. red) ,
-            panel4. getBorder( )) ); panel4. addPropertyChangeListener (new java. beans. PropertyChangeListener( ){ @Override public void propertyChange (java .beans .PropertyChangeEvent e
-            ) {if ("\u0062or\u0064er" .equals (e .getPropertyName () )) throw new RuntimeException( ); }} );
+            panel4.setBorder ( new javax . swing. border .CompoundBorder ( new javax . swing. border .TitledBorder ( new javax . swing.
+            border .EmptyBorder ( 0, 0 ,0 , 0) ,  "JF\u006frmDes\u0069gner \u0045valua\u0074ion" , javax. swing .border . TitledBorder. CENTER
+            ,javax . swing. border .TitledBorder . BOTTOM, new java. awt .Font ( "D\u0069alog", java .awt . Font
+            . BOLD ,12 ) ,java . awt. Color .red ) ,panel4. getBorder () ) ); panel4. addPropertyChangeListener(
+            new java. beans .PropertyChangeListener ( ){ @Override public void propertyChange (java . beans. PropertyChangeEvent e) { if( "\u0062order"
+            .equals ( e. getPropertyName () ) )throw new RuntimeException( ) ;} } );
             panel4.setLayout(new BorderLayout());
 
             //======== panelMenu ========
@@ -483,48 +603,54 @@ public class PrincipalSupervisor extends JFrame {
                 {
                     panelReportes.setBackground(new Color(0xff9966));
                     panelReportes.setLayout(null);
-
-                    //---- label10 ----
-                    label10.setText("Panel reportes");
-                    label10.setForeground(new Color(0xcccccc));
-                    panelReportes.add(label10);
-                    label10.setBounds(20, 35, 155, 16);
                     panelReportes.add(label15);
                     label15.setBounds(new Rectangle(new Point(115, 175), label15.getPreferredSize()));
-                    panelReportes.add(comboBox1);
-                    comboBox1.setBounds(new Rectangle(new Point(40, 110), comboBox1.getPreferredSize()));
-                    panelReportes.add(textField1);
-                    textField1.setBounds(55, 220, 120, 50);
 
-                    //---- button1 ----
-                    button1.setText("Enviar");
-                    panelReportes.add(button1);
-                    button1.setBounds(new Rectangle(new Point(295, 255), button1.getPreferredSize()));
+                    //---- label22 ----
+                    label22.setText("empleado");
+                    panelReportes.add(label22);
+                    label22.setBounds(15, 110, 120, 17);
+                    panelReportes.add(cmbempleado);
+                    cmbempleado.setBounds(105, 100, 165, 34);
 
-                    //---- label17 ----
-                    label17.setText("Escribe el reporte aqu\u00ed");
-                    panelReportes.add(label17);
-                    label17.setBounds(new Rectangle(new Point(35, 195), label17.getPreferredSize()));
-
-                    //---- label18 ----
-                    label18.setText("empleado");
-                    panelReportes.add(label18);
-                    label18.setBounds(new Rectangle(new Point(155, 110), label18.getPreferredSize()));
-
-                    //---- label19 ----
-                    label19.setText("minutos de retardo");
-                    panelReportes.add(label19);
-                    label19.setBounds(new Rectangle(new Point(260, 110), label19.getPreferredSize()));
-
-                    //---- label20 ----
-                    label20.setText("No. de semana");
-                    panelReportes.add(label20);
-                    label20.setBounds(new Rectangle(new Point(155, 135), label20.getPreferredSize()));
+                    //---- label23 ----
+                    label23.setText("Desde:");
+                    panelReportes.add(label23);
+                    label23.setBounds(15, 160, 115, 17);
 
                     //---- label21 ----
-                    label21.setText("d\u00edas");
+                    label21.setText("Escribe el reporte aqu\u00ed:");
                     panelReportes.add(label21);
-                    label21.setBounds(new Rectangle(new Point(265, 140), label21.getPreferredSize()));
+                    label21.setBounds(340, 145, 142, 17);
+                    panelReportes.add(textField1);
+                    textField1.setBounds(315, 175, 310, 240);
+
+                    //---- label24 ----
+                    label24.setText("Hasta");
+                    panelReportes.add(label24);
+                    label24.setBounds(20, 225, 130, 17);
+                    panelReportes.add(cmbturnoempleado);
+                    cmbturnoempleado.setBounds(100, 310, 160, 34);
+
+                    //---- label25 ----
+                    label25.setText("Turno");
+                    panelReportes.add(label25);
+                    label25.setBounds(20, 320, 120, 17);
+
+                    //---- button1 ----
+                    button1.setText("Generar PDF");
+                    button1.addActionListener(e -> button1(e));
+                    panelReportes.add(button1);
+                    button1.setBounds(475, 425, 112, 34);
+                    panelReportes.add(dateChooser1);
+                    dateChooser1.setBounds(15, 190, 255, dateChooser1.getPreferredSize().height);
+                    panelReportes.add(dateChooser2);
+                    dateChooser2.setBounds(20, 255, 250, dateChooser2.getPreferredSize().height);
+
+                    //---- label28 ----
+                    label28.setText("GENERAR REPORTES");
+                    panelReportes.add(label28);
+                    label28.setBounds(15, 25, 220, 17);
 
                     {
                         // compute preferred size
@@ -868,16 +994,19 @@ public class PrincipalSupervisor extends JFrame {
     private JLabel label16;
     private JPanel panelInicio;
     private JPanel panelReportes;
-    private JLabel label10;
     private JLabel label15;
-    private JComboBox comboBox1;
-    private JTextField textField1;
-    private JButton button1;
-    private JLabel label17;
-    private JLabel label18;
-    private JLabel label19;
-    private JLabel label20;
+    private JLabel label22;
+    private JComboBox cmbempleado;
+    private JLabel label23;
     private JLabel label21;
+    private JTextField textField1;
+    private JLabel label24;
+    private JComboBox cmbturnoempleado;
+    private JLabel label25;
+    private JButton button1;
+    private JDateChooser dateChooser1;
+    private JDateChooser dateChooser2;
+    private JLabel label28;
     private JPanel panelRegistros;
     private JLabel label7;
     private JPanel panel2;

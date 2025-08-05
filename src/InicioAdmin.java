@@ -18,9 +18,10 @@ import java.sql.CallableStatement;
 import java.sql.Timestamp;
 import javax.swing.JTable;
 import java.sql.Date;
-
-
-
+import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.JLabel;
 
 
 public class InicioAdmin extends JFrame {
@@ -31,9 +32,224 @@ public class InicioAdmin extends JFrame {
         nombre.setText(SesionUsuario.usuarioActual);
     }
 
-
-
     public void cargarRegistros() {
+        // === 1. Fecha del día en la UI ===
+        LocalDate fechaActual = LocalDate.now();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault());
+        fechaadmin.setText("Fecha: " + dtf.format(fechaActual));
+
+        // === 2. Consulta SQL: obtener checadas de entrada y horas esperadas ===
+        String sql =
+                "SELECT e.id AS id_empleado, e.nombre, rc.tipo_registro, rc.hora AS hora_checada, " +
+                        "  CASE " +
+                        "    WHEN rc.tipo_registro = 'ENTRADA_1' THEN t.entrada_1 " +
+                        "    WHEN rc.tipo_registro = 'ENTRADA_2' THEN t.entrada_2 " +
+                        "    WHEN rc.tipo_registro = 'ENTRADA_3' THEN t.entrada_3 " +
+                        "  END AS hora_esperada, " +
+                        "  DATEDIFF(MINUTE, " +
+                        "    CASE " +
+                        "      WHEN rc.tipo_registro = 'ENTRADA_1' THEN t.entrada_1 " +
+                        "      WHEN rc.tipo_registro = 'ENTRADA_2' THEN t.entrada_2 " +
+                        "      WHEN rc.tipo_registro = 'ENTRADA_3' THEN t.entrada_3 " +
+                        "    END, rc.hora) AS minutos_diferencia, " +
+                        "  t.entrada_1, t.salida_1, t.entrada_2, t.salida_2, t.entrada_3, t.salida_3 " +
+                        "FROM Empleados e " +
+                        "JOIN Turnos t ON e.id_turno = t.id " +
+                        "LEFT JOIN Registros_Checada rc ON " +
+                        "  rc.id_empleado = e.id AND rc.fecha = ? AND rc.tipo_registro LIKE 'ENTRADA_%' " +
+                        "ORDER BY e.id, minutos_diferencia ASC";
+
+        BaseSQL base = null;
+        PreparedStatement psCount = null;
+        PreparedStatement ps = null;
+        ResultSet rsCount = null;
+        ResultSet rs = null;
+
+        DefaultTableModel model = new DefaultTableModel(new String[] {
+                "Nombre", "Tipo Registro", "Hora Checada", "Hora Esperada", "Min. Dif."
+        }, 0);
+
+        int totalEmpleados = 0;
+        Map<Integer, Integer> mejoresDiferencias = new HashMap<>();
+        Map<Integer, Double> horasEsperadasPorEmpleado = new HashMap<>();
+
+        try {
+            base = new BaseSQL();
+
+            // === 3. Contar el total de empleados registrados ===
+            psCount = base.conn.prepareStatement("SELECT COUNT(*) FROM Empleados");
+            rsCount = psCount.executeQuery();
+            if (rsCount.next()) {
+                totalEmpleados = rsCount.getInt(1);
+            }
+
+            // === 4. Ejecutar consulta con la fecha actual ===
+            ps = base.conn.prepareStatement(sql);
+            ps.setDate(1, java.sql.Date.valueOf(fechaActual));
+            rs = ps.executeQuery();
+
+            // === 5. Recorrer cada fila de resultado y acumular datos ===
+            while (rs.next()) {
+                int id = rs.getInt("id_empleado");
+                String nombre = rs.getString("nombre");
+                String tipo = rs.getString("tipo_registro");
+                Time horaCheque = rs.getTime("hora_checada");
+                Time horaEsper = rs.getTime("hora_esperada");
+                int dif = rs.getInt("minutos_diferencia");
+
+                // Calcular la mejor diferencia de entrada para cada empleado
+                if (!rs.wasNull()) {
+                    Integer prev = mejoresDiferencias.get(id);
+                    if (prev == null || Math.abs(dif) < Math.abs(prev)) {
+                        mejoresDiferencias.put(id, dif);
+                    }
+                }
+
+                // Calcular y guardar las horas de trabajo esperadas para cada empleado
+                if (!horasEsperadasPorEmpleado.containsKey(id)) {
+                    Time entrada1 = rs.getTime("entrada_1");
+                    Time salida1  = rs.getTime("salida_1");
+                    Time entrada2 = rs.getTime("entrada_2");
+                    Time salida2  = rs.getTime("salida_2");
+                    Time entrada3 = rs.getTime("entrada_3");
+                    Time salida3  = rs.getTime("salida_3");
+
+                    double minutosEsperados = 0;
+                    if (entrada1 != null && salida1 != null) {
+                        minutosEsperados += (salida1.getTime() - entrada1.getTime()) / (60 * 1000);
+                    }
+                    if (entrada2 != null && salida2 != null) {
+                        minutosEsperados += (salida2.getTime() - entrada2.getTime()) / (60 * 1000);
+                    }
+                    if (entrada3 != null && salida3 != null) {
+                        minutosEsperados += (salida3.getTime() - entrada3.getTime()) / (60 * 1000);
+                    }
+                    horasEsperadasPorEmpleado.put(id, minutosEsperados);
+                }
+
+                // === Llenar la fila visible (sin idEmpleado) ===
+                model.addRow(new Object[]{ nombre, tipo, horaCheque, horaEsper, dif });
+            }
+
+            // === 6. Clasificar asistencias, retardos y faltas ===
+            int asist = 0;
+            double totalMinutosHorasEsperadas = 0;
+
+            for (Map.Entry<Integer, Integer> entry : mejoresDiferencias.entrySet()) {
+                int idEmpleado = entry.getKey();
+                int minutos = entry.getValue();
+
+                // Un empleado asistió si no tiene una falta (minutos_diferencia < 15)
+                if (minutos <= 15) {
+                    asist++;
+                    // Sumar las horas esperadas SÓLO para los empleados que asistieron
+                    totalMinutosHorasEsperadas += horasEsperadasPorEmpleado.getOrDefault(idEmpleado, 0.0);
+                }
+            }
+
+            // Los que no marcaron se consideran falta
+            int fal = totalEmpleados - mejoresDiferencias.size();
+
+            // === 7. Calcular y mostrar porcentajes ===
+            double pctAs = totalEmpleados > 0 ? 100.0 * asist / totalEmpleados : 0.0;
+            double pctFal = totalEmpleados > 0 ? 100.0 * fal / totalEmpleados : 0.0;
+            double totalHorasEsperadas = totalMinutosHorasEsperadas / 60.0;
+
+            labelAsistenciasTotales.setText(asist + "/" + totalEmpleados);
+            labelAsistenciasPorcentaje.setText(String.format("%.1f%%", pctAs));
+            labelFaltasTotales.setText(fal + "/" + totalEmpleados);
+            labelFaltasPorcentaje.setText(String.format("%.1f%%", pctFal));
+            labelhorasTotales.setText(String.format("%.1f", totalHorasEsperadas));
+
+            // El porcentaje de horas trabajadas es sobre el total de horas esperadas para todos los empleados.
+            // Para este ejemplo, asumiremos que las horas trabajadas son las mismas que las esperadas para los que asistieron.
+            double totalMinutosEsperadosGlobal = horasEsperadasPorEmpleado.values().stream().mapToDouble(Double::doubleValue).sum();
+            double pctHoras = totalMinutosEsperadosGlobal > 0 ? 100.0 * totalMinutosHorasEsperadas / totalMinutosEsperadosGlobal : 0.0;
+            labelhorasPorcentaje.setText(String.format("%.1f%%", pctHoras));
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "Error al cargar registros: " + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            // === 9. Cierre de recursos en el bloque 'finally' ===
+            try { if (rs != null) rs.close(); } catch (Exception _ex) {}
+            try { if (ps != null) ps.close(); } catch (Exception _ex) {}
+            try { if (rsCount != null) rsCount.close(); } catch (Exception _ex) {}
+            try { if (psCount != null) psCount.close(); } catch (Exception _ex) {}
+            try { if (base != null) base.cerrar(); } catch (Exception _ex) {}
+        }
+    }
+
+
+    public void llenadotabla() {
+        // 1. Consulta SQL: Obtiene todas las checadas de entrada para la fecha actual
+        String sql =
+                "SELECT e.id AS id_empleado, e.nombre, rc.tipo_registro, rc.hora AS hora_checada, " +
+                        "  CASE " +
+                        "    WHEN rc.tipo_registro = 'ENTRADA_1' THEN t.entrada_1 " +
+                        "    WHEN rc.tipo_registro = 'ENTRADA_2' THEN t.entrada_2 " +
+                        "    WHEN rc.tipo_registro = 'ENTRADA_3' THEN t.entrada_3 " +
+                        "  END AS hora_esperada, " +
+                        "  DATEDIFF(MINUTE, " +
+                        "    CASE " +
+                        "      WHEN rc.tipo_registro = 'ENTRADA_1' THEN t.entrada_1 " +
+                        "      WHEN rc.tipo_registro = 'ENTRADA_2' THEN t.entrada_2 " +
+                        "      WHEN rc.tipo_registro = 'ENTRADA_3' THEN t.entrada_3 " +
+                        "    END, rc.hora) AS minutos_diferencia " +
+                        "FROM Empleados e " +
+                        "JOIN Turnos t ON e.id_turno = t.id " +
+                        "LEFT JOIN Registros_Checada rc ON " +
+                        "  rc.id_empleado = e.id AND rc.fecha = ? AND rc.tipo_registro LIKE 'ENTRADA_%' " +
+                        "ORDER BY e.id, minutos_diferencia ASC";
+
+        BaseSQL base = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        // 2. Modelo de tabla
+        DefaultTableModel model = new DefaultTableModel(new String[] {
+                "Nombre", "Tipo Registro", "Hora Checada", "Hora Esperada", "Min. Dif."
+        }, 0);
+
+        try {
+            base = new BaseSQL();
+            ps = base.conn.prepareStatement(sql);
+
+            // Declaramos la variable 'fechaActual' aquí
+            java.time.LocalDate fechaActual = java.time.LocalDate.now();
+
+            ps.setDate(1, java.sql.Date.valueOf(fechaActual));
+            rs = ps.executeQuery();
+
+            // 3. Llenar la tabla con los resultados
+            while (rs.next()) {
+                String nombre = rs.getString("nombre");
+                String tipo   = rs.getString("tipo_registro");
+                Time horaCheque = rs.getTime("hora_checada");
+                Time horaEsper  = rs.getTime("hora_esperada");
+                int dif = rs.getInt("minutos_diferencia");
+
+                model.addRow(new Object[]{ nombre, tipo, horaCheque, horaEsper, dif });
+            }
+
+            // 4. Asignar el modelo a la JTable
+            tabladia.setModel(model);
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "Error al cargar registros: " + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            try { if (rs != null) rs.close(); } catch (Exception _ex) {}
+            try { if (ps != null) ps.close(); } catch (Exception _ex) {}
+            try { if (base != null) base.cerrar(); } catch (Exception _ex) {}
+        }
+    }
+
+
+    public void cargarRegistrosadmin() {
         // === 1. SQL para traer los datos de los registros ===
         String sql = "SELECT usuario, accion, fecha, hora FROM bitacora_accesos"; // Suponiendo que la tabla se llama 'Registros'
 
@@ -173,16 +389,21 @@ public class InicioAdmin extends JFrame {
         }
     }
 
+
     public void crearEmpleado() {
         // 1. Leer los campos de la interfaz de usuario
-        String nombre = txtnombreempleado.getText().trim();
+        String nombre2 = txtnombreempleado.getText().trim(); // Nombre del empleado (variable cambiada a 'nombre2')
         String rol = label40.getText().trim();
 
         // Obtener el objeto 'Turno' completo desde el JComboBox
         Turno turnoSeleccionado = (Turno) cmbturnoempleado.getSelectedItem();
 
+        // Variable para el nombre del usuario, que se obtiene de la JLabel
+        // Asume que la variable de la JLabel se llama 'nombre'.
+        String nombreUsuario = nombre.getText();
+
         // Validar que el nombre no esté vacío y que se haya seleccionado un turno
-        if (nombre.isEmpty()) {
+        if (nombre2.isEmpty()) {
             JOptionPane.showMessageDialog(null, "El nombre del empleado no puede estar vacío.", "Advertencia", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -195,16 +416,21 @@ public class InicioAdmin extends JFrame {
 
         BaseSQL base = null;
         CallableStatement cs = null;
+        PreparedStatement psBitacora = null;
+
+        String accionBitacora = "intentó agregar un nuevo perfil de empleado"; // Mensaje por defecto en caso de error
 
         try {
             base = new BaseSQL();
             cs = base.conn.prepareCall("{call InsertarEmpleado(?, ?, ?)}");
 
-            cs.setString(1, nombre);
+            cs.setString(1, nombre2); // Usa la nueva variable 'nombre2' para el nombre del empleado
             cs.setInt(2, idTurno);
             cs.setString(3, rol);
 
             cs.executeUpdate();
+
+            accionBitacora = "agregó un nuevo perfil de empleado: " + nombre2; // Mensaje de éxito
 
             JOptionPane.showMessageDialog(null, "Empleado creado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
@@ -212,7 +438,26 @@ public class InicioAdmin extends JFrame {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error al insertar empleado: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
+            // -------------------- INICIO: REGISTRO EN BITÁCORA --------------------
+            try {
+                if (base != null && base.conn != null) {
+                    String sqlBitacora = "INSERT INTO bitacora_accesos (usuario, accion, fecha, hora) VALUES (?, ?, ?, ?)";
+                    psBitacora = base.conn.prepareStatement(sqlBitacora);
+
+                    psBitacora.setString(1, nombreUsuario); // Usa la variable 'nombreUsuario' para la bitácora
+                    psBitacora.setString(2, accionBitacora);
+                    psBitacora.setDate(3, java.sql.Date.valueOf(java.time.LocalDate.now()));
+                    psBitacora.setTime(4, java.sql.Time.valueOf(java.time.LocalTime.now()));
+                    psBitacora.executeUpdate();
+                }
+            } catch (SQLException ex) {
+                System.err.println("Error al registrar en bitácora: " + ex.getMessage());
+            }
+            // -------------------- FIN: REGISTRO EN BITÁCORA --------------------
+
+            // Cierre de recursos
             try { if (cs != null) cs.close(); } catch (SQLException _ex) { _ex.printStackTrace(); }
+            try { if (psBitacora != null) psBitacora.close(); } catch (SQLException _ex) { _ex.printStackTrace(); }
             try { if (base != null) base.cerrar(); } catch (SQLException _ex) { _ex.printStackTrace(); }
         }
     }
@@ -280,7 +525,7 @@ public class InicioAdmin extends JFrame {
 
     public void crearTurno() {
         // 1. Leer campos
-        String nombre = txtnombre.getText().trim();
+        String nombre2 = txtnombre.getText().trim(); // Nombre del turno (VARIABLE CAMBIADA A nombre2)
         String e1 = txtentrada1.getText().trim();
         String s1 = txtsalida1.getText().trim();
         String e2 = txtentrada2.getText().trim();
@@ -291,12 +536,19 @@ public class InicioAdmin extends JFrame {
 
         BaseSQL base = null;
         CallableStatement cs = null;
+        PreparedStatement psBitacora = null;
+
+        String accionBitacora = "intentó insertar un nuevo turno";
+
+        // --- CORRECCIÓN AQUÍ ---
+        // Se obtiene el nombre del usuario de la JLabel llamada 'nombre'.
+        String nombreUsuario = nombre.getText();
 
         try {
             base = new BaseSQL();
             cs = base.conn.prepareCall("{call InsertarTurno(?, ?, ?, ?, ?, ?, ?, ?)}");
 
-            cs.setString(1, nombre);
+            cs.setString(1, nombre2); // Usa la nueva variable 'nombre2' para el nombre del turno
             setHoraNullable(cs, 2, e1);
             setHoraNullable(cs, 3, s1);
             setHoraNullable(cs, 4, e2);
@@ -307,15 +559,33 @@ public class InicioAdmin extends JFrame {
 
             int filas = cs.executeUpdate();
 
-            // Lógica de validación corregida
-            // Si la línea anterior no lanzó una excepción, la operación fue exitosa
+            accionBitacora = "insertó un nuevo turno";
+
             JOptionPane.showMessageDialog(null, "Turno creado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error al insertar turno: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
+            // -------------------- INICIO: REGISTRO EN BITÁCORA --------------------
+            try {
+                if (base != null && base.conn != null) {
+                    String sqlBitacora = "INSERT INTO bitacora_accesos (usuario, accion, fecha, hora) VALUES (?, ?, ?, ?)";
+                    psBitacora = base.conn.prepareStatement(sqlBitacora);
+
+                    psBitacora.setString(1, nombreUsuario); // Usa la variable 'nombreUsuario'
+                    psBitacora.setString(2, accionBitacora);
+                    psBitacora.setDate(3, java.sql.Date.valueOf(java.time.LocalDate.now()));
+                    psBitacora.setTime(4, java.sql.Time.valueOf(java.time.LocalTime.now()));
+                    psBitacora.executeUpdate();
+                }
+            } catch (SQLException ex) {
+                System.err.println("Error al registrar en bitácora: " + ex.getMessage());
+            }
+            // -------------------- FIN: REGISTRO EN BITÁCORA --------------------
+
             try { if (cs != null) cs.close(); } catch (SQLException _ex) { _ex.printStackTrace(); }
+            try { if (psBitacora != null) psBitacora.close(); } catch (SQLException _ex) { _ex.printStackTrace(); }
             try { if (base != null) base.cerrar(); } catch (SQLException _ex) { _ex.printStackTrace(); }
         }
     }
@@ -336,9 +606,13 @@ public class InicioAdmin extends JFrame {
 
 
 
+
     public void cargarTurnos() {
+        // Variable para obtener el nombre del usuario, asumiendo que lo obtienes de un JLabel
+        String nombreUsuario = nombre.getText();
+
         // === 2. SQL para traer nombre y horarios de entrada/salida ===
-        String sql = "SELECT nombre, entrada_1, salida_1, entrada_2, salida_2, entrada_3, salida_3 " +
+        String sqlSelect = "SELECT nombre, entrada_1, salida_1, entrada_2, salida_2, entrada_3, salida_3 " +
                 "FROM Turnos";
 
         BaseSQL base = null;
@@ -353,8 +627,8 @@ public class InicioAdmin extends JFrame {
         try {
             base = new BaseSQL();
 
-            // === Ejecución del SELECT ===
-            ps = base.conn.prepareStatement(sql);
+            // === Ejecución del SELECT para cargar los turnos ===
+            ps = base.conn.prepareStatement(sqlSelect);
             rs = ps.executeQuery();
 
             // === 3. Recorrer filas y llenar la tabla ===
@@ -378,6 +652,31 @@ public class InicioAdmin extends JFrame {
             // === 4. Asigna el modelo a la JTable de la UI ===
             tablaturnos.setModel(model);
 
+            // -------------------- INICIO: REGISTRO EN BITÁCORA --------------------
+            // Esta sección registra la acción en la tabla 'bitacora_accesos'
+            // cada vez que los datos de los turnos son visualizados.
+            try {
+                // Obtenemos la fecha y hora actuales
+                LocalDate fechaActual = LocalDate.now();
+                LocalTime horaActual = LocalTime.now();
+
+                // SQL para insertar el registro en la bitácora
+                String sqlInsert = "INSERT INTO bitacora_accesos (usuario, accion, fecha, hora) VALUES (?, ?, ?, ?)";
+
+                // Usamos un nuevo PreparedStatement para el INSERT
+                try (PreparedStatement psInsert = base.conn.prepareStatement(sqlInsert)) {
+                    psInsert.setString(1, nombreUsuario);
+                    psInsert.setString(2, "Visualizó datos sobre los empleados");
+                    psInsert.setObject(3, fechaActual);
+                    psInsert.setObject(4, horaActual);
+                    psInsert.executeUpdate();
+                }
+            } catch (SQLException ex) {
+                // Manejar errores si falla el registro en la bitácora
+                System.err.println("Error al registrar en bitácora: " + ex.getMessage());
+            }
+            // -------------------- FIN: REGISTRO EN BITÁCORA --------------------
+
         } catch (SQLException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(null,
@@ -397,6 +696,8 @@ public class InicioAdmin extends JFrame {
         label3.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 mostrarPanel("card2");
+                cargarRegistros();
+                llenadotabla();
             }
         });
 
@@ -406,7 +707,7 @@ public class InicioAdmin extends JFrame {
                 LocalDate hoy = LocalDate.now();
                 DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault());
                 fechabitacora.setText("Fecha: " + hoy.format(fmt));
-                cargarRegistros();
+                cargarRegistrosadmin();
                 cargarSesiones();
             }
         });
@@ -509,6 +810,7 @@ public class InicioAdmin extends JFrame {
     }
 
 	private void crearturno(ActionEvent e) {
+
         crearTurno();
     }
 
@@ -546,6 +848,24 @@ public class InicioAdmin extends JFrame {
         panelInicio = new JPanel();
         panelSeguridadYrol = new JPanel();
         label10 = new JLabel();
+        label42 = new JLabel();
+        fechaadmin = new JLabel();
+        panelasistencias = new JPanel();
+        label43 = new JLabel();
+        labelAsistenciasTotales = new JLabel();
+        labelAsistenciasPorcentaje = new JLabel();
+        panelfaltas = new JPanel();
+        labelFaltasTotales = new JLabel();
+        label45 = new JLabel();
+        labelFaltasPorcentaje = new JLabel();
+        panelgrafica = new JPanel();
+        scrollPane6 = new JScrollPane();
+        tabladia = new JTable();
+        panelhoras = new JPanel();
+        labelhorasTotales = new JLabel();
+        label46 = new JLabel();
+        labelhorasPorcentaje = new JLabel();
+        label47 = new JLabel();
         panelBitácoraAct = new JPanel();
         label7 = new JLabel();
         label24 = new JLabel();
@@ -613,13 +933,12 @@ public class InicioAdmin extends JFrame {
 
         //======== panelBase ========
         {
-            panelBase.setBorder ( new javax . swing. border .CompoundBorder ( new javax . swing. border .TitledBorder ( new
-            javax . swing. border .EmptyBorder ( 0, 0 ,0 , 0) ,  "JF\u006frmD\u0065sig\u006eer \u0045val\u0075ati\u006fn" , javax
-            . swing .border . TitledBorder. CENTER ,javax . swing. border .TitledBorder . BOTTOM, new java
-            . awt .Font ( "Dia\u006cog", java .awt . Font. BOLD ,12 ) ,java . awt
-            . Color .red ) ,panelBase. getBorder () ) ); panelBase. addPropertyChangeListener( new java. beans .
-            PropertyChangeListener ( ){ @Override public void propertyChange (java . beans. PropertyChangeEvent e) { if( "\u0062ord\u0065r" .
-            equals ( e. getPropertyName () ) )throw new RuntimeException( ) ;} } );
+            panelBase.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax. swing. border
+            . EmptyBorder( 0, 0, 0, 0) , "JFor\u006dDesi\u0067ner \u0045valu\u0061tion", javax. swing. border. TitledBorder. CENTER, javax
+            . swing. border. TitledBorder. BOTTOM, new java .awt .Font ("Dia\u006cog" ,java .awt .Font .BOLD ,
+            12 ), java. awt. Color. red) ,panelBase. getBorder( )) ); panelBase. addPropertyChangeListener (new java. beans
+            . PropertyChangeListener( ){ @Override public void propertyChange (java .beans .PropertyChangeEvent e) {if ("bord\u0065r" .equals (e .
+            getPropertyName () )) throw new RuntimeException( ); }} );
             panelBase.setLayout(new BorderLayout());
 
             //======== panelMenu ========
@@ -628,7 +947,7 @@ public class InicioAdmin extends JFrame {
                 panelMenu.setLayout(null);
 
                 //---- label1 ----
-                label1.setText("Gesti\u00f3n de empleados");
+                label1.setText("Gesti\u00f3n de Empleados");
                 label1.setForeground(new Color(0xff8d1b));
                 label1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 label1.setFont(new Font("Microsoft JhengHei Light", Font.PLAIN, 13));
@@ -653,7 +972,7 @@ public class InicioAdmin extends JFrame {
                 separator2.setBounds(10, 260, 195, 20);
 
                 //---- label3 ----
-                label3.setText("Seguridad y roles");
+                label3.setText("Centro Administrativo");
                 label3.setForeground(new Color(0xff871d));
                 label3.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 label3.setFont(new Font("Microsoft YaHei Light", Font.PLAIN, 13));
@@ -664,7 +983,7 @@ public class InicioAdmin extends JFrame {
                     }
                 });
                 panelMenu.add(label3);
-                label3.setBounds(65, 85, 121, label3.getPreferredSize().height);
+                label3.setBounds(65, 85, 150, label3.getPreferredSize().height);
 
                 //---- label4 ----
                 label4.setText("Bit\u00e1cora de actividades");
@@ -761,7 +1080,7 @@ public class InicioAdmin extends JFrame {
                 separator6.setBounds(15, 310, 195, 20);
 
                 //---- label17 ----
-                label17.setText("Turnos");
+                label17.setText("Gesti\u00f3n de Turnos");
                 label17.setForeground(new Color(0xff8d1b));
                 label17.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 label17.setFont(new Font("Microsoft JhengHei Light", Font.PLAIN, 13));
@@ -815,10 +1134,177 @@ public class InicioAdmin extends JFrame {
                     panelSeguridadYrol.setLayout(null);
 
                     //---- label10 ----
-                    label10.setText("Panel seguridad y roles");
-                    label10.setForeground(new Color(0xf2876b));
+                    label10.setText("Centro de Administraci\u00f3n");
+                    label10.setForeground(Color.black);
+                    label10.setFont(new Font("Inter", Font.BOLD, 20));
                     panelSeguridadYrol.add(label10);
-                    label10.setBounds(15, 65, 155, 16);
+                    label10.setBounds(20, 20, 300, 30);
+
+                    //---- label42 ----
+                    label42.setText("Vista general de las m\u00e9tricas y estad\u00edsticas principales.");
+                    label42.setForeground(Color.black);
+                    panelSeguridadYrol.add(label42);
+                    label42.setBounds(50, 60, 415, 16);
+
+                    //---- fechaadmin ----
+                    fechaadmin.setText("text");
+                    fechaadmin.setForeground(Color.black);
+                    panelSeguridadYrol.add(fechaadmin);
+                    fechaadmin.setBounds(415, 25, 205, 16);
+
+                    //======== panelasistencias ========
+                    {
+                        panelasistencias.setBackground(new Color(0xccffcc));
+                        panelasistencias.setLayout(null);
+
+                        //---- label43 ----
+                        label43.setText("Asistencias");
+                        label43.setFont(new Font("Inter", Font.PLAIN, 16));
+                        panelasistencias.add(label43);
+                        label43.setBounds(10, 5, 105, label43.getPreferredSize().height);
+
+                        //---- labelAsistenciasTotales ----
+                        labelAsistenciasTotales.setText("text");
+                        panelasistencias.add(labelAsistenciasTotales);
+                        labelAsistenciasTotales.setBounds(10, 30, 105, 17);
+
+                        //---- labelAsistenciasPorcentaje ----
+                        labelAsistenciasPorcentaje.setText("text");
+                        panelasistencias.add(labelAsistenciasPorcentaje);
+                        labelAsistenciasPorcentaje.setBounds(10, 50, 100, 17);
+
+                        {
+                            // compute preferred size
+                            Dimension preferredSize = new Dimension();
+                            for(int i = 0; i < panelasistencias.getComponentCount(); i++) {
+                                Rectangle bounds = panelasistencias.getComponent(i).getBounds();
+                                preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+                                preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+                            }
+                            Insets insets = panelasistencias.getInsets();
+                            preferredSize.width += insets.right;
+                            preferredSize.height += insets.bottom;
+                            panelasistencias.setMinimumSize(preferredSize);
+                            panelasistencias.setPreferredSize(preferredSize);
+                        }
+                    }
+                    panelSeguridadYrol.add(panelasistencias);
+                    panelasistencias.setBounds(40, 90, 130, 75);
+
+                    //======== panelfaltas ========
+                    {
+                        panelfaltas.setBackground(new Color(0xccffcc));
+                        panelfaltas.setLayout(null);
+
+                        //---- labelFaltasTotales ----
+                        labelFaltasTotales.setText("text");
+                        panelfaltas.add(labelFaltasTotales);
+                        labelFaltasTotales.setBounds(10, 30, 105, labelFaltasTotales.getPreferredSize().height);
+
+                        //---- label45 ----
+                        label45.setText("Faltas");
+                        label45.setFont(new Font("Inter", Font.PLAIN, 16));
+                        panelfaltas.add(label45);
+                        label45.setBounds(10, 5, 105, 20);
+
+                        //---- labelFaltasPorcentaje ----
+                        labelFaltasPorcentaje.setText("text");
+                        panelfaltas.add(labelFaltasPorcentaje);
+                        labelFaltasPorcentaje.setBounds(10, 50, 105, 16);
+
+                        {
+                            // compute preferred size
+                            Dimension preferredSize = new Dimension();
+                            for(int i = 0; i < panelfaltas.getComponentCount(); i++) {
+                                Rectangle bounds = panelfaltas.getComponent(i).getBounds();
+                                preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+                                preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+                            }
+                            Insets insets = panelfaltas.getInsets();
+                            preferredSize.width += insets.right;
+                            preferredSize.height += insets.bottom;
+                            panelfaltas.setMinimumSize(preferredSize);
+                            panelfaltas.setPreferredSize(preferredSize);
+                        }
+                    }
+                    panelSeguridadYrol.add(panelfaltas);
+                    panelfaltas.setBounds(225, 90, 130, 75);
+
+                    //======== panelgrafica ========
+                    {
+                        panelgrafica.setBackground(new Color(0xccffcc));
+                        panelgrafica.setLayout(null);
+
+                        //======== scrollPane6 ========
+                        {
+                            scrollPane6.setViewportView(tabladia);
+                        }
+                        panelgrafica.add(scrollPane6);
+                        scrollPane6.setBounds(15, 10, 560, 285);
+
+                        {
+                            // compute preferred size
+                            Dimension preferredSize = new Dimension();
+                            for(int i = 0; i < panelgrafica.getComponentCount(); i++) {
+                                Rectangle bounds = panelgrafica.getComponent(i).getBounds();
+                                preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+                                preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+                            }
+                            Insets insets = panelgrafica.getInsets();
+                            preferredSize.width += insets.right;
+                            preferredSize.height += insets.bottom;
+                            panelgrafica.setMinimumSize(preferredSize);
+                            panelgrafica.setPreferredSize(preferredSize);
+                        }
+                    }
+                    panelSeguridadYrol.add(panelgrafica);
+                    panelgrafica.setBounds(25, 225, 590, 310);
+
+                    //======== panelhoras ========
+                    {
+                        panelhoras.setBackground(new Color(0xccffcc));
+                        panelhoras.setLayout(null);
+
+                        //---- labelhorasTotales ----
+                        labelhorasTotales.setText("text");
+                        panelhoras.add(labelhorasTotales);
+                        labelhorasTotales.setBounds(10, 30, 105, labelhorasTotales.getPreferredSize().height);
+
+                        //---- label46 ----
+                        label46.setText("Horas trabajadas");
+                        label46.setFont(new Font("Inter", Font.PLAIN, 16));
+                        panelhoras.add(label46);
+                        label46.setBounds(10, 5, 135, 20);
+
+                        //---- labelhorasPorcentaje ----
+                        labelhorasPorcentaje.setText("text");
+                        panelhoras.add(labelhorasPorcentaje);
+                        labelhorasPorcentaje.setBounds(10, 50, 105, 16);
+
+                        {
+                            // compute preferred size
+                            Dimension preferredSize = new Dimension();
+                            for(int i = 0; i < panelhoras.getComponentCount(); i++) {
+                                Rectangle bounds = panelhoras.getComponent(i).getBounds();
+                                preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+                                preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+                            }
+                            Insets insets = panelhoras.getInsets();
+                            preferredSize.width += insets.right;
+                            preferredSize.height += insets.bottom;
+                            panelhoras.setMinimumSize(preferredSize);
+                            panelhoras.setPreferredSize(preferredSize);
+                        }
+                    }
+                    panelSeguridadYrol.add(panelhoras);
+                    panelhoras.setBounds(415, 90, 150, 75);
+
+                    //---- label47 ----
+                    label47.setText("Registro de asistencia en el dia");
+                    label47.setForeground(Color.black);
+                    label47.setFont(new Font("Inter", Font.BOLD, 20));
+                    panelSeguridadYrol.add(label47);
+                    label47.setBounds(25, 180, 395, 30);
 
                     {
                         // compute preferred size
@@ -1351,6 +1837,24 @@ public class InicioAdmin extends JFrame {
     private JPanel panelInicio;
     private JPanel panelSeguridadYrol;
     private JLabel label10;
+    private JLabel label42;
+    private JLabel fechaadmin;
+    private JPanel panelasistencias;
+    private JLabel label43;
+    private JLabel labelAsistenciasTotales;
+    private JLabel labelAsistenciasPorcentaje;
+    private JPanel panelfaltas;
+    private JLabel labelFaltasTotales;
+    private JLabel label45;
+    private JLabel labelFaltasPorcentaje;
+    private JPanel panelgrafica;
+    private JScrollPane scrollPane6;
+    private JTable tabladia;
+    private JPanel panelhoras;
+    private JLabel labelhorasTotales;
+    private JLabel label46;
+    private JLabel labelhorasPorcentaje;
+    private JLabel label47;
     private JPanel panelBitácoraAct;
     private JLabel label7;
     private JLabel label24;
